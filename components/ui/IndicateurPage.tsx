@@ -16,7 +16,9 @@ export function IndicateurPage() {
       for (const r of rubriques) {
         const el = document.getElementById(r.id);
         if (!el) continue;
-        const b = el.getBoundingClientRect();
+        // une rubrique épinglée vit dans un « pin-spacer » : c'est lui qui porte la longueur du défilement
+        const hote = el.parentElement?.classList.contains("pin-spacer") ? el.parentElement : el;
+        const b = hote.getBoundingClientRect();
         if (b.top <= mid && b.bottom > mid) {
           const nb = (r.fin ?? r.page) - r.page + 1;
           const f = Math.min(0.999, Math.max(0, (mid - b.top) / b.height));

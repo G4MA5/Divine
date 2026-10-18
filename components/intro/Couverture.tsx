@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { identite } from "@/content/identite";
 import { projets } from "@/content/projets";
+import { usePortraitDisponible } from "../PortraitContext";
 
 /** Date d'édition générée côté client (« Octobre 2026 »). */
 function Edition() {
@@ -56,7 +57,8 @@ function CodeBarres() {
 }
 
 /** Une de magazine. Toutes les dimensions sont en cqw : la couverture garde ses proportions à toute taille. */
-export function Couverture() {
+export function Couverture({ titre: Titre = "p" }: { titre?: "h1" | "p" }) {
+  const dispo = usePortraitDisponible();
   const [portraitOk, setPortraitOk] = useState(true);
 
   return (
@@ -74,16 +76,16 @@ export function Couverture() {
       </div>
 
       {/* le titre, DERRIÈRE le portrait */}
-      <h2
+      <Titre
         className="absolute inset-x-0 top-[8cqw] z-[1] text-center font-display font-bold italic leading-none text-ink"
         style={{ fontSize: "12.6cqw", letterSpacing: "-0.035em" }}
       >
         {identite.magazine}
-      </h2>
+      </Titre>
 
       {/* le portrait */}
       <div className="absolute bottom-0 left-1/2 z-[2] h-[104cqw] w-[84cqw] -translate-x-1/2">
-        {portraitOk ? (
+        {portraitOk && dispo ? (
           <Image
             src={identite.portrait}
             alt="Portrait de Divine Graourou"

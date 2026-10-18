@@ -10,12 +10,26 @@ export function BoutonSommaire() {
   const [ouvert, setOuvert] = useState(false);
   const fermer = useRef<HTMLButtonElement>(null);
   const declencheur = useRef<HTMLButtonElement>(null);
+  const boite = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!ouvert) return;
     fermer.current?.focus();
+    // Échap ferme ; Tab reste dans la fenêtre
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOuvert(false);
+      if (e.key !== "Tab") return;
+      const f = [...(boite.current?.querySelectorAll<HTMLElement>("button, a[href]") ?? [])];
+      if (!f.length) return;
+      const premier = f[0];
+      const dernier = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === premier) {
+        e.preventDefault();
+        dernier.focus();
+      } else if (!e.shiftKey && document.activeElement === dernier) {
+        e.preventDefault();
+        premier.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
@@ -61,7 +75,7 @@ export function BoutonSommaire() {
           aria-label="Sommaire"
           className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-bg/96 px-4 py-16 backdrop-blur-sm"
         >
-          <div className="w-full max-w-xl">
+          <div ref={boite} className="w-full max-w-xl">
             <div className="flex items-baseline justify-between">
               <h2 className="font-display text-4xl italic">Sommaire</h2>
               <button

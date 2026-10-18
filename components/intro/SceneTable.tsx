@@ -5,10 +5,9 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { usePrefs } from "../PrefsProvider";
 import { Avatar, PIVOTS, type AvatarId } from "../avatar/Avatar";
-import { Couverture } from "./Couverture";
-import { rubriques, pad, pageLabel } from "@/content/sections";
-import { identite } from "@/content/identite";
+import { MagazineObject } from "./MagazineObject";
 import { play } from "@/lib/sound";
+import { PRIO } from "@/lib/useScene";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -72,6 +71,7 @@ export function SceneTable() {
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
+          refreshPriority: PRIO.scene,
         },
       });
 
@@ -187,69 +187,7 @@ export function SceneTable() {
         <path d="M36 128h48l-6 20H42Z" fill="#b4533a" />
       </svg>
 
-      {/* le magazine */}
-      <div className="absolute inset-0 flex items-center justify-center" style={{ perspective: "1600px" }}>
-        <div
-          data-s="mag-pos"
-          className="relative will-change-transform"
-          style={{ width: "var(--mw)", height: "calc(var(--mw) * 4 / 3)", transformStyle: "preserve-3d" }}
-        >
-          {/* ombre portée */}
-          <div className="absolute inset-0 shadow-[0_30px_60px_-20px_rgba(0,0,0,.55)]" aria-hidden="true" />
-
-          {/* page de droite : le haut du sommaire */}
-          <div className="absolute inset-0 bg-paper text-ink" style={{ containerType: "inline-size" }} aria-hidden="true">
-            <div className="absolute inset-[7cqw]">
-              <p className="font-sans uppercase tracking-[0.26em] text-ink/60" style={{ fontSize: "2.2cqw" }}>
-                Ce qu&apos;il y a dans ce numéro
-              </p>
-              <ol className="mt-[6cqw]">
-                {rubriques.slice(1, 8).map((r) => (
-                  <li key={r.id} className="flex items-baseline gap-[2cqw] py-[1.5cqw] font-display italic" style={{ fontSize: "4.6cqw" }}>
-                    <span>{r.titre}</span>
-                    <span className="flex-1 border-b border-dotted border-gold/70" />
-                    <span className="font-sans not-italic tabular-nums text-ink/60" style={{ fontSize: "2.4cqw" }}>
-                      {pageLabel(r)}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-            <p className="absolute bottom-[4cqw] right-[7cqw] font-sans uppercase tracking-[0.2em] text-ink/50" style={{ fontSize: "2cqw" }}>
-              {identite.magazine} — p. 03
-            </p>
-          </div>
-
-          {/* la couverture, qui pivote autour de la reliure */}
-          <div data-s="cover-flip" className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
-            <div className="absolute inset-0" style={{ backfaceVisibility: "hidden" }}>
-              <Couverture />
-            </div>
-            {/* dos de la couverture = page de gauche du sommaire */}
-            <div
-              className="absolute inset-0 bg-paper text-ink"
-              style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)", containerType: "inline-size" }}
-              aria-hidden="true"
-            >
-              <div className="absolute inset-[7cqw]">
-                <p className="font-sans uppercase tracking-[0.26em] text-ink/60" style={{ fontSize: "2.2cqw" }}>
-                  {identite.magazine}
-                </p>
-                <h2 className="mt-[14cqw] font-display italic leading-none text-gold" style={{ fontSize: "16cqw" }}>
-                  Sommaire
-                </h2>
-                <hr className="mt-[6cqw] border-0 border-t border-gold/70" />
-                <p className="mt-[4cqw] font-display italic text-ink/70" style={{ fontSize: "4cqw" }}>
-                  Six reportages, une interview et quelques surprises.
-                </p>
-              </div>
-              <p className="absolute bottom-[4cqw] left-[7cqw] font-sans uppercase tracking-[0.2em] text-ink/50" style={{ fontSize: "2cqw" }}>
-                p. {pad(2)}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <MagazineObject />
 
       {/* l'avatar choisi par le visiteur */}
       <div data-s="avatar" className="pointer-events-none absolute bottom-[2svh] left-0 z-10">

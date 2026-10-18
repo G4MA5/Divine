@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Cormorant_Garamond, Inter } from "next/font/google";
+import { Playfair_Display, Cormorant_Garamond, Inter, Mrs_Saint_Delafield } from "next/font/google";
 import "./globals.css";
 import { PrefsProvider } from "@/components/PrefsProvider";
 import { identite } from "@/content/identite";
+import { SITE_URL } from "@/lib/site";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -25,8 +26,21 @@ const inter = Inter({
   display: "swap",
 });
 
+const signature = Mrs_Saint_Delafield({
+  variable: "--font-mrs",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: `${identite.magazine} — Divine Graourou, développeuse full stack`,
+  applicationName: identite.magazine,
+  authors: [{ name: identite.nom }],
+  openGraph: { type: "website", locale: "fr_FR", siteName: identite.magazine },
+  twitter: { card: "summary_large_image" },
+  alternates: { canonical: "/" },
   description:
     "Le portfolio de Divine Graourou, développeuse full stack, DevOps junior et support IT junior à Abidjan, raconté comme un magazine.",
 };
@@ -45,7 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="fr"
       suppressHydrationWarning
-      className={`${playfair.variable} ${cormorant.variable} ${inter.variable} h-full antialiased`}
+      className={`${playfair.variable} ${cormorant.variable} ${inter.variable} ${signature.variable} h-full antialiased`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

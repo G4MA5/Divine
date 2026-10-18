@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { usePrefs } from "../PrefsProvider";
 import { avatars } from "@/content/avatars";
 import { identite } from "@/content/identite";
@@ -20,11 +20,17 @@ export function IntroGate({ children }: { children: ReactNode }) {
   const [ouvert, setOuvert] = useState(true);
   const [etape, setEtape] = useState<Etape>("son");
   const [introVisible, setIntroVisible] = useState(true);
+  const carte = useRef<HTMLDivElement>(null);
 
   // le visiteur déjà venu : « Reprendre la lecture » / « Changer d'avatar »
   useEffect(() => {
     if (ready && hasSaved) setEtape("retour");
   }, [ready, hasSaved]);
+
+  // le focus clavier reste dans l'écran d'accueil et se place sur le premier choix à chaque étape
+  useEffect(() => {
+    if (ouvert) carte.current?.querySelector<HTMLElement>("button")?.focus();
+  }, [ouvert, etape, ready]);
 
   // pas de scroll tant que l'écran d'accueil est affiché
   useEffect(() => {
@@ -50,9 +56,13 @@ export function IntroGate({ children }: { children: ReactNode }) {
     maj();
     window.addEventListener("scroll", maj, { passive: true });
     window.addEventListener("resize", maj);
+    // la mise en page change quand les sections épinglées se créent : on re-mesure
+    const ro = new ResizeObserver(maj);
+    ro.observe(document.body);
     return () => {
       window.removeEventListener("scroll", maj);
       window.removeEventListener("resize", maj);
+      ro.disconnect();
     };
   }, []);
 
@@ -89,28 +99,27 @@ export function IntroGate({ children }: { children: ReactNode }) {
 
   return (
     <>
-      {children}
+      {/* tant que l'écran d'accueil est ouvert, le reste de la page est inerte (ni clavier ni lecteur d'écran) */}
+      <div inert={ouvert}>{children}</div>
 
       {ouvert && (
         <div
           role="dialog"
           aria-modal="true"
-          aria-labelledby="accueil-titre"
+          aria-label="Bienvenue dans le magazine"
           className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-bg px-4 py-10"
         >
           <div className="relative w-full max-w-md border border-accent/70 p-1.5">
-            <div className="border border-accent/40 px-6 py-10 text-center sm:px-10">
+            <div ref={carte} className="border border-accent/40 px-6 py-10 text-center sm:px-10">
               <p className="label">Édition numérique · {identite.numero}</p>
-              <h1 id="accueil-titre" className="mt-3 font-display text-4xl italic leading-none sm:text-5xl">
-                {identite.magazine}
-              </h1>
+              <p className="mt-3 font-display text-4xl italic leading-none sm:text-5xl">{identite.magazine}</p>
               <hr className="filet mx-auto mt-6 w-16" />
 
               {etape === "son" && (
                 <section aria-labelledby="q-son" className="mt-8">
-                  <h2 id="q-son" className="font-display text-2xl italic">
+                  <p id="q-son" className="font-display text-2xl italic">
                     Comment voulez-vous lire ?
-                  </h2>
+                  </p>
                   <div className="mt-6 grid gap-3">
                     <button type="button" onClick={() => choisirSon(true)} className="carton-btn">
                       Avec le son
@@ -124,9 +133,9 @@ export function IntroGate({ children }: { children: ReactNode }) {
 
               {etape === "avatar" && (
                 <section aria-labelledby="q-avatar" className="mt-8">
-                  <h2 id="q-avatar" className="font-display text-2xl italic">
+                  <p id="q-avatar" className="font-display text-2xl italic">
                     Qui êtes-vous ?
-                  </h2>
+                  </p>
                   <ul className="mt-5 grid grid-cols-2 gap-3">
                     {avatars.map((a) => (
                       <li key={a.id}>
@@ -150,9 +159,9 @@ export function IntroGate({ children }: { children: ReactNode }) {
 
               {etape === "retour" && (
                 <section aria-labelledby="q-retour" className="mt-8">
-                  <h2 id="q-retour" className="font-display text-2xl italic">
+                  <p id="q-retour" className="font-display text-2xl italic">
                     Content de vous revoir
-                  </h2>
+                  </p>
                   <div className="mt-6 grid gap-3">
                     <button type="button" onClick={reprendre} className="carton-btn">
                       Reprendre la lecture

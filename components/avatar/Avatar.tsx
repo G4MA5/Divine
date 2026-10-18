@@ -36,11 +36,11 @@ export const PIVOTS = {
 type Part = keyof typeof PIVOTS;
 
 /** Une partie mobile : on l'ancre à son pivot, elle tourne donc autour de (0,0) de son propre repère. */
-function Mobile({ part, children }: { part: Part; children: ReactNode }) {
+function Mobile({ part, children, rot }: { part: Part; children: ReactNode; rot?: number }) {
   const [x, y] = PIVOTS[part];
   return (
     <g transform={`translate(${x} ${y})`}>
-      <g data-part={part}>
+      <g data-part={part} transform={rot ? `rotate(${rot})` : undefined}>
         <g transform={`translate(${-x} ${-y})`}>{children}</g>
       </g>
     </g>
@@ -112,8 +112,8 @@ function Outfit({ id, s }: { id: AvatarId; s: Style }) {
   }
 }
 
-export const Avatar = forwardRef<SVGSVGElement, { id: AvatarId; className?: string; title?: string }>(function Avatar(
-  { id, className, title },
+export const Avatar = forwardRef<SVGSVGElement, { id: AvatarId; className?: string; title?: string; pose?: "debout" | "assis" }>(function Avatar(
+  { id, className, title, pose = "debout" },
   ref,
 ) {
   const s = STYLES[id];
@@ -129,6 +129,19 @@ export const Avatar = forwardRef<SVGSVGElement, { id: AvatarId; className?: stri
     >
       <ellipse cx="80" cy="351" rx="42" ry="6" fill="#000" opacity="0.18" />
       {/* jambes */}
+      {pose === "assis" ? (
+        <g>
+          {/* le siège */}
+          <rect x="30" y="226" width="86" height="12" rx="4" fill="#5a4636" />
+          <rect x="34" y="236" width="8" height="112" rx="3" fill="#5a4636" />
+          <rect x="104" y="236" width="8" height="112" rx="3" fill="#5a4636" />
+          {/* cuisses vers l'avant, mollets vers le bas */}
+          <rect x="62" y="206" width="76" height="18" rx="9" fill={jambes} />
+          <rect x="124" y="214" width="17" height="116" rx="8" fill={jambes} />
+          <ellipse cx="136" cy="334" rx="15" ry="6.5" fill={s.shoes} />
+        </g>
+      ) : (
+        <>
       <Mobile part="legL">
         <rect x="61" y="214" width="17" height="128" rx="8" fill={jambes} />
         <ellipse cx="68" cy="344" rx="14" ry="6.5" fill={s.shoes} />
@@ -137,6 +150,8 @@ export const Avatar = forwardRef<SVGSVGElement, { id: AvatarId; className?: stri
         <rect x="82" y="214" width="17" height="128" rx="8" fill={jambes} />
         <ellipse cx="92" cy="344" rx="14" ry="6.5" fill={s.shoes} />
       </Mobile>
+        </>
+      )}
       {/* bras gauche (derrière le torse) */}
       <Mobile part="armL">
         <rect x="42" y="128" width="15" height="92" rx="7.5" fill={id === "curieuse" ? s.skin : s.outfit} />
@@ -144,9 +159,10 @@ export const Avatar = forwardRef<SVGSVGElement, { id: AvatarId; className?: stri
       </Mobile>
       <Outfit id={id} s={s} />
       {/* bras droit (devant) */}
-      <Mobile part="armR">
+      <Mobile part="armR" rot={pose === "assis" ? -62 : undefined}>
         <rect x="103" y="128" width="15" height="92" rx="7.5" fill={id === "curieuse" ? s.skin : s.outfit} />
         <circle cx="110.5" cy="224" r="8.5" fill={s.skin} />
+        {pose === "assis" && <rect x="100" y="206" width="26" height="34" rx="3" fill="#f1e9da" stroke="#a9812f" strokeWidth="2" />}
       </Mobile>
       {/* tête */}
       <Mobile part="head">

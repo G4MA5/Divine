@@ -8,6 +8,18 @@ npm run dev      # http://localhost:3000
 npm run build
 ```
 
+## Variables d'environnement (Vercel)
+| Variable | Rôle |
+|---|---|
+| `NEXT_PUBLIC_SITE_URL` | adresse publique avec le nom de domaine (sitemap, cartes d'aperçu, balises canoniques) |
+| `NEXT_PUBLIC_FORM_ENDPOINT` | adresse du formulaire (Formspree ou route Resend). Sans elle, le formulaire ouvre un `mailto:` |
+
+## Tests
+```bash
+npm run build
+npx playwright test     # 390 px et 1280 px, clair / sombre, mouvement réduit, clavier, URLs directes
+```
+
 ## Modifier le contenu
 Tous les textes sont dans `/content` — jamais dans les composants :
 
