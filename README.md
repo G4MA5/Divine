@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# [div_dev_Now] — le portfolio magazine de Divine
 
-## Getting Started
-
-First, run the development server:
+Next.js (App Router) + TypeScript + Tailwind + GSAP/ScrollTrigger + Lenis + Howler.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Modifier le contenu
+Tous les textes sont dans `/content` — jamais dans les composants :
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Fichier | Contenu |
+|---|---|
+| `identite.ts` | nom, titre, contact, langues, centres d'intérêt, chemin du portrait et du CV |
+| `parcours.ts` | formation |
+| `experience.ts` | expériences pro |
+| `projets.ts` | les reportages (un objet par projet) |
+| `competences.ts` | compétences et atouts |
+| `edito.ts`, `recette.ts`, `interview.ts` | les textes à fournir |
+| `sections.ts` | les rubriques, leur numéro de page, le sommaire |
+| `avatars.ts` | les 4 avatars du visiteur |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Tout ce qui reste à fournir est listé dans `TODO-CONTENU.md`.
 
-## Learn More
+## Ajouter un projet
+Ajouter un objet dans `content/projets.ts` (slug unique). Choisir une valeur de `ouverture` parmi
+`rendez-vous`, `badge`, `livres`, `stock`, `ticket`, `metro`.
 
-To learn more about Next.js, take a look at the following resources:
+## Remplacer un avatar ou un son
+- Avatar : voir `RIVE-SPEC.md`.
+- Son : déposer le fichier dans `public/sounds/` et renseigner son nom dans `FILES` de `lib/sound.ts`.
+  Sans fichier, le son est synthétisé par le navigateur (Web Audio).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Règles du projet
+Mobile d'abord, mode clair/sombre, son coupé par défaut, mouvement réduit respecté, un effet par section,
+bouton « Passer l'intro » toujours visible pendant l'intro, tout le site en français.
