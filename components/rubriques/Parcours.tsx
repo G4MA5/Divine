@@ -6,6 +6,7 @@ import { identite } from "@/content/identite";
 import { PiedDePage } from "../ui/PiedDePage";
 import { gsap, ScrollTrigger, PRIO, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
+import { Illu } from "../ui/Illu";
 
 /**
  * p. 04-05 — Parcours
@@ -57,13 +58,17 @@ export function Parcours() {
   });
 
   return (
-    <section id="parcours" ref={ref} aria-labelledby="parcours-titre" className="relative h-svh overflow-hidden">
+    <section id="parcours" ref={ref} data-couleur="bleu" aria-labelledby="parcours-titre" className="relative h-svh overflow-hidden">
+      <Illu src="chapeau.svg" className="right-[9%] top-[14%] z-0 w-[22vw] max-w-[130px]" anim="flotte" rot={10} />
+      <Illu src="soleil-jaune.svg" className="-bottom-[4%] -right-[10%] z-0 w-[42vw] max-w-[260px]" anim="respire" />
+      <Illu src="etoile.svg" className="left-[44%] top-[20%] z-0 w-[6vw] max-w-[34px]" anim="tourne" />
+      <Illu src="nuages.svg" className="-left-[6%] top-[28%] z-0 w-[50vw] max-w-[320px]" />
       <div className="absolute inset-x-0 top-0 z-10 pl-4 pr-10 pt-20 sm:px-8">
         <p className="label flex justify-between">
           <span>{identite.magazine} · Parcours</span>
           <span className="tabular-nums">p. 04-05</span>
         </p>
-        <h2 id="parcours-titre" className="mt-3 font-display text-5xl italic leading-none sm:text-7xl">
+        <h2 id="parcours-titre" className="titre-xl mt-3 text-[clamp(3.4rem,15vw,8rem)]">
           Parcours
         </h2>
         <hr className="filet mt-4" />
@@ -74,17 +79,17 @@ export function Parcours() {
 
       <ol data-track className="absolute bottom-0 left-0 top-0 flex items-center gap-8 pl-6 pr-10 pt-24 will-change-transform sm:gap-16 sm:pl-12">
         {parcours.map((e, i) => (
-          <li key={e.titre} data-panel className="relative w-[78vw] shrink-0 sm:w-[44vw] sm:max-w-xl">
-            <p data-an className="font-display text-[clamp(3.2rem,13vw,7.5rem)] italic leading-none text-accent tabular-nums">
+          <li key={e.titre} data-panel className="relative w-[78vw] shrink-0 border-[3px] border-fg bg-bg-deep p-5 shadow-[7px_7px_0_#ffc727] sm:w-[44vw] sm:max-w-xl sm:p-8">
+            <p data-an className="titre-xl text-[clamp(3rem,12vw,6.5rem)] text-accent tabular-nums">
               {e.periode}
             </p>
             <p data-an className="label mt-2">
               Étape {i + 1} / {parcours.length}
             </p>
-            <h3 data-an className="mt-4 font-display text-2xl leading-tight sm:text-4xl">
+            <h3 data-an className="mt-4 font-display text-2xl font-extrabold leading-tight sm:text-4xl">
               {e.titre}
             </h3>
-            <p data-an className="mt-3 text-soft">
+            <p data-an className="mt-3 font-semibold text-soft">
               {e.lieu}
             </p>
             {e.detail && (
@@ -97,8 +102,8 @@ export function Parcours() {
       </ol>
 
       {/* la frise */}
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-24 z-10 h-px bg-accent/25">
-        <div data-fil className="h-[2px] w-full origin-left bg-accent" />
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-24 z-10 h-[3px] bg-fg/25">
+        <div data-fil className="h-[3px] w-full origin-left bg-accent" />
       </div>
 
       <div className="absolute inset-x-0 bottom-0 z-10 pl-4 pr-10 sm:px-8">

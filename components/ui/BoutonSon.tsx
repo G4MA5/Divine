@@ -14,7 +14,7 @@ export function BoutonSon() {
       aria-pressed={sound}
       aria-label={sound ? "Couper le son" : "Activer le son"}
       title={sound ? "Couper le son" : "Activer le son"}
-      className="fixed bottom-4 left-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-accent/60 bg-bg/85 text-accent backdrop-blur transition-colors hover:bg-bg-deep"
+      className="fixed bottom-4 left-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border-2 border-ink bg-yellow text-ink shadow-[2px_2px_0_#1f2d34] transition-transform hover:translate-x-px hover:translate-y-px"
     >
       <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
         {hauteurs.map((h, i) => (

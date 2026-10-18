@@ -5,6 +5,7 @@ import { competences } from "@/content/competences";
 import { Page } from "./Page";
 import { gsap, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
+import { Illu } from "../ui/Illu";
 
 /**
  * p. 16 — Compétences · motif : le tennis
@@ -20,7 +21,7 @@ function Court() {
     const balle = root.querySelector("[data-balle]") as HTMLElement;
     const ombre = root.querySelector("[data-ombre]") as HTMLElement;
     const N = blocs.length;
-    gsap.set(blocs, { opacity: 0.32 });
+    gsap.set(blocs, { opacity: 0.4 });
     let dernier = -1;
 
     const point = (k: number) => {
@@ -48,7 +49,7 @@ function Court() {
         const allume = i <= idx;
         if ((bl.dataset.on === "1") !== allume) {
           bl.dataset.on = allume ? "1" : "0";
-          gsap.to(bl, { opacity: allume ? 1 : 0.32, duration: 0.35 });
+          gsap.to(bl, { opacity: allume ? 1 : 0.4, scale: allume ? 1 : 0.97, duration: 0.35 });
         }
       });
       if (idx !== dernier) {
@@ -86,12 +87,12 @@ function Court() {
             key={c.categorie}
             data-bloc
             data-cote={i % 2 ? "d" : "g"}
-            className={`relative w-[78%] bg-bg/80 px-4 py-5 backdrop-blur-[1px] sm:w-[58%] ${i % 2 ? "ml-auto" : ""}`}
+            className={`relative w-[78%] border-[3px] border-ink bg-paper px-4 py-5 text-ink shadow-[6px_6px_0_#1f2d34] sm:w-[58%] ${i % 2 ? "ml-auto" : ""}`}
           >
-            <h3 className="font-display text-3xl italic leading-none">{c.categorie}</h3>
+            <h3 className="titre-xl text-4xl">{c.categorie}</h3>
             <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
               {c.items.map((it) => (
-                <li key={it} className="label !text-fg">
+                <li key={it} className="label !text-ink">
                   {it}
                 </li>
               ))}
@@ -107,8 +108,8 @@ function Court() {
         </svg>
       </span>
       <style>{`
-        :root { --court: #d2b79c; }
-        :root[data-theme="dark"] { --court: #3b3029; }
+        :root { --court: #18a24a; }
+        :root[data-theme="dark"] { --court: #0f7a37; }
       `}</style>
     </div>
   );
@@ -116,7 +117,19 @@ function Court() {
 
 export function Competences() {
   return (
-    <Page id="competences">
+    <Page
+      id="competences"
+      couleur="vert"
+      large
+      decor={
+        <>
+          <Illu src="soleil-vert.svg" className="-right-[10%] top-[3%] w-[36vw] max-w-[240px]" anim="respire" vitesse={1.5} />
+          <Illu src="plante-bleue.svg" className="-bottom-[1%] -left-[2%] z-20 w-[22vw] max-w-[130px]" anim="respire" vitesse={-1} />
+          <Illu src="plante-jaune.svg" className="-bottom-[1%] -right-[2%] z-20 w-[22vw] max-w-[130px]" anim="respire" delai={1} vitesse={-1.5} />
+          <Illu src="nuages.svg" className="left-[-6%] top-[8%] w-[50vw] max-w-[320px]" />
+        </>
+      }
+    >
       <Court />
     </Page>
   );

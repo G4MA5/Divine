@@ -14,7 +14,7 @@ export function BoutonTheme() {
       aria-pressed={sombre}
       aria-label={sombre ? "Passer en mode clair" : "Passer en mode sombre"}
       title={sombre ? "Mode clair" : "Mode sombre"}
-      className="fixed right-4 top-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-accent/60 bg-bg/85 text-accent backdrop-blur transition-colors hover:bg-bg-deep"
+      className="fixed right-4 top-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border-2 border-ink bg-yellow text-ink shadow-[2px_2px_0_#1f2d34] transition-transform hover:translate-x-px hover:translate-y-px"
     >
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
         {sombre ? (

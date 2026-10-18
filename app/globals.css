@@ -1,44 +1,81 @@
 @import "tailwindcss";
 
-/* ───────── Tokens : papier crème / encre noire, l'or seulement en accent ───────── */
+/* ───────── La palette de Divine : celle de ses illustrations ─────────
+   corail, orange, jaune soleil, bleu, vert, violet, sur papier crème et encre bleu nuit. */
 :root {
-  --paper: #f4ede0;
-  --paper-deep: #ebe2d0;
-  --ink: #15120f;
-  --gold: #a9812f;
-  --muted: #6f6558;
+  --paper: #fff6ec;
+  --ink: #1f2d34;
+  --coral: #ff725e;
+  --orange: #fe8401;
+  --yellow: #ffc727;
+  --blue: #2f5fe0;
+  --green: #22c55e;
+  --violet: #8e3fa6;
+  --teal: #14b8a6;
+  --gold: #ff725e; /* ancien nom de l'accent : désormais le corail */
+  --muted: #5d6b72;
 
-  /* sémantique : suit le mode clair / sombre */
+  /* sémantique : chaque rubrique peut la redéfinir avec data-couleur */
   --bg: var(--paper);
-  --bg-deep: var(--paper-deep);
+  --bg-deep: #ffe9d6;
   --fg: var(--ink);
-  --accent: var(--gold);
-  --soft: var(--muted);
-  --line: color-mix(in srgb, var(--accent) 55%, transparent);
-  --grain-opacity: 0.06;
+  --accent: #e8452f;
+  --soft: #55646b;
+  --line: color-mix(in srgb, var(--fg) 30%, transparent);
+  --grain-opacity: 0.07;
   color-scheme: light;
 }
 
+/* ───────── Mode sombre ───────── */
 :root[data-theme="dark"] {
-  --bg: var(--ink);
-  --bg-deep: #1d1915;
-  --fg: #f1e9da;
-  --accent: #cda75c;
-  --soft: #a39786;
-  --grain-opacity: 0;
+  --bg: #161f24;
+  --bg-deep: #1f2c33;
+  --fg: #fff6ec;
+  --accent: #ff8a78;
+  --soft: #b4c0c6;
+  --grain-opacity: 0.03;
   color-scheme: dark;
 }
-
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: var(--ink);
-    --bg-deep: #1d1915;
-    --fg: #f1e9da;
-    --accent: #cda75c;
-    --soft: #a39786;
-    --grain-opacity: 0;
+    --bg: #161f24;
+    --bg-deep: #1f2c33;
+    --fg: #fff6ec;
+    --accent: #ff8a78;
+    --soft: #b4c0c6;
+    --grain-opacity: 0.03;
     color-scheme: dark;
   }
+}
+
+/* ───────── Une couleur par rubrique (toute la section change de monde) ───────── */
+[data-couleur="coral"] { --bg: #ff725e; --bg-deep: #f25a45; --fg: #1f2d34; --accent: #fff6ec; --soft: #3a2a2a; }
+[data-couleur="jaune"] { --bg: #ffc727; --bg-deep: #f4b800; --fg: #1f2d34; --accent: #b42318; --soft: #4a3f12; }
+[data-couleur="bleu"] { --bg: #2f5fe0; --bg-deep: #254ec2; --fg: #fff6ec; --accent: #ffc727; --soft: #d6e0ff; }
+[data-couleur="vert"] { --bg: #22c55e; --bg-deep: #17a84b; --fg: #10281d; --accent: #fff6ec; --soft: #1d4430; }
+[data-couleur="violet"] { --bg: #8e3fa6; --bg-deep: #7a3392; --fg: #fff6ec; --accent: #ffc727; --soft: #ecd2f5; }
+[data-couleur="teal"] { --bg: #14b8a6; --bg-deep: #0e9f8f; --fg: #0d2a27; --accent: #fff6ec; --soft: #17463f; }
+[data-couleur="orange"] { --bg: #fe8401; --bg-deep: #ec7700; --fg: #1f2d34; --accent: #fff6ec; --soft: #4a2a08; }
+[data-couleur="nuit"] { --bg: #1f2d34; --bg-deep: #283a43; --fg: #fff6ec; --accent: #ff8a78; --soft: #b4c0c6; }
+[data-couleur="creme"] { --bg: #fff6ec; --bg-deep: #ffe9d6; --fg: #1f2d34; --accent: #e8452f; --soft: #55646b; }
+
+:root[data-theme="dark"] [data-couleur="coral"] { --bg: #b8402f; --bg-deep: #a23626; --fg: #fff6ec; --accent: #ffd27a; --soft: #ffd9d2; }
+:root[data-theme="dark"] [data-couleur="jaune"] { --bg: #dfab14; --bg-deep: #c99600; --fg: #1f2d34; --accent: #7a1e10; --soft: #4a3f12; }
+:root[data-theme="dark"] [data-couleur="bleu"] { --bg: #2349b5; --bg-deep: #1c3c99; --fg: #fff6ec; --accent: #ffc727; --soft: #cfdbff; }
+:root[data-theme="dark"] [data-couleur="vert"] { --bg: #12803b; --bg-deep: #0e6c32; --fg: #fff6ec; --accent: #ffe08a; --soft: #d3f2dc; }
+:root[data-theme="dark"] [data-couleur="violet"] { --bg: #6d2b85; --bg-deep: #5b2371; --fg: #fff6ec; --accent: #ffc727; --soft: #ecd2f5; }
+:root[data-theme="dark"] [data-couleur="teal"] { --bg: #0c7f73; --bg-deep: #0a6a60; --fg: #fff6ec; --accent: #ffe08a; --soft: #cdeee9; }
+:root[data-theme="dark"] [data-couleur="orange"] { --bg: #b45a00; --bg-deep: #9c4d00; --fg: #fff6ec; --accent: #ffe08a; --soft: #ffe2c2; }
+:root[data-theme="dark"] [data-couleur="creme"] { --bg: #161f24; --bg-deep: #1f2c33; --fg: #fff6ec; --accent: #ff8a78; --soft: #b4c0c6; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) [data-couleur="coral"] { --bg: #b8402f; --bg-deep: #a23626; --fg: #fff6ec; --accent: #ffd27a; --soft: #ffd9d2; }
+  :root:not([data-theme="light"]) [data-couleur="jaune"] { --bg: #dfab14; --bg-deep: #c99600; --fg: #1f2d34; --accent: #7a1e10; --soft: #4a3f12; }
+  :root:not([data-theme="light"]) [data-couleur="bleu"] { --bg: #2349b5; --bg-deep: #1c3c99; --fg: #fff6ec; --accent: #ffc727; --soft: #cfdbff; }
+  :root:not([data-theme="light"]) [data-couleur="vert"] { --bg: #12803b; --bg-deep: #0e6c32; --fg: #fff6ec; --accent: #ffe08a; --soft: #d3f2dc; }
+  :root:not([data-theme="light"]) [data-couleur="violet"] { --bg: #6d2b85; --bg-deep: #5b2371; --fg: #fff6ec; --accent: #ffc727; --soft: #ecd2f5; }
+  :root:not([data-theme="light"]) [data-couleur="teal"] { --bg: #0c7f73; --bg-deep: #0a6a60; --fg: #fff6ec; --accent: #ffe08a; --soft: #cdeee9; }
+  :root:not([data-theme="light"]) [data-couleur="orange"] { --bg: #b45a00; --bg-deep: #9c4d00; --fg: #fff6ec; --accent: #ffe08a; --soft: #ffe2c2; }
+  :root:not([data-theme="light"]) [data-couleur="creme"] { --bg: #161f24; --bg-deep: #1f2c33; --fg: #fff6ec; --accent: #ff8a78; --soft: #b4c0c6; }
 }
 
 @theme inline {
@@ -46,6 +83,13 @@
   --color-ink: var(--ink);
   --color-gold: var(--gold);
   --color-muted: var(--muted);
+  --color-coral: var(--coral);
+  --color-orange: var(--orange);
+  --color-yellow: var(--yellow);
+  --color-blue: var(--blue);
+  --color-green: var(--green);
+  --color-violet: var(--violet);
+  --color-teal: var(--teal);
   --color-bg: var(--bg);
   --color-bg-deep: var(--bg-deep);
   --color-fg: var(--fg);
@@ -66,13 +110,20 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-serif);
-  font-size: 1.15rem;
-  line-height: 1.6;
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.55;
   overflow-x: clip;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* Grain de papier très léger (invisible en mode sombre) */
+[data-couleur] {
+  background: var(--bg);
+  color: var(--fg);
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Grain de papier léger */
 body::before {
   content: "";
   position: fixed;
@@ -80,54 +131,114 @@ body::before {
   z-index: 1;
   pointer-events: none;
   opacity: var(--grain-opacity);
+  mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 3px solid var(--fg);
   outline-offset: 3px;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--accent) 35%, transparent);
+  background: var(--yellow);
+  color: var(--ink);
 }
 
-/* ───────── Codes de magazine ───────── */
+/* ───────── Codes de magazine, version vivante ───────── */
 .label {
   font-family: var(--font-sans);
-  font-size: 0.68rem;
-  font-weight: 500;
-  letter-spacing: 0.26em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--soft);
 }
 
 .filet {
-  height: 1px;
-  background: var(--line);
+  height: 2px;
+  background: var(--fg);
+  opacity: 0.85;
   border: 0;
 }
 
 .lettrine::first-letter {
   float: left;
   font-family: var(--font-display);
-  font-size: 4.4em;
-  line-height: 0.82;
+  font-weight: 900;
+  font-size: 4.6em;
+  line-height: 0.8;
   padding: 0.06em 0.1em 0 0;
   color: var(--accent);
 }
 
 .pull-quote {
   font-family: var(--font-display);
+  font-weight: 800;
   font-style: italic;
-  font-size: clamp(1.9rem, 6.4vw, 3.6rem);
-  line-height: 1.12;
-  letter-spacing: -0.01em;
+  font-size: clamp(2rem, 6.8vw, 3.8rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
 }
+
+/* Les grands titres de rubrique : gras, serrés, pleins de caractère */
+.titre-xl {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+/* Un bouton franc, comme un autocollant de magazine */
+.btn {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.95rem 1.25rem;
+  border: 2px solid var(--fg);
+  color: var(--fg);
+  background: transparent;
+  box-shadow: 4px 4px 0 var(--fg);
+  transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s, color 0.15s;
+}
+.btn:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+}
+.btn-plein {
+  background: var(--fg);
+  color: var(--bg);
+}
+.btn-plein:hover {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* Les illustrations flottent, tournent, respirent */
+@keyframes flotte {
+  0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+  50% { transform: translateY(-14px) rotate(calc(var(--r, 0deg) + 3deg)); }
+}
+@keyframes tourne {
+  to { transform: rotate(360deg); }
+}
+@keyframes respire {
+  0%, 100% { transform: scale(1) rotate(var(--r, 0deg)); }
+  50% { transform: scale(1.07) rotate(calc(var(--r, 0deg) - 3deg)); }
+}
+.flotte { animation: flotte 6s ease-in-out infinite; }
+.tourne { animation: tourne 40s linear infinite; }
+.respire { animation: respire 5s ease-in-out infinite; }
 
 @media (min-width: 768px) {
   body {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
   }
 }
 

@@ -3,7 +3,7 @@
 Tout est cherchable dans le code avec `[À FOURNIR` ou `[À CONFIRMER`.
 
 ## Images et fichiers
-- [ ] **Portrait de couverture** → `public/images/portrait.png` (idéalement détouré, fond transparent, avec de l'espace au-dessus de la tête pour le titre). En attendant, une silhouette s'affiche.
+- [x] Portrait de couverture : ta photo détourée de l'ancien site (`public/images/portrait.png`). Tu peux la remplacer par une photo avec plus d'espace au-dessus de la tête.
 - [ ] **CV corrigé en PDF** → `public/cv/cv-divine.pdf` (le code-barres de la couverture le télécharge).
 - [ ] **Captures d'écran des projets** (6) → `public/images/projets/<slug>/` puis les lister dans `content/projets.ts` (`captures`).
 - [ ] **Sons** (facultatif, sinon synthétisés par le navigateur) → `public/sounds/`, puis renseigner le nom dans `FILES` de `lib/sound.ts` :
@@ -11,7 +11,7 @@ Tout est cherchable dans le code avec `[À FOURNIR` ou `[À CONFIRMER`.
 - [ ] **Avatars Rive** (4 fichiers `.riv`) → `public/rive/` (voir `RIVE-SPEC.md`).
 
 ## Textes (dans `/content`)
-- [ ] `edito.ts` : l'édito
+- [ ] `edito.ts` : l'édito définitif (le texte actuel vient de ton ancien site)
 - [ ] `interview.ts` : les 12 réponses
 - [ ] `recette.ts` : le texte de « La recette » (temps, difficulté, étapes)
 - [ ] « Prochain numéro » (encadré de la quatrième de couverture)
@@ -21,7 +21,7 @@ Tout est cherchable dans le code avec `[À FOURNIR` ou `[À CONFIRMER`.
   - UPB Student's : lien de la bibliothèque
 
 ## Liens et décisions
-- [ ] GitHub : lien (`content/identite.ts`)
+- [x] GitHub, Instagram, WhatsApp : repris de l'ancien site
 - [ ] LinkedIn : lien (`content/identite.ts`)
 - [ ] Afficher ou non le téléphone sur le site (`afficherTelephone` dans `content/identite.ts`)
 - [ ] Ambiance de fond très légère (bruit de pages, café) : oui ou non ?

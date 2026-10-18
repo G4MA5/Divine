@@ -9,6 +9,7 @@ import { MagazineObject } from "../intro/MagazineObject";
 import { usePrefs } from "../PrefsProvider";
 import { PRIO, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
+import { Illu } from "../ui/Illu";
 
 const A_FOURNIR = "[À FOURNIR";
 const ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT;
@@ -26,9 +27,9 @@ function Lien({ label, valeur, href }: { label: string; valeur: string; href?: s
   return (
     <div>
       <dt className="label !text-[0.6rem]">{label}</dt>
-      <dd className="font-display text-xl italic">
+      <dd className="font-display text-xl font-bold italic">
         {placeholder || !href ? valeur : (
-          <a href={href} className="underline decoration-accent decoration-1 underline-offset-4 transition-colors hover:text-accent">
+          <a href={href} className="underline decoration-2 underline-offset-4 transition-colors hover:bg-yellow hover:text-ink">
             {valeur}
           </a>
         )}
@@ -66,7 +67,7 @@ function Formulaire() {
     }
   };
 
-  const champ = "mt-1 w-full border border-accent/60 bg-transparent px-3 py-3 font-serif text-lg outline-none transition-colors focus:border-accent focus:bg-bg-deep";
+  const champ = "mt-1 w-full border-[3px] border-ink bg-paper px-3 py-3 font-serif text-lg font-semibold normal-case tracking-normal text-ink outline-none shadow-[3px_3px_0_#1f2d34] transition-shadow focus:shadow-[1px_1px_0_#1f2d34]";
 
   return (
     <form onSubmit={envoyer} className="grid gap-4" aria-label="Écrire à Divine">
@@ -90,7 +91,7 @@ function Formulaire() {
       </label>
       <input name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
       <div className="flex flex-wrap items-center gap-4">
-        <button type="submit" disabled={etat === "envoi"} className="label border border-accent bg-accent px-5 py-3 !text-bg transition-opacity hover:opacity-85 disabled:opacity-50">
+        <button type="submit" disabled={etat === "envoi"} className="btn btn-plein disabled:opacity-50">
           {etat === "envoi" ? "Envoi…" : "Envoyer"}
         </button>
         <p role="status" className="font-display italic">
@@ -216,13 +217,18 @@ function ScenneFin() {
 export function Quatrieme() {
   return (
     <section id="quatrieme" aria-labelledby="quatrieme-titre">
-      <div className="relative pb-6 pl-4 pr-10 pt-20 sm:px-8">
-        <div className="mx-auto max-w-3xl">
+      <div data-couleur="coral" className="relative overflow-hidden pb-6 pl-4 pr-10 pt-24 sm:px-8">
+        <Illu src="soleil-jaune.svg" className="-left-[12%] top-[2%] w-[44vw] max-w-[280px]" anim="respire" vitesse={1.5} />
+        <Illu src="coeur.svg" className="right-[8%] top-[5%] w-[12vw] max-w-[70px]" anim="respire" rot={12} />
+        <Illu src="etoile.svg" className="right-[28%] top-[3%] w-[6vw] max-w-[34px]" anim="tourne" />
+        <Illu src="avion.svg" className="right-[10%] top-[22%] w-[14vw] max-w-[80px]" anim="flotte" rot={-10} vitesse={-2} />
+        <Illu src="plante-jaune.svg" className="-bottom-[1%] -left-[2%] w-[22vw] max-w-[140px]" anim="respire" />
+        <div className="relative z-10 mx-auto max-w-3xl">
           <p className="label flex justify-between">
             <span>{identite.magazine} · Quatrième de couverture</span>
             <span className="tabular-nums">p. 21</span>
           </p>
-          <h2 id="quatrieme-titre" className="mt-3 font-display text-5xl italic leading-[1.02] sm:text-7xl">
+          <h2 id="quatrieme-titre" className="titre-xl mt-3 text-[clamp(3.4rem,15vw,8rem)]">
             Écrivez-moi
           </h2>
           <hr className="filet mt-5" />
@@ -230,15 +236,17 @@ export function Quatrieme() {
           <dl className="mt-8 grid gap-5 sm:grid-cols-2">
             <Lien label="Email" valeur={identite.email} href={`mailto:${identite.email}`} />
             {identite.afficherTelephone && <Lien label="Téléphone" valeur={identite.telephone} href={`tel:${identite.telephone.replace(/[^+\d]/g, "")}`} />}
-            <Lien label="GitHub" valeur={identite.github} href={identite.github} />
+            <Lien label="GitHub" valeur="github.com/divine-dev-now" href={identite.github} />
             <Lien label="LinkedIn" valeur={identite.linkedin} href={identite.linkedin} />
+            <Lien label="Instagram" valeur="@divin____e" href={identite.instagram} />
+            <Lien label="WhatsApp" valeur="Écrire sur WhatsApp" href={identite.whatsapp} />
             <div>
               <dt className="label !text-[0.6rem]">Langues</dt>
-              <dd className="font-display text-xl italic">{identite.langues.map((l) => `${l.langue} ${l.niveau}`).join(" · ")}</dd>
+              <dd className="font-display text-xl font-bold italic">{identite.langues.map((l) => `${l.langue} ${l.niveau}`).join(" · ")}</dd>
             </div>
             <div>
               <dt className="label !text-[0.6rem]">Basée à</dt>
-              <dd className="font-display text-xl italic">{identite.ville}</dd>
+              <dd className="font-display text-xl font-bold italic">{identite.ville}</dd>
             </div>
           </dl>
 
@@ -246,16 +254,16 @@ export function Quatrieme() {
             <Formulaire />
           </div>
 
-          <aside aria-label="Prochain numéro" className="mt-12 border-2 border-accent p-5 text-center">
-            <h3 className="label !text-accent">Prochain numéro</h3>
-            <p className="mt-2 font-display text-xl italic">[À FOURNIR : le prochain numéro]</p>
+          <aside aria-label="Prochain numéro" className="mt-12 border-[3px] border-ink bg-paper p-5 text-center text-ink shadow-[7px_7px_0_#1f2d34]">
+            <h3 className="label !text-[#e8452f]">Prochain numéro</h3>
+            <p className="mt-2 font-display text-xl font-bold italic">[À FOURNIR : le prochain numéro]</p>
           </aside>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href={identite.cv} download className="label border border-accent px-5 py-3 transition-colors hover:bg-accent hover:text-bg">
+            <a href={identite.cv} download className="btn btn-plein">
               Télécharger le CV
             </a>
-            <button type="button" onClick={relire} className="label border border-accent px-5 py-3 transition-colors hover:bg-accent hover:text-bg">
+            <button type="button" onClick={relire} className="btn">
               Relire depuis la couverture
             </button>
           </div>

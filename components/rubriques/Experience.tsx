@@ -6,6 +6,7 @@ import { identite } from "@/content/identite";
 import { PiedDePage } from "../ui/PiedDePage";
 import { gsap, ScrollTrigger, PRIO, useScene } from "@/lib/useScene";
 import { play, startLoop, stopLoop } from "@/lib/sound";
+import { Illu } from "../ui/Illu";
 
 const NB_BARRES = 56;
 /** hauteurs d'une onde audio (déterministes, pour éviter tout écart serveur / client) */
@@ -18,8 +19,8 @@ function Entete({ ex }: { ex: (typeof experiences)[number] }) {
   return (
     <div>
       <p className="label">{ex.periode}</p>
-      <h3 className="mt-2 font-display text-4xl italic leading-tight sm:text-6xl">{ex.poste}</h3>
-      <p className="mt-1 text-soft">
+      <h3 className="titre-xl mt-2 text-5xl sm:text-7xl">{ex.poste}</h3>
+      <p className="mt-1 text-lg font-semibold text-soft">
         {ex.entreprise} · {ex.lieu}
       </p>
     </div>
@@ -84,13 +85,16 @@ export function Experience() {
   return (
     <section id="experience" ref={ref} aria-labelledby="experience-titre">
       {/* ───── Transsion ───── */}
-      <div data-a className="relative flex h-svh flex-col justify-center pb-10 pl-4 pr-10 pt-20 sm:px-8">
+      <div data-a data-couleur="jaune" className="relative flex h-svh flex-col justify-center overflow-hidden pb-10 pl-4 pr-10 pt-20 sm:px-8">
+        <Illu src="soleil-orange.svg" className="-right-[10%] top-[4%] w-[40vw] max-w-[260px]" anim="respire" />
+        <Illu src="nuages.svg" className="-left-[5%] top-[12%] w-[44vw] max-w-[300px]" />
+        <Illu src="plante-corail.svg" className="-bottom-[1%] right-[2%] w-[22vw] max-w-[150px]" anim="respire" delai={1} />
         <div className="mx-auto w-full max-w-3xl">
           <p className="label flex justify-between">
             <span>{identite.magazine} · Expérience</span>
             <span className="tabular-nums">p. 06</span>
           </p>
-          <h2 id="experience-titre" className="mt-3 font-display text-5xl italic leading-none sm:text-7xl">
+          <h2 id="experience-titre" className="titre-xl mt-3 text-[clamp(3.4rem,15vw,8rem)]">
             Expérience
           </h2>
           <hr className="filet mt-4 mb-8" />
@@ -119,7 +123,10 @@ export function Experience() {
       </div>
 
       {/* ───── Top Telecom Services ───── */}
-      <div data-b className="relative flex h-svh flex-col justify-center pb-10 pl-4 pr-10 pt-20 sm:px-8">
+      <div data-b data-couleur="violet" className="relative flex h-svh flex-col justify-center overflow-hidden pb-10 pl-4 pr-10 pt-20 sm:px-8">
+        <Illu src="soleil-violet.svg" className="-left-[10%] top-[4%] w-[40vw] max-w-[260px]" anim="respire" />
+        <Illu src="etoile.svg" className="right-[6%] top-[12%] w-[7vw] max-w-[40px]" anim="tourne" />
+        <Illu src="coeur.svg" className="left-[44%] top-[7%] w-[6vw] max-w-[34px]" anim="flotte" rot={-10} />
         <div className="mx-auto grid w-full max-w-5xl items-center gap-8 sm:grid-cols-2">
           <div>
             <p className="label flex justify-between sm:hidden">
@@ -130,7 +137,7 @@ export function Experience() {
             <ol className="mt-8 space-y-4">
               {ttsc.missions.map((m, i) => (
                 <li key={m} data-piste className="flex gap-3">
-                  <span className="label mt-1 tabular-nums text-accent">Piste {String(i + 1).padStart(2, "0")}</span>
+                  <span className="label mt-1 tabular-nums !text-accent">Piste {String(i + 1).padStart(2, "0")}</span>
                   <span className="font-display text-lg italic leading-snug sm:text-xl">{m}</span>
                 </li>
               ))}

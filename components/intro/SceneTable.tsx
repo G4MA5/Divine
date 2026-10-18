@@ -157,34 +157,19 @@ export function SceneTable() {
       {/* la table */}
       <div data-s="table" className="scene-table absolute inset-0" aria-hidden="true" />
 
-      {/* les accessoires : lampe, tasse, plante (illustrations simples) */}
-      <svg data-s="prop" aria-hidden="true" viewBox="0 0 120 150" className="absolute left-[3%] top-[4%] w-[22vw] max-w-[150px]">
-        <defs>
-          <radialGradient id="halo" cx="50%" cy="50%" r="50%">
-            <stop offset="0" stopColor="#f6d58a" stopOpacity=".75" />
-            <stop offset="1" stopColor="#f6d58a" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-        <circle cx="60" cy="42" r="56" fill="url(#halo)" />
-        <path d="M34 60 50 14h20l16 46Z" fill="#a9812f" />
-        <rect x="56" y="60" width="8" height="64" fill="#6f5320" />
-        <ellipse cx="60" cy="130" rx="26" ry="8" fill="#6f5320" />
-      </svg>
+      {/* les accessoires : le soleil, une tasse, des plantes (tes illustrations) */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img data-s="prop" aria-hidden="true" alt="" src="/images/illu/soleil-orange.svg" className="pointer-events-none absolute left-[2%] top-[3%] w-[26vw] max-w-[180px]" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img data-s="prop" aria-hidden="true" alt="" src="/images/illu/plante-bleue.svg" className="pointer-events-none absolute right-[3%] top-[3%] w-[22vw] max-w-[150px]" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img data-s="prop" aria-hidden="true" alt="" src="/images/illu/plante-corail.svg" className="pointer-events-none absolute bottom-[4%] right-[2%] w-[24vw] max-w-[170px]" />
       <svg data-s="prop" aria-hidden="true" viewBox="0 0 110 110" className="absolute right-[4%] top-[38%] w-[19vw] max-w-[120px]">
-        <ellipse cx="55" cy="62" rx="48" ry="40" fill="#f4ede0" />
-        <ellipse cx="55" cy="58" rx="34" ry="28" fill="#fff" stroke="#d8cdb8" />
+        <ellipse cx="55" cy="62" rx="48" ry="40" fill="#fff6ec" />
+        <ellipse cx="55" cy="58" rx="34" ry="28" fill="#fff" stroke="#1f2d34" strokeWidth="2" />
         <ellipse cx="55" cy="58" rx="27" ry="21" fill="#4a2f1d" />
-        <path d="M86 52c14 0 14 18 0 18" fill="none" stroke="#f4ede0" strokeWidth="7" />
+        <path d="M86 52c14 0 14 18 0 18" fill="none" stroke="#fff6ec" strokeWidth="7" />
         <path d="M44 56c6-4 14-4 20 0" stroke="#c89a6b" strokeWidth="2.4" fill="none" strokeLinecap="round" />
-      </svg>
-      <svg data-s="prop" aria-hidden="true" viewBox="0 0 120 150" className="absolute right-[3%] top-[2%] w-[20vw] max-w-[130px]">
-        <path d="M60 140V70" stroke="#3d5a3c" strokeWidth="5" />
-        <g fill="#4f7a4c">
-          <path d="M60 110C30 104 18 80 22 52c26 4 40 24 38 58Z" />
-          <path d="M60 100C90 92 104 70 100 40c-26 4-42 24-40 60Z" />
-          <path d="M60 70C44 58 44 32 60 10c16 22 16 48 0 60Z" />
-        </g>
-        <path d="M36 128h48l-6 20H42Z" fill="#b4533a" />
       </svg>
 
       <MagazineObject />
@@ -200,12 +185,12 @@ export function SceneTable() {
       <style>{`
         .scene .scene-table {
           background:
-            repeating-linear-gradient(90deg, rgba(110,72,34,.10) 0 2px, transparent 2px 11px),
-            repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0 1px, transparent 1px 37px),
-            linear-gradient(180deg, #dcc59b, #c9a877 60%, #bd9a68);
+            radial-gradient(circle at 20% 15%, rgba(255,255,255,.35), transparent 45%),
+            repeating-linear-gradient(135deg, rgba(31,45,52,.07) 0 3px, transparent 3px 22px),
+            linear-gradient(180deg, #ffd24d, #ffc727 55%, #f5b300);
         }
         .scene[data-reduced] .scene-table, .scene[data-reduced] [data-s=prop], .scene[data-reduced] [data-s=avatar] { display: none; }
-        html[data-theme="dark"] .scene .scene-table { filter: brightness(0.5) saturate(0.85); }
+        html[data-theme="dark"] .scene .scene-table { filter: brightness(0.62) saturate(0.9); }
       `}</style>
     </section>
   );

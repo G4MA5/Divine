@@ -10,7 +10,9 @@ export const identite = {
   telephone: "(+225) 07 78 30 42 87",
   /** [À CONFIRMER] afficher ou non le téléphone sur le site */
   afficherTelephone: false,
-  github: "[À FOURNIR : lien GitHub]",
+  github: "https://github.com/divine-dev-now/",
+  instagram: "https://www.instagram.com/divin____e/",
+  whatsapp: "https://wa.me/2250778304287",
   linkedin: "[À FOURNIR : lien LinkedIn]",
   /** [À FOURNIR : CV corrigé en PDF] à déposer dans /public/cv/cv-divine.pdf */
   cv: "/cv/cv-divine.pdf",

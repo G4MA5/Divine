@@ -9,6 +9,7 @@ import { Citation } from "../ui/Citation";
 import { Page } from "./Page";
 import { gsap } from "@/lib/useScene";
 import { play } from "@/lib/sound";
+import { Illu } from "../ui/Illu";
 
 const A_FOURNIR = "[À FOURNIR";
 
@@ -27,7 +28,7 @@ function melange<T>(a: T[]): T[] {
 function QR({ q, premier }: { q: QuestionInterview; premier: boolean }) {
   return (
     <div className="mb-8">
-      <h4 className="font-display text-2xl italic leading-snug text-accent sm:text-3xl">{q.question}</h4>
+      <h4 className="font-display text-2xl font-black italic leading-snug text-accent sm:text-3xl">{q.question}</h4>
       <p className={`mt-2 ${premier ? "lettrine" : ""}`}>{q.reponse}</p>
     </div>
   );
@@ -66,7 +67,7 @@ function Salon() {
   return (
     <div className="mt-10">
       {/* le salon d'interview */}
-      <div className="grid grid-cols-[1fr_1fr] items-end gap-2 border-b border-accent/60 pb-0 sm:gap-8" aria-hidden="true">
+      <div className="grid grid-cols-[1fr_1fr] items-end gap-2 border-b-[3px] border-fg pb-0 sm:gap-8" aria-hidden="true">
         <Avatar id={id} pose="assis" className="mx-auto h-44 w-auto sm:h-64" />
         <Portrait className="mx-auto h-44 w-auto sm:h-64" />
       </div>
@@ -95,17 +96,17 @@ function Salon() {
                 <button
                   type="button"
                   onClick={() => poser(x)}
-                  className="relative w-full border border-accent px-5 py-4 text-left font-display text-lg italic leading-snug transition-colors hover:bg-accent hover:text-bg sm:text-xl"
+                  className="relative w-full border-[3px] border-ink bg-paper px-5 py-4 text-left font-display text-lg font-bold italic leading-snug text-ink shadow-[5px_5px_0_#1f2d34] transition-transform hover:-translate-y-0.5 hover:bg-yellow sm:text-xl"
                 >
                   {parId(x).question}
-                  <span aria-hidden="true" className="absolute -bottom-[7px] left-8 h-3 w-3 rotate-45 border-b border-r border-accent bg-bg" />
+                  <span aria-hidden="true" className="absolute -bottom-[9px] left-8 h-4 w-4 rotate-45 border-b-[3px] border-r-[3px] border-ink bg-paper" />
                 </button>
               </li>
             ))}
           </ul>
         </div>
       ) : (
-        <div className="border-y border-accent/60 py-6 text-center">
+        <div className="border-y-[3px] border-fg py-6 text-center">
           <p className="font-display text-2xl italic">Toutes les questions ont été posées.</p>
           <button
             type="button"
@@ -114,7 +115,7 @@ function Salon() {
               setPosees([]);
               setOrdre(melange(questions.map((q) => q.id)));
             }}
-            className="label mt-3 border border-accent px-4 py-3 transition-colors hover:bg-bg-deep"
+            className="btn mt-3"
           >
             Recommencer l&apos;interview
           </button>
@@ -131,7 +132,7 @@ function Salon() {
             play("page");
             setTout((v) => !v);
           }}
-          className="label border border-accent px-4 py-3 transition-colors hover:bg-bg-deep"
+          className="btn"
         >
           {tout ? "Replier l'interview" : "Lire toute l'interview"}
         </button>
@@ -148,8 +149,20 @@ function Salon() {
 
 export function Interview() {
   return (
-    <Page id="interview" titre="L'Interview">
-      <p className="mt-5 italic text-soft">Posez vos questions : trois au choix, puis trois nouvelles.</p>
+    <Page
+      id="interview"
+      titre="L'Interview"
+      couleur="violet"
+      decor={
+        <>
+          <Illu src="soleil-violet.svg" className="-right-[10%] top-[3%] w-[38vw] max-w-[240px]" anim="respire" vitesse={1.5} />
+          <Illu src="etoile.svg" className="left-[6%] top-[9%] w-[7vw] max-w-[40px]" anim="tourne" />
+          <Illu src="coeur.svg" className="right-[30%] top-[2%] w-[6vw] max-w-[34px]" anim="flotte" rot={10} />
+          <Illu src="femme-bulle.svg" className="-bottom-[1%] -left-[4%] w-[44vw] max-w-[260px]" vitesse={-1} />
+        </>
+      }
+    >
+      <p className="mt-5 text-xl font-semibold italic">Posez vos questions : trois au choix, puis trois nouvelles.</p>
       <Salon />
     </Page>
   );

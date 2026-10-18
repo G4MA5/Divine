@@ -20,6 +20,7 @@ import { BoutonTheme } from "@/components/ui/BoutonTheme";
 import { BoutonSommaire } from "@/components/ui/BoutonSommaire";
 import { MarquePage } from "@/components/ui/MarquePage";
 import { IndicateurPage } from "@/components/ui/IndicateurPage";
+import { Parallaxe } from "@/components/ui/Parallaxe";
 
 const donneesStructurees = {
   "@context": "https://schema.org",
@@ -57,6 +58,7 @@ export default function Accueil() {
         <Interview />
         <Quatrieme />
       </main>
+      <Parallaxe />
     </IntroGate>
     </PortraitProvider>
   );

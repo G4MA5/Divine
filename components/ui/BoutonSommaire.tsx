@@ -60,7 +60,7 @@ export function BoutonSommaire() {
         aria-label="Ouvrir le sommaire"
         aria-haspopup="dialog"
         title="Sommaire"
-        className="fixed left-4 top-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-accent/60 bg-bg/85 text-accent backdrop-blur transition-colors hover:bg-bg-deep"
+        className="fixed left-4 top-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border-2 border-ink bg-yellow text-ink shadow-[2px_2px_0_#1f2d34] transition-transform hover:translate-x-px hover:translate-y-px"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" aria-hidden="true">
           <path d="M12 6.2C10 4.8 7 4.4 3.5 5v13c3.5-.6 6.5-.2 8.5 1.2 2-1.4 5-1.8 8.5-1.2V5c-3.5-.6-6.5-.2-8.5 1.2Z" />
@@ -73,17 +73,17 @@ export function BoutonSommaire() {
           role="dialog"
           aria-modal="true"
           aria-label="Sommaire"
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-bg/96 px-4 py-16 backdrop-blur-sm"
+          data-couleur="coral" className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto px-4 py-16"
         >
           <div ref={boite} className="w-full max-w-xl">
             <div className="flex items-baseline justify-between">
-              <h2 className="font-display text-4xl italic">Sommaire</h2>
+              <h2 className="titre-xl text-6xl">Sommaire</h2>
               <button
                 ref={fermer}
                 type="button"
                 onClick={() => setOuvert(false)}
                 aria-label="Fermer le sommaire"
-                className="label border border-accent/60 px-3 py-2 transition-colors hover:bg-bg-deep"
+                className="btn !px-4 !py-2"
               >
                 Fermer
               </button>
@@ -97,9 +97,9 @@ export function BoutonSommaire() {
                     onClick={() => aller(r.id)}
                     className="group flex w-full items-baseline gap-3 py-3 text-left"
                   >
-                    <span className="font-display text-xl italic transition-colors group-hover:text-accent">{r.titre}</span>
-                    <span className="min-w-6 flex-1 translate-y-[-0.25em] border-b border-dotted border-accent/60" aria-hidden="true" />
-                    <span className="label tabular-nums">p. {pageLabel({ ...r, page: r.page, fin: r.fin }).split("-").map((n) => pad(Number(n))).join("-")}</span>
+                    <span className="font-display text-2xl font-black italic transition-colors group-hover:text-accent">{r.titre}</span>
+                    <span className="min-w-6 flex-1 translate-y-[-0.25em] border-b-2 border-dotted border-fg/60" aria-hidden="true" />
+                    <span className="label tabular-nums !text-fg">p. {pageLabel({ ...r, page: r.page, fin: r.fin }).split("-").map((n) => pad(Number(n))).join("-")}</span>
                   </button>
                 </li>
               ))}

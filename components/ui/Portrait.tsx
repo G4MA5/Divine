@@ -14,8 +14,8 @@ export function Portrait({ className = "" }: { className?: string }) {
       <Image
         src={identite.portrait}
         alt="Portrait de Divine Graourou"
-        width={400}
-        height={520}
+        width={442}
+        height={890}
         className={className}
         onError={() => setOk(false)}
       />

@@ -7,6 +7,7 @@ import { identite } from "@/content/identite";
 import { Avatar, type AvatarId } from "../avatar/Avatar";
 import { allerA } from "../SmoothScroll";
 import { play } from "@/lib/sound";
+import { Illu } from "../ui/Illu";
 
 type Etape = "son" | "avatar" | "retour";
 
@@ -107,21 +108,31 @@ export function IntroGate({ children }: { children: ReactNode }) {
           role="dialog"
           aria-modal="true"
           aria-label="Bienvenue dans le magazine"
-          className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-bg px-4 py-10"
+          data-couleur="coral"
+          className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto px-4 py-10"
         >
-          <div className="relative w-full max-w-md border border-accent/70 p-1.5">
-            <div ref={carte} className="border border-accent/40 px-6 py-10 text-center sm:px-10">
-              <p className="label">Édition numérique · {identite.numero}</p>
-              <p className="mt-3 font-display text-4xl italic leading-none sm:text-5xl">{identite.magazine}</p>
-              <hr className="filet mx-auto mt-6 w-16" />
+          {/* tes illustrations, pour que ça vive dès la première seconde */}
+          <Illu src="soleil-jaune.svg" className="left-[-6%] top-[4%] w-[44vw] max-w-[300px]" anim="respire" />
+          <Illu src="avion.svg" className="right-[6%] top-[9%] w-[16vw] max-w-[90px]" anim="flotte" rot={-8} />
+          <Illu src="nuages.svg" className="right-[-4%] top-[16%] w-[42vw] max-w-[280px]" />
+          <Illu src="oiseaux.svg" className="left-[22%] top-[10%] w-[14vw] max-w-[80px]" anim="flotte" delai={1} />
+          <Illu src="plante-bleue.svg" className="bottom-[-1%] left-[2%] w-[22vw] max-w-[140px]" anim="respire" />
+          <Illu src="plante-jaune.svg" className="bottom-[-1%] right-[3%] w-[20vw] max-w-[130px]" anim="respire" delai={1.5} />
+          <Illu src="etoile.svg" className="bottom-[22%] right-[7%] w-[7vw] max-w-[36px]" anim="tourne" />
+
+          <div className="relative z-10 w-full max-w-md border-[3px] border-ink bg-paper text-ink shadow-[8px_8px_0_#1f2d34]">
+            <div ref={carte} className="px-6 pb-8 pt-10 text-center sm:px-9">
+              <p className="label !text-ink">Édition numérique · {identite.numero}</p>
+              <p className="titre-xl mt-3 text-5xl text-[#e8452f] sm:text-6xl">{identite.magazine}</p>
+              <p className="mt-2 italic text-ink/70">Le magazine de Divine, développeuse à Abidjan</p>
 
               {etape === "son" && (
-                <section aria-labelledby="q-son" className="mt-8">
-                  <p id="q-son" className="font-display text-2xl italic">
+                <section aria-labelledby="q-son" className="mt-7">
+                  <p id="q-son" className="font-display text-2xl font-bold italic">
                     Comment voulez-vous lire ?
                   </p>
-                  <div className="mt-6 grid gap-3">
-                    <button type="button" onClick={() => choisirSon(true)} className="carton-btn">
+                  <div className="mt-5 grid gap-3">
+                    <button type="button" onClick={() => choisirSon(true)} className="carton-btn carton-btn--plein">
                       Avec le son
                     </button>
                     <button type="button" onClick={() => choisirSon(false)} className="carton-btn">
@@ -132,38 +143,41 @@ export function IntroGate({ children }: { children: ReactNode }) {
               )}
 
               {etape === "avatar" && (
-                <section aria-labelledby="q-avatar" className="mt-8">
-                  <p id="q-avatar" className="font-display text-2xl italic">
+                <section aria-labelledby="q-avatar" className="mt-7">
+                  <p id="q-avatar" className="font-display text-2xl font-bold italic">
                     Qui êtes-vous ?
                   </p>
                   <ul className="mt-5 grid grid-cols-2 gap-3">
-                    {avatars.map((a) => (
+                    {avatars.map((a, i) => (
                       <li key={a.id}>
                         <button
                           type="button"
                           onClick={() => choisirAvatar(a.id)}
                           aria-label={`${a.rubrique} : ${a.description}`}
-                          className="carton-avatar group flex w-full flex-col items-center gap-2 border border-accent/40 px-2 pb-3 pt-3 transition-colors hover:border-accent hover:bg-bg-deep"
+                          className="carton-avatar group flex w-full flex-col items-center gap-2 border-2 border-ink px-2 pb-3 pt-3 shadow-[3px_3px_0_#1f2d34] transition-transform hover:-translate-y-1"
+                          style={{ background: ["#2f5fe0", "#ff725e", "#22c55e", "#ffc727"][i] }}
                         >
-                          <Avatar id={a.id as AvatarId} className="h-28 w-auto transition-transform group-hover:-translate-y-1" />
-                          <span className="font-display text-base italic leading-tight">{a.rubrique}</span>
+                          <Avatar id={a.id as AvatarId} className="h-28 w-auto transition-transform group-hover:scale-105" />
+                          <span className="font-sans text-[0.72rem] font-extrabold uppercase leading-tight tracking-[0.12em]" style={{ color: i === 0 ? "#fff6ec" : "#1f2d34" }}>
+                            {a.rubrique}
+                          </span>
                         </button>
                       </li>
                     ))}
                   </ul>
-                  <button type="button" onClick={surprenez} className="carton-btn mt-4 w-full">
+                  <button type="button" onClick={surprenez} className="carton-btn carton-btn--plein mt-4 w-full">
                     Surprenez-moi
                   </button>
                 </section>
               )}
 
               {etape === "retour" && (
-                <section aria-labelledby="q-retour" className="mt-8">
-                  <p id="q-retour" className="font-display text-2xl italic">
+                <section aria-labelledby="q-retour" className="mt-7">
+                  <p id="q-retour" className="font-display text-2xl font-bold italic">
                     Content de vous revoir
                   </p>
-                  <div className="mt-6 grid gap-3">
-                    <button type="button" onClick={reprendre} className="carton-btn">
+                  <div className="mt-5 grid gap-3">
+                    <button type="button" onClick={reprendre} className="carton-btn carton-btn--plein">
                       Reprendre la lecture
                     </button>
                     <button type="button" onClick={() => setEtape("son")} className="carton-btn">
@@ -181,7 +195,7 @@ export function IntroGate({ children }: { children: ReactNode }) {
         <button
           type="button"
           onClick={passer}
-          className="label fixed bottom-4 right-4 z-[70] border border-accent/60 bg-bg/90 px-3 py-3 backdrop-blur transition-colors hover:bg-bg-deep sm:bottom-5"
+          className="label fixed bottom-4 right-4 z-[70] border-2 border-ink bg-paper px-3 py-3 !text-ink shadow-[3px_3px_0_#1f2d34] transition-transform hover:translate-x-px hover:translate-y-px sm:bottom-5"
         >
           Passer l&apos;intro
         </button>
@@ -190,16 +204,20 @@ export function IntroGate({ children }: { children: ReactNode }) {
       <style>{`
         .carton-btn {
           font-family: var(--font-sans);
-          font-size: 0.72rem;
-          letter-spacing: 0.24em;
+          font-size: 0.74rem;
+          font-weight: 800;
+          letter-spacing: 0.2em;
           text-transform: uppercase;
           padding: 0.95rem 1rem;
-          border: 1px solid var(--accent);
-          color: var(--fg);
-          background: transparent;
-          transition: background-color 0.2s, color 0.2s;
+          border: 2px solid #1f2d34;
+          color: #1f2d34;
+          background: #fff6ec;
+          box-shadow: 3px 3px 0 #1f2d34;
+          transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
         }
-        .carton-btn:hover { background: var(--accent); color: var(--bg); }
+        .carton-btn:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1f2d34; background: #ffc727; }
+        .carton-btn--plein { background: #1f2d34; color: #fff6ec; }
+        .carton-btn--plein:hover { background: #ff725e; color: #1f2d34; }
       `}</style>
     </>
   );

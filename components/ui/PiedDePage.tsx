@@ -7,7 +7,7 @@ export function PiedDePage({ page }: { page: number | string }) {
   return (
     <footer className="mt-16 sm:mt-24">
       <hr className="filet" />
-      <p className="label mt-3 flex justify-between">
+      <p className="label mt-3 flex justify-between !text-fg">
         <span>{identite.magazine}</span>
         <span className="tabular-nums">p. {num}</span>
       </p>

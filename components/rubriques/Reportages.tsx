@@ -25,13 +25,13 @@ export function Reportages() {
 
   useScene(ref, (root) => {
     const pages = gsap.utils.toArray<HTMLElement>("[data-rp]", root);
-    const SEG = 3.4;
+    const SEG = 4.6;
     const tl = gsap.timeline({
       defaults: { ease: "none" },
       scrollTrigger: {
         trigger: root.querySelector("[data-pin]"),
         start: "top top",
-        end: `+=${pages.length * 190}%`,
+        end: `+=${pages.length * 240}%`,
         pin: true,
         scrub: 0.5,
         anticipatePin: 1,
@@ -61,15 +61,17 @@ export function Reportages() {
             <span>{identite.magazine} · Reportages</span>
             <span className="tabular-nums">p. 08-15</span>
           </p>
-          <h2 id="reportages-titre" className="mt-3 font-display text-5xl italic leading-none sm:text-7xl">
+          <h2 id="reportages-titre" className="titre-xl mt-3 text-[clamp(3.4rem,15vw,8rem)]">
             Reportages
           </h2>
           <hr className="filet mt-5" />
-          <div className="mt-10 space-y-20">
-            {projets.map((p, i) => (
-              <ReportageContenu key={p.slug} projet={p} page={pageDe(i)} lien />
-            ))}
-          </div>
+        </div>
+        <div className="mt-10">
+          {projets.map((p, i) => (
+            <div key={p.slug} data-couleur={p.couleur} className="relative overflow-hidden px-4 py-14 pr-10 sm:px-8">
+              <ReportageContenu projet={p} page={pageDe(i)} lien />
+            </div>
+          ))}
         </div>
       </section>
     );
@@ -85,14 +87,15 @@ export function Reportages() {
           <div
             key={p.slug}
             data-rp
-            className="absolute inset-0 overflow-hidden bg-bg pb-14 pl-4 pr-10 pt-20 shadow-[0_0_40px_rgba(0,0,0,.18)] sm:px-8"
+            data-couleur={p.couleur}
+            className="absolute inset-0 overflow-hidden bg-bg pb-14 pl-4 pr-10 pt-20 shadow-[0_0_40px_rgba(0,0,0,.25)] sm:px-8"
             style={{ zIndex: projets.length - i, backfaceVisibility: "hidden" }}
           >
             <div data-contenu className="flex h-full flex-col justify-start">
               <ReportageContenu projet={p} compact niveau={3} page={pageDe(i)} lien />
             </div>
             <OuvertureVisuel type={p.ouverture} />
-            <p className="label absolute inset-x-0 bottom-4 z-30 flex justify-between pl-4 pr-10 sm:px-8">
+            <p className="label absolute inset-x-0 bottom-4 z-30 flex justify-between pl-4 pr-10 !text-fg sm:px-8">
               <span>{identite.magazine}</span>
               <span className="tabular-nums">p. {pageDe(i)}</span>
             </p>

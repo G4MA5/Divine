@@ -46,8 +46,8 @@ test("le scroll arrière rembobine la scène de la table", async ({ page }) => {
   const milieu = await etat();
   expect(milieu).not.toBe(depart);
   await defiler(page, 0);
-  await page.waitForTimeout(1200);
-  expect(await etat()).toBe(depart);
+  // le scrub lisse le mouvement : on laisse le temps à la scène de revenir à son point de départ
+  await expect.poll(etat, { timeout: 10_000 }).toBe(depart);
 });
 
 test("le son reste coupé : aucun contexte audio n'est créé sans action explicite", async ({ page }) => {

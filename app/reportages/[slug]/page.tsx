@@ -39,22 +39,24 @@ export default async function PageReportage(props: PageProps<"/reportages/[slug]
       <OuvertureAuto type={p.ouverture} />
       <BoutonTheme />
       <BoutonSon />
-      <main className="mx-auto min-h-svh max-w-3xl pb-10 pl-4 pr-10 pt-20 sm:px-8">
-        <Link href="/#reportages" className="label inline-block border border-accent/60 px-3 py-2 transition-colors hover:bg-bg-deep">
+      <main data-couleur={p.couleur} className="min-h-svh overflow-hidden pb-10 pl-4 pr-10 pt-20 sm:px-8">
+        <div className="mx-auto max-w-3xl">
+        <Link href="/#reportages" className="btn">
           ← Retour au magazine
         </Link>
         <div className="mt-8">
           <ReportageContenu projet={p} niveau={1} />
         </div>
-        <nav aria-label="Autres reportages" className="mt-14 flex justify-between gap-4 border-t border-accent/50 pt-4">
-          <Link href={`/reportages/${prec.slug}`} className="font-display italic transition-colors hover:text-accent">
+        <nav aria-label="Autres reportages" className="mt-14 flex justify-between gap-4 border-t-2 border-fg pt-4">
+          <Link href={`/reportages/${prec.slug}`} className="font-display text-lg font-bold italic underline decoration-2 underline-offset-4">
             ← {prec.titre}
           </Link>
-          <Link href={`/reportages/${suiv.slug}`} className="text-right font-display italic transition-colors hover:text-accent">
+          <Link href={`/reportages/${suiv.slug}`} className="text-right font-display text-lg font-bold italic underline decoration-2 underline-offset-4">
             {suiv.titre} →
           </Link>
         </nav>
         <PiedDePage page="08-15" />
+        </div>
       </main>
     </>
   );

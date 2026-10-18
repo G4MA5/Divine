@@ -35,7 +35,7 @@ export function MarquePage() {
       style={{ ["--p" as string]: 0 }}
     >
       <div
-        className="w-full bg-accent"
+        className="w-full bg-coral"
         style={{
           height: "calc(4rem + var(--p) * (100svh - 8rem))",
           clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 9px), 0 100%)",
