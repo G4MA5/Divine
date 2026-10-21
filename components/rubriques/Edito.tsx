@@ -12,9 +12,35 @@ import { play } from "@/lib/sound";
  * qui se dissipe). Lettrine, signature manuscrite à la fin, marque-page dans la marge.
  * Ta photo se pose sur un grand soleil qui tourne doucement. Son : froissement de papier.
  */
+/** Un mot du texte ; « GAMA Labs » devient un lien souligné vers le site de GAMA Labs. */
+function rendreMot(w: string, j: number) {
+  if (w.startsWith("GAMA§Labs")) {
+    const suite = w.slice("GAMA§Labs".length);
+    return (
+      <span key={j} data-w className="inline-block">
+        <a
+          href="https://gama-labs.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline decoration-gold decoration-[3px] underline-offset-[6px] transition-colors hover:bg-gold hover:text-ink"
+        >
+          GAMA&nbsp;Labs
+        </a>
+        {suite}{" "}
+      </span>
+    );
+  }
+  return (
+    <span key={j} data-w className="inline-block">
+      {w}{" "}
+    </span>
+  );
+}
+
 function Contenu() {
   const ref = useRef<HTMLDivElement>(null);
-  const paragraphes = edito.texte.split(/\n\n+/);
+  // « GAMA Labs » reste un seul mot pour pouvoir être souligné et mené vers le site
+  const paragraphes = edito.texte.replace(/GAMA Labs/g, "GAMA§Labs").split(/\n\n+/);
 
   useScene(ref, (root) => {
     const ws = gsap.utils.toArray<HTMLElement>("[data-w]", root);
@@ -76,7 +102,7 @@ function Contenu() {
         <div data-photo className="relative">
           <Portrait className="relative z-10 mx-auto h-auto w-[84%] " />
         </div>
-        <span className="label absolute -bottom-2 left-1/2 z-20 -translate-x-1/2 -rotate-3 whitespace-nowrap border-2 border-ink bg-coral px-3 py-2 !text-ink shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)]">
+        <span className="label absolute -bottom-2 left-1/2 z-20 -translate-x-1/2 -rotate-3 whitespace-nowrap border-2 border-ink bg-coral px-3 py-2 !text-ink">
           Divine, à Abidjan
         </span>
       </div>
@@ -89,20 +115,10 @@ function Contenu() {
               <p key={i} className={`mb-6 text-[1.25em] font-semibold leading-snug ${i === 0 ? "lettrine" : ""}`}>
                 {dernier ? (
                   <span data-marqueur className="box-decoration-clone px-1 [background:linear-gradient(transparent_18%,#f6d36b_18%,#f6d36b_92%,transparent_92%)_no-repeat] [background-size:0%_100%]">
-                    {mots(p).map((w, j) => (
-                      <span key={j} data-w className="inline-block">
-                        {w}
-                        {" "}
-                      </span>
-                    ))}
+                    {mots(p).map((w, j) => rendreMot(w, j))}
                   </span>
                 ) : (
-                  mots(p).map((w, j) => (
-                    <span key={j} data-w className="inline-block">
-                      {w}
-                      {" "}
-                    </span>
-                  ))
+                  mots(p).map((w, j) => rendreMot(w, j))
                 )}
               </p>
             );
@@ -120,6 +136,7 @@ export function Edito() {
   return (
     <Page
       id="edito"
+      trait
       large
     >
       <Contenu />

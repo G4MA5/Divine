@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { identite } from "@/content/identite";
 import { projets } from "@/content/projets";
-import { usePortraitDisponible } from "../PortraitContext";
+import { usePortraitDisponible, useCvDisponible } from "../PortraitContext";
 
 /** Date d'édition générée côté client (« Octobre 2026 »). */
 function Edition() {
@@ -57,13 +57,10 @@ function Etoile({ className, couleur = "#f2b400" }: { className: string; couleur
   );
 }
 
-/** Pastille collée sur la couverture, comme un autocollant. */
-function Sticker({ children, className, fond, texte, rot }: { children: React.ReactNode; className: string; fond: string; texte: string; rot: number }) {
+/** Une mention de couverture : filet fin au-dessus, majuscules espacées (comme sur un vrai magazine). */
+function Sticker({ children, className }: { children: React.ReactNode; className: string; fond?: string; texte?: string; rot?: number }) {
   return (
-    <li
-      className={`absolute font-sans font-extrabold uppercase leading-tight ${className}`}
-      style={{ background: fond, color: texte, transform: `rotate(${rot}deg)`, fontSize: "2.2cqw", letterSpacing: "0.08em", padding: "1.2cqw 2cqw", maxWidth: "27cqw", borderRadius: "1.2cqw", border: "0.25cqw solid #121212", boxShadow: "none" }}
-    >
+    <li className={`absolute font-sans font-bold uppercase leading-tight ${className}`} style={{ fontSize: "2.2cqw", letterSpacing: "0.14em", borderTop: "0.3cqw solid #121212", paddingTop: "1.1cqw", maxWidth: "27cqw" }}>
       {children}
     </li>
   );
@@ -75,6 +72,7 @@ function Sticker({ children, className, fond, texte, rot }: { children: React.Re
  */
 export function Couverture({ titre: Titre = "p" }: { titre?: "h1" | "p" }) {
   const dispo = usePortraitDisponible();
+  const cvDispo = useCvDisponible();
   const [portraitOk, setPortraitOk] = useState(true);
 
   return (
@@ -124,19 +122,19 @@ export function Couverture({ titre: Titre = "p" }: { titre?: "h1" | "p" }) {
 
       {/* accroches, collées comme des autocollants */}
       <ul className="m-0 list-none p-0">
-        <Sticker className="left-[5cqw] top-[46cqw] z-[5]" fond="#121212" texte="#ffffff" rot={-6}>
+        <Sticker className="left-[5cqw] top-[46cqw] z-[5]" >
           {identite.accroches[0]}
         </Sticker>
-        <Sticker className="left-[7cqw] top-[62cqw] z-[5]" fond="#ffffff" texte="#121212" rot={4}>
+        <Sticker className="left-[7cqw] top-[62cqw] z-[5]" >
           {identite.accroches[1]}
         </Sticker>
-        <Sticker className="left-[5cqw] top-[76cqw] z-[5]" fond="#121212" texte="#ffffff" rot={-3}>
+        <Sticker className="left-[5cqw] top-[76cqw] z-[5]" >
           {identite.accroches[2]}
         </Sticker>
-        <Sticker className="right-[5cqw] top-[54cqw] z-[5] text-right" fond="#f2b400" texte="#121212" rot={5}>
+        <Sticker className="right-[5cqw] top-[54cqw] z-[5] text-right" >
           {projets.length} projets à la une
         </Sticker>
-        <Sticker className="right-[6cqw] top-[72cqw] z-[5] text-right" fond="#ffffff" texte="#121212" rot={-4}>
+        <Sticker className="right-[6cqw] top-[72cqw] z-[5] text-right" >
           L&apos;interview exclusive
         </Sticker>
       </ul>
@@ -149,15 +147,16 @@ export function Couverture({ titre: Titre = "p" }: { titre?: "h1" | "p" }) {
         </span>
       </p>
 
-      {/* code-barres cliquable : télécharge le CV */}
-      <a
-        href={identite.cv}
-        download
-        aria-label="Télécharger le CV (PDF)"
-        className="absolute bottom-[5.5cqw] right-[5.5cqw] z-[9] block w-[19cqw] border-2 border-[#121212] transition-transform hover:scale-105"
-      >
-        <CodeBarres />
-      </a>
+      {/* code-barres : il télécharge le CV quand le fichier est déposé */}
+      {cvDispo ? (
+        <a href={identite.cv} download aria-label="Télécharger le CV (PDF)" className="absolute bottom-[5.5cqw] right-[5.5cqw] z-[9] block w-[19cqw] border border-[#121212] transition-transform hover:scale-105">
+          <CodeBarres />
+        </a>
+      ) : (
+        <div aria-hidden="true" className="absolute bottom-[5.5cqw] right-[5.5cqw] z-[9] block w-[19cqw] border border-[#121212]">
+          <CodeBarres />
+        </div>
+      )}
 
       <p className="absolute bottom-[6.2cqw] left-[6cqw] z-[6] font-sans font-bold uppercase tracking-[0.2em]" style={{ fontSize: "2cqw" }}>
         {identite.ville}

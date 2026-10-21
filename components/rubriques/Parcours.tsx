@@ -3,106 +3,122 @@
 import { useRef } from "react";
 import { parcours } from "@/content/parcours";
 import { identite } from "@/content/identite";
-import { PiedDePage } from "../ui/PiedDePage";
-import { gsap, ScrollTrigger, PRIO, useScene } from "@/lib/useScene";
+import { Page } from "./Page";
+import { TitreAnime } from "../ui/TitreAnime";
+import { gsap, ScrollTrigger, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
+
 /**
- * p. 04-05 — Parcours
- * Effet : défilement horizontal épinglé. Le scroll vertical fait glisser une frise panoramique façon double page.
- * Chaque étape est un « article » avec sa date en gros chiffres dorés. Son : un léger « tic » à chaque étape.
+ * p. 04-05 — Parcours, raconté comme un `git log --graph`
+ * Chaque étape est un commit (son identifiant, sa date, son message). Le certificat du Michigan est une branche
+ * qui part de la licence et y revient ; « HEAD » pointe sur l'étape en cours. Le graphe se trace au scroll et chaque
+ * commit apparaît quand le fil l'atteint.
  */
-export function Parcours() {
-  const ref = useRef<HTMLElement>(null);
+
+const H = 168; // hauteur d'une ligne, en px
+const A = 18; // abscisse de la branche principale
+const B = 52; // abscisse de la branche du certificat
+
+/** Un identifiant de commit stable (7 caractères hexadécimaux) calculé à partir du titre. */
+const hash = (t: string) => {
+  let h = 2166136261;
+  for (const c of t) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+  return (h >>> 0).toString(16).padStart(8, "0").slice(0, 7);
+};
+
+// du plus récent (en haut, HEAD) au plus ancien : Master, Licence, Certificat (branche), Bac
+const commits = [...parcours].sort((a, b) => ordre(b.periode) - ordre(a.periode));
+function ordre(p: string) {
+  if (/depuis 2026/i.test(p)) return 4;
+  if (/2023-2026/.test(p)) return 3;
+  if (/avril 2024/i.test(p)) return 2.5;
+  return 1;
+}
+
+function Graphe({ branches }: { branches: boolean[] }) {
+  const n = branches.length;
+  const y = (i: number) => i * H + H / 2;
+  const iB = branches.findIndex(Boolean);
+  // la branche part de la licence (ligne juste au-dessus) et y revient (ligne juste en dessous)
+  const haut = y(iB - 1);
+  const bas = y(iB + 1);
+  const dB = `M${A} ${haut} C ${A} ${haut + 40}, ${B} ${haut + 24}, ${B} ${y(iB) - 28} L ${B} ${y(iB) + 28} C ${B} ${bas - 24}, ${A} ${bas - 40}, ${A} ${bas}`;
+  return (
+    <svg aria-hidden="true" width="72" height={n * H} viewBox={`0 0 72 ${n * H}`} className="absolute left-0 top-0">
+      <path d={`M${A} ${y(0)} V ${y(n - 1)}`} fill="none" stroke="#e3e1db" strokeWidth="2" />
+      <path d={dB} fill="none" stroke="#e3e1db" strokeWidth="2" />
+      <path data-fil d={`M${A} ${y(0)} V ${y(n - 1)}`} fill="none" stroke="#d99a00" strokeWidth="2.5" pathLength={1} strokeDasharray="1" strokeDashoffset="1" />
+      <path data-fil d={dB} fill="none" stroke="#121212" strokeWidth="2.5" pathLength={1} strokeDasharray="1" strokeDashoffset="1" />
+      {branches.map((b, i) => (
+        <circle key={i} data-noeud cx={b ? B : A} cy={y(i)} r="8" fill="#fff" stroke={i === 0 ? "#d99a00" : "#121212"} strokeWidth="2.5" />
+      ))}
+    </svg>
+  );
+}
+
+function Journal() {
+  const ref = useRef<HTMLDivElement>(null);
+  const branches = commits.map((c) => /avril 2024/i.test(c.periode));
 
   useScene(ref, (root) => {
-    const track = root.querySelector("[data-track]") as HTMLElement;
-    const panels = gsap.utils.toArray<HTMLElement>("[data-panel]", root);
+    // les fils se dessinent au rythme du scroll
+    gsap.to(root.querySelectorAll("[data-fil]"), { strokeDashoffset: 0, ease: "none", stagger: 0.05, scrollTrigger: { trigger: root, start: "top 65%", end: "bottom 65%", scrub: true } });
 
-    const defile = gsap.to(track, {
-      x: () => -(track.scrollWidth - window.innerWidth + 24),
-      ease: "none",
-      scrollTrigger: {
-        trigger: root,
-        pin: true,
-        scrub: 0.6,
-        anticipatePin: 1,
-        end: () => `+=${track.scrollWidth}`,
-        invalidateOnRefresh: true,
-        refreshPriority: PRIO.parcours,
-      },
-    });
-
-    panels.forEach((p) => {
-      gsap.fromTo(
-        p.querySelectorAll("[data-an]"),
-        { y: 70, opacity: 0 },
-        { y: 0, opacity: 1, ease: "none", stagger: 0.08, scrollTrigger: { trigger: p, containerAnimation: defile, start: "left 92%", end: "left 55%", scrub: true } },
-      );
+    gsap.utils.toArray<HTMLElement>("[data-commit]", root).forEach((r, i) => {
+      const noeud = root.querySelectorAll("[data-noeud]")[i];
+      gsap.set(noeud, { scale: 0, transformOrigin: "center", transformBox: "fill-box" });
+      gsap.set(r.querySelectorAll("[data-ligne]"), { opacity: 0, y: 18 });
       ScrollTrigger.create({
-        trigger: p,
-        containerAnimation: defile,
-        start: "left 62%",
-        onEnter: () => play("tic"),
-        onEnterBack: () => play("tic"),
+        trigger: r,
+        start: "top 70%",
+        once: true,
+        onEnter: () => {
+          play("tic");
+          gsap.to(noeud, { scale: 1, duration: 0.5, ease: "back.out(3)" });
+          gsap.to(r.querySelectorAll("[data-ligne]"), { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.08 });
+        },
       });
     });
-
-    // la ligne de la frise se trace au fil du défilement
-    gsap.fromTo(
-      root.querySelector("[data-fil]"),
-      { scaleX: 0 },
-      { scaleX: 1, ease: "none", transformOrigin: "left", scrollTrigger: { trigger: root, scrub: 0.6, end: () => `+=${track.scrollWidth}` } },
-    );
   });
 
   return (
-    <section id="parcours" ref={ref} aria-labelledby="parcours-titre" className="relative h-svh overflow-hidden">
-      <div className="absolute inset-x-0 top-0 z-10 pl-4 pr-10 pt-20 sm:px-8">
-        <p className="label flex justify-between">
-          <span>{identite.magazine} · Parcours</span>
-          <span className="tabular-nums">p. 04-05</span>
-        </p>
-        <h2 id="parcours-titre" className="titre-xl mt-3 text-[clamp(3.4rem,15vw,8rem)]">
-          Parcours
-        </h2>
-        <hr className="filet mt-4" />
-      </div>
-
-      {/* la gouttière de la double page */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-1/2 z-0 hidden w-24 -translate-x-1/2 bg-gradient-to-r from-transparent via-black/[0.05] to-transparent sm:block" />
-
-      <ol data-track className="absolute bottom-0 left-0 top-0 flex items-center gap-8 pl-6 pr-10 pt-24 will-change-transform sm:gap-16 sm:pl-12">
-        {parcours.map((e, i) => (
-          <li key={e.titre} data-panel className="relative w-[78vw] shrink-0 border border-fg bg-bg-deep p-5 shadow-[0_18px_40px_-26px_rgba(0,0,0,.35)] sm:w-[44vw] sm:max-w-xl sm:p-8">
-            <p data-an className="titre-xl text-[clamp(3rem,12vw,6.5rem)] text-accent tabular-nums">
-              {e.periode}
-            </p>
-            <p data-an className="label mt-2">
-              Étape {i + 1} / {parcours.length}
-            </p>
-            <h3 data-an className="mt-4 font-display text-2xl font-extrabold leading-tight sm:text-4xl">
-              {e.titre}
-            </h3>
-            <p data-an className="mt-3 font-semibold text-soft">
-              {e.lieu}
-            </p>
-            {e.detail && (
-              <p data-an className="mt-1 italic text-soft">
-                {e.detail}
+    <div ref={ref} className="relative mt-14 font-mono text-[0.92rem]">
+      <p className="mb-6 text-soft">
+        <span className="text-gold">$</span> git log --graph --oneline --decorate
+      </p>
+      <div className="relative">
+        <Graphe branches={branches} />
+        <ol>
+          {commits.map((c, i) => (
+            <li key={c.titre} data-commit className="flex flex-col justify-center border-b border-ink/10 pl-[5rem]" style={{ minHeight: H }}>
+              <p data-ligne className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="text-gold">{hash(c.titre)}</span>
+                {i === 0 && <span className="rounded-full bg-ink px-2.5 py-0.5 text-[0.7rem] font-semibold text-white">HEAD → master</span>}
+                {branches[i] && <span className="rounded-full border border-ink px-2.5 py-0.5 text-[0.7rem] font-semibold">branche : certificat</span>}
               </p>
-            )}
+              <TitreAnime as="h3" texte={c.titre} className="titre-xl my-1 font-display text-[clamp(1.5rem,3.6vw,2.6rem)] !leading-[1.05]" declencheur="top 75%" />
+              <p data-ligne className="text-soft">
+                Date : {c.periode}
+              </p>
+              <p data-ligne className="font-display text-lg italic text-ink">
+                {c.lieu}
+                {c.detail && <span className="text-soft"> — {c.detail}</span>}
+              </p>
+            </li>
+          ))}
+          <li data-ligne className="pl-[5rem] pt-5 text-soft">
+            Author : {identite.prenom} {identite.nom.split(" ")[0].charAt(0) + identite.nom.split(" ")[0].slice(1).toLowerCase()}
           </li>
-        ))}
-      </ol>
-
-      {/* la frise */}
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-24 z-10 h-[3px] bg-fg/25">
-        <div data-fil className="h-[3px] w-full origin-left bg-accent" />
+        </ol>
       </div>
+    </div>
+  );
+}
 
-      <div className="absolute inset-x-0 bottom-0 z-10 pl-4 pr-10 sm:px-8">
-        <PiedDePage page="04-05" />
-      </div>
-    </section>
+export function Parcours() {
+  return (
+    <Page id="parcours" large>
+      <Journal />
+    </Page>
   );
 }

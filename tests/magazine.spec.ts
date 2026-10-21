@@ -97,7 +97,7 @@ test("mouvement réduit : pas de scène ni de sections épinglées, contenu acce
   await entrer(page);
   await expect(page.locator(".pin-spacer")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Sommaire" }).first()).toBeInViewport();
-  await expect(page.getByRole("link", { name: "Lire le reportage →" })).toHaveCount(projets.length);
+  await expect(page.getByRole("button", { name: /Ouvrir le dossier/ })).toHaveCount(projets.length);
   await ctx.close();
 });
 
@@ -121,4 +121,21 @@ test("le contenu textuel de l'interview complète est dans le HTML", async ({ re
   const html = await (await request.get("/")).text();
   expect(html).toContain("Pourquoi le backend ?");
   expect(html).toContain("Tennis ou code");
+});
+
+test("aucun « À FOURNIR » n'est visible sur le site", async ({ request }) => {
+  for (const url of ["/", "/reportages/canopee", "/reportages/metro"]) {
+    const html = await (await request.get(url)).text();
+    expect(html, url).not.toContain("À FOURNIR");
+  }
+});
+
+test("la couverture d'un dossier s'ouvre en iris et se referme avec Échap", async ({ page }) => {
+  await entrer(page);
+  await page.locator("#reportages").scrollIntoViewIfNeeded();
+  await page.getByRole("button", { name: /Ouvrir le dossier Canopée/ }).click();
+  const dossier = page.getByRole("dialog", { name: /Dossier Canopée/ });
+  await expect(dossier).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dossier).toHaveCount(0, { timeout: 5000 });
 });

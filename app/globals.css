@@ -210,3 +210,31 @@ body {
 .tb-barcode { display: flex; flex-direction: column; align-items: center; gap: 6px; background: #fff; padding: 10px 12px; box-sizing: border-box; }
 .tb-foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; padding-top: 16px; }
 .tb-seal { border-radius: 50%; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transform: rotate(-10deg); }
+
+/* ───────── Couvertures des projets (reprises de l'autre portfolio) ───────── */
+.vc {
+  position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; container-type: inline-size;
+  background: var(--vcbg); color: var(--vcfg);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.mini:hover .vc, .mini:focus-visible .vc { transform: translateY(-0.6rem); }
+.vc--bone { --vcbg: #ece7e0; --vcfg: #111; --vcacc: #e4002b; }
+.vc--blue { --vcbg: #0a9ce0; --vcfg: #fff; --vcacc: #fff; }
+.vc--black { --vcbg: #0b0b0b; --vcfg: #fff; --vcacc: #e4002b; }
+.vc--red { --vcbg: #e2091f; --vcfg: #fff; --vcacc: #111; }
+.vc--green { --vcbg: #0f5a3a; --vcfg: #fff; --vcacc: #ffd400; }
+.vc--mint { --vcbg: #dff0e8; --vcfg: #111; --vcacc: #0f5a3a; }
+.vc-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 1; }
+.vc--overlap .vc-art { z-index: 3; }
+.vc-mast { position: absolute; z-index: 2; top: 3.5cqw; left: 0; right: 0; text-align: center; font-family: var(--font-bodoni), serif; font-weight: 600; text-transform: uppercase; font-size: var(--t, 16cqw); line-height: 0.95; letter-spacing: -0.015em; }
+.vc-sub, .vc-credit, .vc-big, .vc-tiny { position: absolute; z-index: 4; }
+.vc-sub { right: 7cqw; top: calc(var(--t, 16cqw) * 0.95 + 4.4cqw); font: 700 clamp(0.5rem, 2.1cqw, 0.7rem) var(--font-jost), sans-serif; letter-spacing: 0.3em; text-transform: uppercase; }
+.vc-credit { right: 7cqw; top: calc(var(--t, 16cqw) * 0.95 + 9.6cqw); font: 700 clamp(0.5rem, 2.1cqw, 0.7rem) var(--font-jost), sans-serif; letter-spacing: 0.24em; text-transform: uppercase; color: var(--vcacc); }
+.vc-big { font-family: var(--font-jost), sans-serif; font-weight: 300; text-transform: uppercase; letter-spacing: -0.04em; }
+.vc-big .acc { color: var(--vcacc); }
+.vc-tiny { right: 6cqw; bottom: 5cqw; text-align: right; font: 700 clamp(0.46rem, 1.9cqw, 0.64rem) var(--font-jost), sans-serif; letter-spacing: 0.14em; text-transform: uppercase; line-height: 1.55; }
+.vc-tiny span { display: block; }
+.vc--bottom .vc-big { left: 6cqw; bottom: 4cqw; display: flex; flex-direction: column; font-size: 16cqw; line-height: 0.88; }
+.vc--vertical .vc-big { left: 5cqw; top: 24cqw; display: flex; gap: 1.5cqw; font-size: 8cqw; letter-spacing: -0.06em; line-height: 1; }
+.vc--vertical .vc-big span { writing-mode: vertical-rl; text-orientation: upright; }

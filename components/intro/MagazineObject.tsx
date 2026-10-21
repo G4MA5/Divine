@@ -17,9 +17,6 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
         className="relative will-change-transform"
         style={{ width: "var(--mw)", height: "calc(var(--mw) * 4 / 3)", transformStyle: "preserve-3d" }}
       >
-        {/* ombre portée */}
-        <div className="absolute inset-0 shadow-[0_30px_60px_-20px_rgba(0,0,0,.55)]" aria-hidden="true" />
-
         {/* page de droite */}
         <div className="absolute inset-0 bg-white text-[#121212]" style={{ containerType: "inline-size" }} aria-hidden="true">
           {fin ? (

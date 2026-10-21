@@ -2,8 +2,6 @@
 
 import { useRef, type CSSProperties, type ReactNode } from "react";
 import { competences } from "@/content/competences";
-import { devsecops, securite } from "@/content/devsecops";
-import { TitreAnime } from "../ui/TitreAnime";
 import { Page } from "./Page";
 import { gsap, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
@@ -105,7 +103,7 @@ function Couverture() {
     const n = root.querySelector("[data-n]") as HTMLElement;
     const c = { v: 0 };
     gsap.fromTo(root.querySelector("[data-tampon]"), { scale: 0.3, rotation: -80, opacity: 0 }, { scale: 1, rotation: -10, opacity: 1, duration: 1.1, ease: "back.out(2)", scrollTrigger: { trigger: root.querySelector("[data-tampon]"), start: "top 90%", once: true } });
-    gsap.to(c, { v: 15, duration: 1.4, ease: "power2.out", onUpdate: () => (n.textContent = String(Math.round(c.v))), scrollTrigger: { trigger: root.querySelector("[data-tampon]"), start: "top 90%", once: true, onEnter: () => play("tampon") } });
+    gsap.to(c, { v: 21, duration: 1.4, ease: "power2.out", onUpdate: () => (n.textContent = String(Math.round(c.v))), scrollTrigger: { trigger: root.querySelector("[data-tampon]"), start: "top 90%", once: true, onEnter: () => play("tampon") } });
   });
 
   const titre = "BOÎTE À OUTILS";
@@ -129,7 +127,7 @@ function Couverture() {
 
         <div data-filet aria-hidden="true" style={{ height: 2, background: C.a1, marginTop: 10 }} />
         <div className="tb-ca tb-strip" style={{ fontSize: fs(12, 8), borderBottom: `1px solid ${C.muted}` }}>
-          <span>15 outils</span>
+          <span>21 outils</span>
           <span style={{ color: C.a1 }}>·</span>
           <span>Mobile · Web · Back-end · Données · Sécurité</span>
           <span style={{ color: C.a1 }}>·</span>
@@ -228,6 +226,36 @@ function Couverture() {
           </Word>
         </Line>
 
+        <Line dir={1}>
+          <Word face="sa" size={92} weight={400} outline={C.a1}>
+            GitHub Actions
+            <Sup n="15" color={C.a1} />
+          </Word>
+          <Word face="bo" size={96} color={C.a3}>
+            TRIVY
+            <Sup n="16" />
+          </Word>
+          <Word face="it" size={72}>
+            SonarQube
+            <Sup n="17" color={C.a1} />
+          </Word>
+        </Line>
+
+        <Line dir={-1}>
+          <Word face="it" size={92} color={C.a4}>
+            OWASP ZAP
+            <Sup n="18" />
+          </Word>
+          <Word face="sa" size={104}>
+            Git
+            <Sup n="19" color={C.a1} />
+          </Word>
+          <Word face="bo" size={88} color={C.a2}>
+            JWT
+            <Sup n="20" color={C.a2} />
+          </Word>
+        </Line>
+
         <div className="tb-foot">
           <span style={{ lineHeight: 0.9 }}>
             <span className="tb-it" style={{ fontSize: fs(56, 18) }}>
@@ -235,13 +263,13 @@ function Couverture() {
             </span>
             <Word face="sa" size={124} color={C.a1}>
               UML
-              <Sup n="15" />
+              <Sup n="21" />
             </Word>
           </span>
           <span style={{ display: "flex", alignItems: "flex-end", gap: cq(28) }}>
             <span data-tampon className="tb-seal" style={{ width: `max(72px, ${cq(132)})`, height: `max(72px, ${cq(132)})`, background: C.a1 }}>
               <span data-n className="tb-it" style={{ fontSize: fs(46, 24), lineHeight: 1 }}>
-                15
+                21
               </span>
               <span className="tb-ca" style={{ fontSize: fs(11, 7), lineHeight: 1.4 }}>
                 outils
@@ -258,7 +286,7 @@ function Couverture() {
                 />
               </svg>
               <span className="tb-ca" style={{ fontSize: 9, color: "#111", letterSpacing: "0.3em" }}>
-                N°15 · ABIDJAN
+                N°21 · ABIDJAN
               </span>
             </span>
           </span>
@@ -269,51 +297,6 @@ function Couverture() {
 }
 
 
-/** DevSecOps : la sécurité à chaque étape de la chaîne, et mes réflexes sécurité. */
-function DevSecOps() {
-  return (
-    <section aria-labelledby="devsecops-titre" className="mt-20">
-      <p className="label">Dans la boîte à outils · sécurité</p>
-      <TitreAnime as="h3" id="devsecops-titre" texte={devsecops.titre} className="titre-xl mt-2 text-[clamp(3rem,13vw,7rem)]" />
-      <p className="mt-4 max-w-3xl font-display text-2xl italic leading-snug sm:text-3xl">{devsecops.chapo}</p>
-      <p className="mt-4 max-w-3xl">{devsecops.texte}</p>
-
-      {/* la chaîne, étape par étape : chaque étape a sa porte de sécurité */}
-      <ol className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-ink/15 bg-ink/15 sm:grid-cols-2 lg:grid-cols-4">
-        {devsecops.etapes.map((e, i) => (
-          <li key={e.nom} className="bg-white p-5">
-            <p className="flex items-baseline justify-between">
-              <span className="titre-xl text-3xl">{e.nom}</span>
-              <span className="label tabular-nums !text-accent">{String(i + 1).padStart(2, "0")}</span>
-            </p>
-            <p className="mt-2 text-base leading-snug text-soft">{e.garde}</p>
-            <ul className="mt-3 flex flex-wrap gap-1.5">
-              {e.outils.map((o) => (
-                <li key={o} className="rounded-full border border-ink/25 px-2.5 py-1 font-sans text-[0.68rem] font-semibold">
-                  {o}
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ol>
-
-      <div className="mt-14">
-        <TitreAnime as="h3" texte={securite.titre} className="titre-xl text-[clamp(2.6rem,10vw,5.5rem)]" />
-        <p className="mt-2 font-display text-xl italic">{securite.chapo}</p>
-        <ul className="mt-6 grid gap-x-10 gap-y-6 sm:grid-cols-2">
-          {securite.principes.map((p) => (
-            <li key={p.titre} className="border-t border-ink pt-3">
-              <p className="font-display text-xl font-bold italic">{p.titre}</p>
-              <p className="mt-1 text-base leading-snug text-soft">{p.texte}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
 /** Tout le détail, par famille (et indexable : le texte reste dans la page). */
 function Familles() {
   return (
@@ -321,7 +304,7 @@ function Familles() {
       <h3 className="label !text-fg">Tout le détail, par famille</h3>
       <dl className="mt-4 grid gap-4 sm:grid-cols-2">
         {competences.map((c) => (
-          <div key={c.categorie} className="border border-ink/20 bg-paper p-4 text-ink shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)]">
+          <div key={c.categorie} className="border border-ink/20 bg-paper p-4 text-ink">
             <dt className="titre-xl text-3xl">{c.categorie}</dt>
             <dd className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
               {c.items.map((it) => (
@@ -345,7 +328,6 @@ export function Competences() {
       large
     >
       <Couverture />
-      <DevSecOps />
       <Familles />
     </Page>
   );

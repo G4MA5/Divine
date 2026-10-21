@@ -9,7 +9,7 @@ import { gsap, ScrollTrigger, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
 /**
  * p. 02 — Sommaire
- * Effet : les lignes sont tapées une à une, comme à la machine à écrire, et les points de conduite
+ * Effet : les lignes se tapent à la machine À MESURE QUE LE VISITEUR DÉFILE (le son suit le scroll), et les points de conduite
  * se tracent vers le numéro de page. Son : frappe de machine, très douce.
  */
 export function Sommaire() {
@@ -17,33 +17,62 @@ export function Sommaire() {
 
   useScene(ref, (root) => {
     const lignes = gsap.utils.toArray<HTMLElement>("[data-ligne]", root);
-    lignes.forEach((l) => {
-      gsap.set(l.querySelectorAll("[data-c]"), { opacity: 0 });
-      gsap.set(l.querySelector("[data-lead]"), { scaleX: 0, transformOrigin: "left center" });
-      gsap.set(l.querySelectorAll("[data-num], [data-acc]"), { opacity: 0 });
+    const struct = lignes.map((l) => ({
+      chars: [...l.querySelectorAll<HTMLElement>("[data-c]")],
+      lead: l.querySelector<HTMLElement>("[data-lead]")!,
+      fin: [...l.querySelectorAll<HTMLElement>("[data-num], [data-acc]")],
+    }));
+    const total = struct.reduce((n, l) => n + l.chars.length, 0);
+    struct.forEach((l) => {
+      l.chars.forEach((c) => (c.style.opacity = "0"));
+      gsap.set(l.lead, { scaleX: 0, transformOrigin: "left center" });
+      gsap.set(l.fin, { opacity: 0 });
     });
 
+    // la frappe suit le scroll : chaque lettre apparaît quand le visiteur descend, et le son ne joue que pendant qu'il défile
+    const rendre = (n: number) => {
+      let debut = 0;
+      struct.forEach((l) => {
+        const k = l.chars.length;
+        const fait = Math.max(0, Math.min(k, n - debut));
+        l.chars.forEach((c, i) => (c.style.opacity = i < fait ? "1" : "0"));
+        gsap.set(l.lead, { scaleX: fait / k });
+        gsap.set(l.fin, { opacity: fait >= k ? 1 : 0 });
+        debut += k;
+      });
+    };
+    // La frappe SUIT le scroll sans jamais sauter : le visiteur fixe jusqu'où le texte doit être écrit,
+    // et la machine rattrape ce point lettre après lettre (jamais d'un coup). Dès qu'elle l'a atteint, elle s'arrête,
+    // et le son avec elle : rien ne continue tant que le visiteur ne redescend pas.
+    let cible = 0;
+    let ecrit = 0;
+    let acc = 0;
     ScrollTrigger.create({
       trigger: root,
-      start: "top 55%",
-      once: true,
-      onEnter: () => {
-        const tl = gsap.timeline();
-        let t = 0.2;
-        lignes.forEach((l) => {
-          const chars = l.querySelectorAll("[data-c]");
-          chars.forEach((c, j) => {
-            tl.set(c, { opacity: 1 }, t + j * 0.05);
-            if (j % 2 === 0) tl.call(() => play("machine"), [], t + j * 0.05);
-          });
-          const fin = t + chars.length * 0.05;
-          tl.to(l.querySelector("[data-lead]"), { scaleX: 1, duration: 0.5, ease: "power2.out" }, fin)
-            .to(l.querySelectorAll("[data-num]"), { opacity: 1, duration: 0.3 }, fin + 0.35)
-            .to(l.querySelectorAll("[data-acc]"), { opacity: 1, duration: 0.4 }, fin + 0.1);
-          t = fin + 0.35;
-        });
+      start: "top 75%",
+      end: "bottom 80%",
+      onUpdate: (self) => {
+        cible = Math.round(self.progress * total);
       },
     });
+    const VITESSE = 38; // lettres par seconde, au maximum
+    const tick = () => {
+      const dt = Math.min(0.1, gsap.ticker.deltaRatio() / 60);
+      if (ecrit === cible) {
+        acc = 0;
+        return;
+      }
+      acc += dt * VITESSE;
+      const pas = Math.floor(acc);
+      if (pas < 1) return;
+      acc -= pas;
+      const avant = ecrit;
+      ecrit = cible > ecrit ? Math.min(cible, ecrit + pas) : Math.max(cible, ecrit - pas * 3);
+      rendre(ecrit);
+      if (ecrit > avant) play("machine");
+    };
+    gsap.ticker.add(tick);
+    return () => gsap.ticker.remove(tick);
   });
 
   return (

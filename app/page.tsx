@@ -15,12 +15,12 @@ import { Quatrieme } from "@/components/rubriques/Quatrieme";
 import { identite } from "@/content/identite";
 import { SITE_URL } from "@/lib/site";
 import { PortraitProvider } from "@/components/PortraitContext";
-import { portraitExiste } from "@/lib/portrait";
+import { portraitExiste, cvExiste } from "@/lib/portrait";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { BoutonSon } from "@/components/ui/BoutonSon";
 import { BoutonSommaire } from "@/components/ui/BoutonSommaire";
-import { MarquePage } from "@/components/ui/MarquePage";
 import { IndicateurPage } from "@/components/ui/IndicateurPage";
+import { Filigranes, NavFlottante, Aimants } from "@/components/ui/Effets";
 
 const donneesStructurees = {
   "@context": "https://schema.org",
@@ -36,14 +36,15 @@ const donneesStructurees = {
 
 export default function Accueil() {
   return (
-    <PortraitProvider disponible={portraitExiste()}>
+    <PortraitProvider disponible={portraitExiste()} cv={cvExiste()}>
     <IntroGate>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(donneesStructurees) }} />
       <SmoothScroll />
       <BoutonSommaire />
       <BoutonSon />
-      <MarquePage />
       <IndicateurPage />
+      <NavFlottante />
+      <Aimants />
       <main>
         <SceneTable />
         <Sommaire />
@@ -59,6 +60,7 @@ export default function Accueil() {
         <Quatrieme />
         <Pied />
       </main>
+      <Filigranes />
     </IntroGate>
     </PortraitProvider>
   );

@@ -1,106 +1,154 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { projets } from "@/content/projets";
-import { identite } from "@/content/identite";
-import { pad } from "@/content/sections";
-import { OuvertureVisuel, construireOuverture } from "../reportages/ouvertures";
-import { ReportageContenu } from "../reportages/ReportageContenu";
+import { Page } from "./Page";
+import { CouvertureProjet } from "../reportages/CouvertureProjet";
+import { DossierContenu } from "../reportages/DossierContenu";
 import { usePrefs } from "../PrefsProvider";
-import { gsap, PRIO, useScene } from "@/lib/useScene";
+import { gsap, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
-/** Numéro de page de chaque reportage dans la plage p. 08-15. */
-const pageDe = (i: number) => pad(8 + Math.floor((i * 8) / projets.length));
 
 /**
  * p. 08-15 — Reportages
- * Effet : des pages empilées qui se décollent une à une au scroll, comme on feuillette.
- * Chaque reportage s'ouvre sur son propre effet (rendez-vous, badge tamponné, livres, stock, ticket + canopée, ligne de métro).
- * Son : une page qu'on tourne à chaque reportage.
+ * Six couvertures de magazine ; un clic ouvre le dossier par un « iris » : un disque blanc grandit depuis la couverture
+ * choisie jusqu'à remplir l'écran, puis le dossier se compose (couverture, titre, texte). Refermer fait l'inverse.
+ * Son : une page qu'on tourne.
  */
-export function Reportages() {
-  const ref = useRef<HTMLElement>(null);
+type Origine = { x: number; y: number };
+
+function Dossier({ index, origine, onClose }: { index: number; origine: Origine; onClose: () => void }) {
   const { reducedMotion } = usePrefs();
+  const racine = useRef<HTMLDivElement>(null);
+  const fermer = useRef<HTMLButtonElement>(null);
+  const ferme = useRef(false);
+  const p = projets[index];
+  const rayon = () => Math.hypot(window.innerWidth, window.innerHeight) * 1.05;
+  const iris = (r: number) => `circle(${r}px at ${origine.x}px ${origine.y}px)`;
+
+  const fin = () => {
+    if (ferme.current) return;
+    ferme.current = true;
+    if (reducedMotion || !racine.current) return onClose();
+    play("fermer");
+    gsap.to(racine.current, { clipPath: iris(0), duration: 0.75, ease: "power3.inOut", onComplete: onClose });
+  };
+
+  useEffect(() => {
+    const el = racine.current;
+    if (!el) return;
+    fermer.current?.focus();
+    const prev = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    const lenis = (window as unknown as { __lenis?: { stop: () => void; start: () => void } }).__lenis;
+    lenis?.stop();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") fin();
+      if (e.key === "Tab") {
+        const f = [...el.querySelectorAll<HTMLElement>("button, a[href]")];
+        const i = f.indexOf(document.activeElement as HTMLElement);
+        if (f.length) {
+          e.preventDefault();
+          f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
+        }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    if (!reducedMotion) {
+      play("page");
+      gsap.fromTo(el, { clipPath: iris(0) }, { clipPath: iris(rayon()), duration: 0.95, ease: "power3.inOut" });
+      gsap.from(el.querySelectorAll("[data-entre]"), { y: 36, opacity: 0, duration: 0.7, ease: "power3.out", stagger: 0.09, delay: 0.55 });
+      // le titre : ses mots montent depuis la ligne de base
+      const t = el.querySelector("[data-titre-dossier]");
+      if (t) {
+        const mots = (t.textContent ?? "").split(" ");
+        t.setAttribute("aria-label", t.textContent ?? "");
+        t.innerHTML = mots.map((m) => `<span aria-hidden="true" style="display:inline-block;transform-origin:50% 100%" data-m>${m}</span>`).join(" ");
+        gsap.from(t.querySelectorAll("[data-m]"), { scaleY: 0, yPercent: 25, duration: 0.8, ease: "power3.out", stagger: 0.1, delay: 0.7 });
+      }
+    }
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.documentElement.style.overflow = prev;
+      lenis?.start();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return createPortal(
+    <div ref={racine} role="dialog" aria-modal="true" aria-label={`Dossier ${p.titre}`} className="fixed inset-0 z-[90] overflow-y-auto bg-white" style={reducedMotion ? undefined : { clipPath: iris(0) }}>
+      <button ref={fermer} type="button" onClick={fin} aria-label="Refermer le dossier" className="btn fixed right-4 top-4 z-10 !px-4 !py-2">
+        Refermer ×
+      </button>
+      <div className="mx-auto max-w-5xl px-4 pb-16 pt-20 sm:px-8">
+        <div data-entre>
+          <DossierContenu projet={p} numero={index + 1} niveau={2} lien />
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+function Grille() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [ouvert, setOuvert] = useState<{ i: number; o: Origine } | null>(null);
+  const declencheur = useRef<HTMLElement | null>(null);
 
   useScene(ref, (root) => {
-    const pages = gsap.utils.toArray<HTMLElement>("[data-rp]", root);
-    const SEG = 4.6;
-    const tl = gsap.timeline({
-      defaults: { ease: "none" },
-      scrollTrigger: {
-        trigger: root.querySelector("[data-pin]"),
-        start: "top top",
-        end: `+=${pages.length * 240}%`,
-        pin: true,
-        scrub: 0.5,
-        anticipatePin: 1,
-        refreshPriority: PRIO.reportages,
-      },
-    });
-
-    pages.forEach((pg, i) => {
-      const t0 = i * SEG;
-      const ouv = pg.querySelector("[data-ouv]") as HTMLElement;
-      const fin = construireOuverture(projets[i].ouverture, ouv, tl, t0 + 0.1);
-      if (i === 0) tl.call(() => play("page"), [], 0.05);
-      if (i < pages.length - 1) {
-        const pel = t0 + SEG - 0.7;
-        tl.call(() => play("page"), [], pel)
-          .to(pg, { rotationY: -112, xPercent: -6, opacity: 0.0, transformOrigin: "0% 50%", transformPerspective: 1700, duration: 0.7, ease: "power2.in" }, pel);
-      }
-      void fin;
-    });
+    const cartes = gsap.utils.toArray<HTMLElement>("[data-mini]", root);
+    gsap.set(cartes, { opacity: 0, y: 70, rotation: (i: number) => (i % 2 ? 3 : -3) });
+    gsap.to(cartes, { opacity: 1, y: 0, rotation: 0, duration: 0.9, ease: "power3.out", stagger: 0.09, scrollTrigger: { trigger: root, start: "top 80%", once: true } });
   });
 
-  if (reducedMotion) {
-    return (
-      <section id="reportages" aria-labelledby="reportages-titre" className="relative pb-6 pl-4 pr-10 pt-20 sm:px-8">
-        <div className="mx-auto max-w-3xl">
-          <p className="label flex justify-between">
-            <span>{identite.magazine} · Reportages</span>
-            <span className="tabular-nums">p. 08-15</span>
-          </p>
-          <h2 id="reportages-titre" className="titre-xl mt-3 text-[clamp(3.4rem,15vw,8rem)]">
-            Reportages
-          </h2>
-          <hr className="filet mt-5" />
-        </div>
-        <div className="mt-10">
-          {projets.map((p, i) => (
-            <div key={p.slug} className="relative overflow-hidden px-4 py-14 pr-10 sm:px-8">
-              <ReportageContenu projet={p} page={pageDe(i)} lien />
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section id="reportages" ref={ref} aria-labelledby="reportages-titre">
-      <div data-pin className="relative h-svh overflow-hidden" style={{ perspective: "1700px" }}>
-        <h2 id="reportages-titre" className="sr-only">
-          Reportages
-        </h2>
+    <div ref={ref} className="mt-12">
+      <ul className="grid gap-x-6 gap-y-12 [grid-template-columns:repeat(auto-fit,minmax(13rem,1fr))]">
         {projets.map((p, i) => (
-          <div
-            key={p.slug}
-            data-rp
-
-            className="absolute inset-0 overflow-hidden bg-bg pb-14 pl-4 pr-10 pt-20 shadow-[0_0_40px_rgba(0,0,0,.25)] sm:px-8"
-            style={{ zIndex: projets.length - i, backfaceVisibility: "hidden" }}
-          >
-            <div data-contenu className="flex h-full flex-col justify-start">
-              <ReportageContenu projet={p} compact niveau={3} page={pageDe(i)} lien />
-            </div>
-            <OuvertureVisuel type={p.ouverture} />
-            <p className="label absolute inset-x-0 bottom-4 z-30 flex justify-between pl-4 pr-10 !text-fg sm:px-8">
-              <span>{identite.magazine}</span>
-              <span className="tabular-nums">p. {pageDe(i)}</span>
-            </p>
-          </div>
+          <li key={p.slug} data-mini>
+            <button
+              type="button"
+              className="mini block w-full text-left"
+              aria-label={`Ouvrir le dossier ${p.titre}`}
+              onClick={(e) => {
+                const r = e.currentTarget.getBoundingClientRect();
+                declencheur.current = e.currentTarget;
+                setOuvert({ i, o: { x: r.left + r.width / 2, y: r.top + r.height / 2 } });
+              }}
+            >
+              <CouvertureProjet p={p} numero={i + 1} />
+              <span className="mt-4 flex items-center justify-between gap-3">
+                <span className="font-sans text-base">
+                  N°{String(i + 1).padStart(2, "0")} — {p.titre}
+                </span>
+                <span aria-hidden="true" className="label !text-fg">
+                  Lire →
+                </span>
+              </span>
+            </button>
+          </li>
         ))}
-      </div>
-    </section>
+      </ul>
+      {ouvert && (
+        <Dossier
+          index={ouvert.i}
+          origine={ouvert.o}
+          onClose={() => {
+            setOuvert(null);
+            declencheur.current?.focus();
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+export function Reportages() {
+  return (
+    <Page id="reportages" large>
+      <p className="mt-6 max-w-2xl font-display text-2xl italic leading-snug sm:text-3xl">Six projets à la une. Choisis une couverture : elle s&apos;ouvre sur le dossier.</p>
+      <Grille />
+    </Page>
   );
 }

@@ -7,9 +7,9 @@ import { PiedDePage } from "../ui/PiedDePage";
 import { Avatar, type AvatarId } from "../avatar/Avatar";
 import { MagazineObject } from "../intro/MagazineObject";
 import { usePrefs } from "../PrefsProvider";
+import { useCvDisponible } from "../PortraitContext";
 import { PRIO, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
-const A_FOURNIR = "[À FOURNIR";
 const ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT;
 
 /** Remonte tout en haut, sur la couverture. */
@@ -21,12 +21,12 @@ export function allerEnHaut() {
 }
 
 function Lien({ label, valeur, href }: { label: string; valeur: string; href?: string }) {
-  const placeholder = valeur.startsWith(A_FOURNIR);
+  if (!valeur || !href) return null;
   return (
     <div>
       <dt className="label !text-[0.6rem]">{label}</dt>
       <dd className="font-display text-xl font-bold italic">
-        {placeholder || !href ? valeur : (
+        {(
           <a href={href} className="underline decoration-2 underline-offset-4 transition-colors hover:bg-yellow hover:text-ink">
             {valeur}
           </a>
@@ -65,7 +65,7 @@ function Formulaire() {
     }
   };
 
-  const champ = "mt-1 w-full border border-ink/20 bg-paper px-3 py-3 font-serif text-lg font-semibold normal-case tracking-normal text-ink outline-none shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)] transition-shadow focus:shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)]";
+  const champ = "mt-1 w-full border border-ink/20 bg-paper px-3 py-3 font-serif text-lg font-semibold normal-case tracking-normal text-ink outline-none focus:shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)]";
 
   return (
     <form onSubmit={envoyer} className="grid gap-4" aria-label="Écrire à Divine">
@@ -209,10 +209,11 @@ function ScenneFin() {
 
 /**
  * p. 21 — Quatrième de couverture
- * Contact, langues, formulaire, encadré « Prochain numéro », CV. Au dernier scroll, l'avatar referme le magazine
+ * Contact, langues, formulaire, CV. Au dernier scroll, l'avatar referme le magazine
  * et le repose sur la table. Son : une page qui se ferme.
  */
 export function Quatrieme() {
+  const cv = useCvDisponible();
   return (
     <section id="quatrieme" aria-labelledby="quatrieme-titre">
       <div className="relative overflow-hidden pb-6 pl-4 pr-10 pt-24 sm:px-8">
@@ -247,15 +248,12 @@ export function Quatrieme() {
             <Formulaire />
           </div>
 
-          <aside aria-label="Prochain numéro" className="mt-12 border border-ink/20 bg-paper p-5 text-center text-ink shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)]">
-            <h3 className="label !text-accent">Prochain numéro</h3>
-            <p className="mt-2 font-display text-xl font-bold italic">[À FOURNIR : le prochain numéro]</p>
-          </aside>
-
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href={identite.cv} download className="btn btn-plein">
-              Télécharger le CV
-            </a>
+            {cv && (
+              <a href={identite.cv} download className="btn btn-plein">
+                Télécharger le CV
+              </a>
+            )}
             <button type="button" onClick={allerEnHaut} className="btn">
               Relire depuis la couverture
             </button>

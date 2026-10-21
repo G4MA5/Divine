@@ -1,13 +1,39 @@
 export type Experience = {
-  id: "transsion" | "ttsc";
-  periode: string;
+  id: string;
+  /** « Depuis 2023 », « Juin 2024 – Décembre 2024 »… : masqué s'il n'est pas renseigné */
+  periode?: string;
   poste: string;
   entreprise: string;
-  lieu: string;
+  lieu?: string;
+  /** une phrase de contexte sous le poste */
+  resume?: string;
   missions: string[];
+  /** un lien vers l'organisation */
+  lien?: { texte: string; href: string };
 };
 
 export const experiences: Experience[] = [
+  {
+    id: "gama",
+    periode: "Depuis 2023",
+    poste: "Co-fondatrice",
+    entreprise: "GAMA Labs",
+    lieu: "Abidjan",
+    resume: "Studio de sites, d'applications et de logiciels sur mesure, créé en 2023 avec cinq autres ingénieurs. Apprendre · Créer · Impacter.",
+    missions: [
+      "Sites web, applications web et applications mobiles (Flutter) livrés de l'analyse au déploiement",
+      "Une méthode en sept étapes : analyse, spécification, conception, design, code, test, déploiement",
+      "Des projets pour l'UPB et ses étudiants : Génie UPB, UpB Student's, Metro",
+    ],
+    lien: { texte: "gama-labs.com", href: "https://gama-labs.com" },
+  },
+  {
+    id: "bde",
+    poste: "Secrétaire générale du BDE",
+    entreprise: "Bureau des étudiants, 6e promotion de l'UPB",
+    lieu: "Bingerville",
+    missions: [],
+  },
   {
     id: "transsion",
     periode: "Juin 2024 – Décembre 2024",

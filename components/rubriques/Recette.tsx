@@ -56,7 +56,7 @@ function Fiche() {
         </svg>
         <ul className="absolute inset-x-6 bottom-16 z-10 flex flex-wrap justify-center gap-2">
           {recette.ingredients.map((x) => (
-            <li key={x} data-ing className="border border-ink/20 bg-paper px-3 py-1 font-display font-bold italic text-ink shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)]">
+            <li key={x} data-ing className="border border-ink/20 bg-paper px-3 py-1 font-display font-bold italic text-ink">
               {x}
             </li>
           ))}
@@ -68,15 +68,17 @@ function Fiche() {
       </div>
 
       {/* la fiche recette */}
-      <section aria-label="Fiche recette" className="mt-8 border border-ink/20 bg-paper p-5 text-ink shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)] sm:p-8">
-        <dl className="grid grid-cols-3 gap-3 border-b-2 border-ink pb-4 text-center">
+      <section aria-label="Fiche recette" className="mt-8 border border-ink/20 bg-paper p-5 text-ink sm:p-8">
+        <dl className="grid auto-cols-fr grid-flow-col gap-3 border-b border-ink pb-4 text-center">
           {(
             [
               ["Préparation", recette.temps],
               ["Difficulté", recette.difficulte],
               ["Pour", recette.pour],
             ] as const
-          ).map(([k, v]) => (
+          )
+            .filter(([, v]) => !!v)
+            .map(([k, v]) => (
             <div key={k}>
               <dt className="label !text-[0.6rem] !text-ink/60">{k}</dt>
               <dd className="mt-1 font-display text-base font-bold italic leading-snug sm:text-lg">{v}</dd>
@@ -85,6 +87,8 @@ function Fiche() {
         </dl>
         <h3 className="label mt-5 !text-accent">Ingrédients</h3>
         <p className="mt-1">{recette.ingredients.join(" · ")}</p>
+        {recette.etapes.length > 0 && (
+          <>
         <h3 className="label mt-6 !text-accent">Préparation</h3>
         <ol data-etapes className="mt-3 space-y-4">
           {recette.etapes.map((e, i) => (
@@ -94,6 +98,8 @@ function Fiche() {
             </li>
           ))}
         </ol>
+          </>
+        )}
       </section>
     </div>
   );

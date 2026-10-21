@@ -12,6 +12,6 @@ export function generateStaticParams() {
 export default async function Image(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params;
   const p = projetParSlug(slug);
-  const rubrique = (p?.rubrique ?? "Reportage").replace(/\[À FOURNIR[^\]]*\]/g, "").trim() || "Reportage";
+  const rubrique = p?.rubrique ?? "Reportage";
   return new ImageResponse(<CarteCouverture titre={p?.titre ?? "Reportage"} rubrique={`Reportage · ${rubrique}`} accroche="Un projet de Divine Graourou" />, size);
 }

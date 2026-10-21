@@ -8,6 +8,7 @@ import { Avatar, type AvatarId } from "../avatar/Avatar";
 import { allerA } from "../SmoothScroll";
 import { play } from "@/lib/sound";
 import { Chargement } from "./Chargement";
+import { Machine } from "../ui/Effets";
 type Etape = "son" | "avatar" | "retour";
 
 /**
@@ -125,7 +126,9 @@ export function IntroGate({ children }: { children: ReactNode }) {
             <div ref={carte} className="px-6 pb-8 pt-10 text-center sm:px-9">
               <p className="label !text-ink">Édition numérique · {identite.numero}</p>
               <p className="titre-xl mt-3 text-5xl sm:text-6xl">{identite.magazine}</p>
-              <p className="mt-2 italic text-ink/70">Le magazine de Divine, développeuse à Abidjan</p>
+              <p className="mt-2 min-h-[1.6em] italic text-ink/70">
+                <Machine texte="Le magazine de Divine, développeuse à Abidjan" />
+              </p>
 
               {etape === "son" && (
                 <section aria-labelledby="q-son" className="mt-7">
@@ -155,7 +158,7 @@ export function IntroGate({ children }: { children: ReactNode }) {
                           type="button"
                           onClick={() => choisirAvatar(a.id)}
                           aria-label={`${a.rubrique} : ${a.description}`}
-                          className="carton-avatar group flex w-full flex-col items-center gap-2 border-2 border-ink px-2 pb-3 pt-3 shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)] transition-colors hover:bg-[#fbf3dc]"
+                          className="carton-avatar group flex w-full flex-col items-center gap-2 border-2 border-ink px-2 pb-3 pt-3 transition-colors hover:bg-[#fbf3dc]"
                           
                         >
                           <Avatar id={a.id as AvatarId} className="h-28 w-auto transition-transform group-hover:scale-105" />

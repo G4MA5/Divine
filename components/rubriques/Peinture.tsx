@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { peintureIntro, tableaux, type Tableau } from "@/content/peinture";
 import { Page } from "./Page";
+import { Machine } from "../ui/Effets";
 import { gsap, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
 
@@ -20,34 +21,26 @@ function Cadre({ t, onOuvrir, indice }: { t: Tableau; onOuvrir: () => void; indi
       <button
         type="button"
         onClick={onOuvrir}
-        aria-label={`Voir « ${t.titre} » en grand`}
+        aria-label={t.titre ? `Voir « ${t.titre} » en grand` : `Voir le tableau n° ${indice + 1} en grand`}
         className="relative block w-full origin-top text-left transition-transform duration-500 group-hover:-translate-y-1"
       >
         {/* le fil */}
         <span aria-hidden="true" data-fil className="absolute -top-10 left-1/2 h-10 w-px bg-ink/40" />
         {/* le cadre */}
-        <span className="block border-[10px] border-ink bg-white p-3 shadow-[0_24px_40px_-24px_rgba(0,0,0,.5)] transition-shadow duration-500 group-hover:shadow-[0_34px_50px_-24px_rgba(0,0,0,.55)] sm:border-[12px] sm:p-4">
+        <span className="block border border-ink/80 bg-white p-3 duration-500 sm:p-5">
           <span className="relative block w-full overflow-hidden bg-[#f3f2ee]" style={{ aspectRatio: String(t.ratio) }}>
             {t.image ? (
-              <Image src={t.image} alt={t.titre} fill sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 30vw" className="object-cover" />
+              <Image src={t.image} alt={t.titre ?? `Tableau n° ${indice + 1}`} fill sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 30vw" className="object-cover" />
             ) : (
-              <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
-                <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#d99a00" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.9 2-1.8 0-1.4-1.2-1.5-1.2-2.7 0-.9.8-1.5 1.8-1.5H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8Z" />
-                  <circle cx="7.5" cy="11" r="1" />
-                  <circle cx="10.5" cy="7.2" r="1" />
-                  <circle cx="15" cy="7.7" r="1" />
-                </svg>
-                <span className="label !normal-case !tracking-normal">[À FOURNIR : tableau n° {indice + 1}]</span>
-              </span>
-            )}
+                <span aria-hidden="true" className="absolute inset-0" />
+              )}
           </span>
         </span>
       </button>
       {/* le cartel, comme au musée */}
       <figcaption className="mt-4 translate-y-1 opacity-70 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-        <p className="font-display text-lg font-bold italic leading-tight">{t.titre}</p>
-        <p className="label mt-1">{[t.annee, t.technique, t.dimensions].filter(Boolean).join(" · ") || `Tableau n° ${indice + 1}`}</p>
+        {t.titre && <p className="font-display text-lg font-bold italic leading-tight">{t.titre}</p>}
+        <p className="label mt-1">{[t.annee, t.technique, t.dimensions].filter(Boolean).join(" · ") || `N° ${String(indice + 1).padStart(2, "0")}`}</p>
       </figcaption>
     </figure>
   );
@@ -81,7 +74,7 @@ function Lightbox({ index, onClose, onNav }: { index: number; onClose: () => voi
   }, [onClose, onNav]);
 
   return (
-    <div data-lightbox role="dialog" aria-modal="true" aria-label={`Tableau : ${t.titre}`} className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-white/97 px-4 py-14">
+    <div data-lightbox role="dialog" aria-modal="true" aria-label={`Tableau n° ${index + 1}`} className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-white/97 px-4 py-14">
       <button ref={fermer} type="button" onClick={onClose} aria-label="Fermer" className="btn absolute right-4 top-4 !px-4 !py-2">
         Fermer
       </button>
@@ -90,19 +83,17 @@ function Lightbox({ index, onClose, onNav }: { index: number; onClose: () => voi
           ←
         </button>
         <div className="flex-1">
-          <div className="mx-auto border-[12px] border-ink bg-white p-4 shadow-[0_40px_70px_-34px_rgba(0,0,0,.6)]" style={{ maxWidth: `min(100%, ${Math.round(62 * Math.min(t.ratio, 1.25))}vh)` }}>
+          <div className="mx-auto border border-ink/80 bg-white p-5" style={{ maxWidth: `min(100%, ${Math.round(62 * Math.min(t.ratio, 1.25))}vh)` }}>
             <div className="relative w-full bg-[#f3f2ee]" style={{ aspectRatio: String(t.ratio) }}>
               {t.image ? (
-                <Image src={t.image} alt={t.titre} fill sizes="90vw" className="object-contain" priority />
+                <Image src={t.image} alt={t.titre ?? `Tableau n° ${index + 1}`} fill sizes="90vw" className="object-contain" priority />
               ) : (
-                <span className="absolute inset-0 flex items-center justify-center p-6 text-center">
-                  <span className="label !normal-case !tracking-normal">[À FOURNIR : tableau n° {index + 1}]</span>
-                </span>
+                <span aria-hidden="true" className="absolute inset-0" />
               )}
             </div>
           </div>
-          <p className="mt-6 text-center font-display text-2xl font-bold italic">{t.titre}</p>
-          <p className="label mt-1 text-center">{[t.annee, t.technique, t.dimensions].filter(Boolean).join(" · ") || `Tableau n° ${index + 1} sur ${tableaux.length}`}</p>
+          {t.titre && <p className="mt-6 text-center font-display text-2xl font-bold italic">{t.titre}</p>}
+          <p className="label mt-1 text-center">{[t.annee, t.technique, t.dimensions].filter(Boolean).join(" · ") || `N° ${String(index + 1).padStart(2, "0")} sur ${tableaux.length}`}</p>
         </div>
         <button type="button" onClick={() => onNav(1)} aria-label="Tableau suivant" className="btn !px-3 !py-3 text-lg">
           →
@@ -160,9 +151,8 @@ function Galerie() {
 
 export function Peinture() {
   return (
-    <Page id="peinture" titre={peintureIntro.titre} large>
-      <p className="mt-6 max-w-2xl font-display text-2xl italic leading-snug sm:text-3xl">{peintureIntro.chapo}</p>
-      <p className="mt-4 max-w-2xl text-soft">{peintureIntro.texte}</p>
+    <Page id="peinture" titre={peintureIntro.titre} large trait>
+      <p className="mt-6 max-w-2xl font-display text-2xl italic leading-snug sm:text-3xl"><Machine texte={peintureIntro.chapo} vitesse={55} /></p>
       <Galerie />
     </Page>
   );

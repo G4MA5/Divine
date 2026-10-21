@@ -157,15 +157,7 @@ export function SceneTable() {
       {/* la table */}
       <div data-s="table" className="scene-table absolute inset-0" aria-hidden="true" />
 
-      {/* un seul accessoire : une tasse de café */}
-      <svg data-s="prop" aria-hidden="true" viewBox="0 0 110 110" className="absolute right-[4%] top-[38%] w-[19vw] max-w-[120px]">
-        <ellipse cx="55" cy="62" rx="48" ry="40" fill="#ffffff" />
-        <ellipse cx="55" cy="58" rx="34" ry="28" fill="#fff" stroke="#121212" strokeWidth="2" />
-        <ellipse cx="55" cy="58" rx="27" ry="21" fill="#4a2f1d" />
-        <path d="M86 52c14 0 14 18 0 18" fill="none" stroke="#ffffff" strokeWidth="7" />
-        <path d="M44 56c6-4 14-4 20 0" stroke="#c89a6b" strokeWidth="2.4" fill="none" strokeLinecap="round" />
-      </svg>
-
+      
       <MagazineObject />
 
       {/* l'avatar choisi par le visiteur */}

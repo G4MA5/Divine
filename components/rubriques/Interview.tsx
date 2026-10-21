@@ -9,10 +9,12 @@ import { Citation } from "../ui/Citation";
 import { Page } from "./Page";
 import { gsap } from "@/lib/useScene";
 import { play } from "@/lib/sound";
-const A_FOURNIR = "[À FOURNIR";
+
+/** Les questions qui ont une réponse : seules celles-là sont jouables. */
+const repondues = questions.filter((q) => !!q.reponse);
 
 /** Première phrase d'une réponse, pour la citation en grand format. */
-const citationDe = (r: string) => (r.startsWith(A_FOURNIR) ? "[À FOURNIR : citation extraite d'une réponse]" : (r.match(/^.*?[.!?](\s|$)/)?.[0] ?? r).trim());
+const citationDe = (r: string) => (r.match(/^.*?[.!?](\s|$)/)?.[0] ?? r).trim();
 
 function melange<T>(a: T[]): T[] {
   const r = [...a];
@@ -32,22 +34,55 @@ function QR({ q, premier }: { q: QuestionInterview; premier: boolean }) {
   );
 }
 
+function Scene() {
+  const { avatar } = usePrefs();
+  const id = (avatar ?? "curieuse") as AvatarId;
+  return (
+    <>
+      <div className="grid grid-cols-[1fr_1fr] items-end gap-2 border-b border-ink sm:gap-8" aria-hidden="true">
+        <Avatar id={id} pose="assis" className="mx-auto h-44 w-auto sm:h-64" />
+        <Portrait className="mx-auto h-44 w-auto sm:h-64" />
+      </div>
+      <p className="label mt-2 flex justify-between">
+        <span>L&apos;intervieweur</span>
+        <span>Divine</span>
+      </p>
+    </>
+  );
+}
+
+/** Tant que les réponses ne sont pas là : les questions, présentées comme le teaser du prochain numéro. */
+function Teaser() {
+  return (
+    <div className="mt-10">
+      <Scene />
+      <p className="mt-10 font-display text-2xl italic sm:text-3xl">À paraître dans le prochain numéro : l&apos;interview exclusive.</p>
+      <ol className="mt-6 grid gap-x-10 sm:grid-cols-2">
+        {questions.map((q, i) => (
+          <li key={q.id} className="flex gap-4 border-t border-ink/20 py-3">
+            <span className="label tabular-nums !text-accent">{String(i + 1).padStart(2, "0")}</span>
+            <span className="font-display text-lg italic leading-snug">{q.question}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
 /**
- * p. 19-20 — L'Interview : l'avatar du visiteur devient l'intervieweur.
- * Il propose 3 questions au choix (bulles dorées) ; ma réponse s'affiche en style magazine, puis 3 nouvelles questions
- * tirées du pool sans répétition. « Lire toute l'interview » affiche tout d'un coup (et reste dans le HTML pour le référencement).
+ * p. 21-22 — L'Interview : l'avatar du visiteur devient l'intervieweur.
+ * Il propose 3 questions au choix (bulles) ; la réponse s'affiche en style magazine, puis 3 nouvelles questions
+ * tirées du pool sans répétition. « Lire toute l'interview » affiche tout d'un coup (et reste dans le HTML).
  * Son : un léger « clic » de stylo à chaque question.
  */
 function Salon() {
-  const { avatar } = usePrefs();
-  const id = (avatar ?? "curieuse") as AvatarId;
-  const [ordre, setOrdre] = useState<number[]>(() => questions.map((q) => q.id));
+  const [ordre, setOrdre] = useState<number[]>(() => repondues.map((q) => q.id));
   const [posees, setPosees] = useState<number[]>([]);
   const [tout, setTout] = useState(false);
   const fil = useRef<HTMLDivElement>(null);
 
   // le tirage est mélangé une fois, côté client (pas d'écart serveur / client)
-  useEffect(() => setOrdre(melange(questions.map((q) => q.id))), []);
+  useEffect(() => setOrdre(melange(repondues.map((q) => q.id))), []);
 
   const restantes = ordre.filter((x) => !posees.includes(x));
   const propositions = restantes.slice(0, 3);
@@ -64,54 +99,39 @@ function Salon() {
 
   return (
     <div className="mt-10">
-      {/* le salon d'interview */}
-      <div className="grid grid-cols-[1fr_1fr] items-end gap-2 border-b border-fg pb-0 sm:gap-8" aria-hidden="true">
-        <Avatar id={id} pose="assis" className="mx-auto h-44 w-auto sm:h-64" />
-        <Portrait className="mx-auto h-44 w-auto sm:h-64" />
-      </div>
-      <p className="label mt-2 flex justify-between">
-        <span>L&apos;intervieweur</span>
-        <span>Divine</span>
-      </p>
+      <Scene />
 
-      {/* échanges déjà faits */}
       <div ref={fil} className="mt-8" aria-live="polite">
         {posees.map((x, i) => (
           <div key={x}>
             <QR q={parId(x)} premier={i === 0} />
-            {(i + 1) % 2 === 0 && <Citation auteur="Divine">{citationDe(parId(x).reponse)}</Citation>}
+            {(i + 1) % 2 === 0 && <Citation auteur="Divine">{citationDe(parId(x).reponse ?? "")}</Citation>}
           </div>
         ))}
       </div>
 
-      {/* les questions au choix */}
       {propositions.length > 0 ? (
         <div>
           <p className="label">{posees.length === 0 ? "Posez votre première question" : "Et ensuite ?"}</p>
           <ul className="mt-3 grid gap-3">
             {propositions.map((x) => (
               <li key={x}>
-                <button
-                  type="button"
-                  onClick={() => poser(x)}
-                  className="relative w-full border border-ink/20 bg-paper px-5 py-4 text-left font-display text-lg font-bold italic leading-snug text-ink shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)] transition-transform hover:-translate-y-0.5 hover:bg-yellow sm:text-xl"
-                >
+                <button type="button" onClick={() => poser(x)} className="relative w-full rounded-2xl border border-ink/30 px-5 py-4 text-left font-display text-lg font-bold italic leading-snug transition-colors hover:bg-ink hover:text-white sm:text-xl">
                   {parId(x).question}
-                  <span aria-hidden="true" className="absolute -bottom-[9px] left-8 h-4 w-4 rotate-45 border-b border-r border-ink/20 bg-paper" />
                 </button>
               </li>
             ))}
           </ul>
         </div>
       ) : (
-        <div className="border-y border-fg py-6 text-center">
+        <div className="border-y border-ink py-6 text-center">
           <p className="font-display text-2xl italic">Toutes les questions ont été posées.</p>
           <button
             type="button"
             onClick={() => {
               play("papier");
               setPosees([]);
-              setOrdre(melange(questions.map((q) => q.id)));
+              setOrdre(melange(repondues.map((q) => q.id)));
             }}
             className="btn mt-3"
           >
@@ -120,7 +140,6 @@ function Salon() {
         </div>
       )}
 
-      {/* toute l'interview, d'un coup */}
       <div className="mt-10">
         <button
           type="button"
@@ -136,7 +155,7 @@ function Salon() {
         </button>
         {/* reste dans le HTML (référencement) : « until-found » le garde cherchable même replié */}
         <div id="interview-complete" {...(tout ? {} : ({ hidden: "until-found" } as Record<string, unknown>))} className="mt-8">
-          {questions.map((q, i) => (
+          {repondues.map((q, i) => (
             <QR key={q.id} q={q} premier={i === 0} />
           ))}
         </div>
@@ -147,12 +166,15 @@ function Salon() {
 
 export function Interview() {
   return (
-    <Page
-      id="interview"
-      titre="L'Interview"
-    >
-      <p className="mt-5 text-xl font-semibold italic">Posez vos questions : trois au choix, puis trois nouvelles.</p>
-      <Salon />
+    <Page id="interview" titre="L'Interview" trait>
+      {repondues.length > 0 ? (
+        <>
+          <p className="mt-5 text-xl font-semibold italic">Posez vos questions : trois au choix, puis trois nouvelles.</p>
+          <Salon />
+        </>
+      ) : (
+        <Teaser />
+      )}
     </Page>
   );
 }
