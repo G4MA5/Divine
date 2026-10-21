@@ -50,7 +50,7 @@ export function Experience() {
     });
     tlA
       .to(barres, { scaleY: 1, stagger: { each: 0.025, from: "start" }, duration: 0.5 }, 0)
-      .to(barres, { scaleY: 0.05, stagger: { each: 0.012, from: "start" }, duration: 0.3 }, 1.1)
+      .to(barres, { scaleY: 0.05, opacity: 0, stagger: { each: 0.012, from: "start" }, duration: 0.3 }, 1.1)
       .to(lignes, { clipPath: "inset(0 0% 0 0)", stagger: 0.35, duration: 0.5 }, 1.25);
     ScrollTrigger.create({ trigger: a, start: "top 40%", once: true, onEnter: () => play("papier") });
 
@@ -85,7 +85,7 @@ export function Experience() {
   return (
     <section id="experience" ref={ref} aria-labelledby="experience-titre">
       {/* ───── Transsion ───── */}
-      <div data-a data-couleur="jaune" className="relative flex h-svh flex-col justify-center overflow-hidden pb-10 pl-4 pr-10 pt-20 sm:px-8">
+      <div data-a data-couleur="jaune" className="relative flex h-svh flex-col justify-center overflow-hidden pb-24 pl-4 pr-10 pt-20 sm:px-8">
         <Illu src="soleil-orange.svg" className="-right-[10%] top-[4%] w-[40vw] max-w-[260px]" anim="respire" />
         <Illu src="nuages.svg" className="-left-[5%] top-[12%] w-[44vw] max-w-[300px]" />
         <Illu src="plante-corail.svg" className="-bottom-[1%] right-[2%] w-[22vw] max-w-[150px]" anim="respire" delai={1} />
@@ -107,7 +107,7 @@ export function Experience() {
               ))}
             </div>
           </div>
-          <ul className="-mt-24 space-y-3 sm:-mt-32">
+          <ul className="-mt-24 space-y-4 sm:-mt-32">
             {transsion.missions.map((m) => (
               <li key={m} data-ligne className="font-display text-lg italic leading-snug sm:text-2xl">
                 {m}

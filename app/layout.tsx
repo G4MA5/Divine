@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Cormorant_Garamond, Inter, Mrs_Saint_Delafield } from "next/font/google";
+import { Playfair_Display, Cormorant_Garamond, Inter, Mrs_Saint_Delafield, Bodoni_Moda, Jost } from "next/font/google";
 import "./globals.css";
 import { PrefsProvider } from "@/components/PrefsProvider";
 import { identite } from "@/content/identite";
@@ -33,6 +33,20 @@ const signature = Mrs_Saint_Delafield({
   display: "swap",
 });
 
+const bodoni = Bodoni_Moda({
+  variable: "--font-bodoni",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+const jost = Jost({
+  variable: "--font-jost",
+  subsets: ["latin"],
+  weight: ["300", "400", "600"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: `${identite.magazine} — Divine Graourou, développeuse full stack`,
@@ -59,7 +73,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="fr"
       suppressHydrationWarning
-      className={`${playfair.variable} ${cormorant.variable} ${inter.variable} ${signature.variable} h-full antialiased`}
+      className={`${playfair.variable} ${cormorant.variable} ${inter.variable} ${signature.variable} ${bodoni.variable} ${jost.variable} h-full antialiased`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

@@ -251,3 +251,26 @@ body::before {
     scroll-behavior: auto !important;
   }
 }
+
+/* ───────── Boîte à outils : la couverture typographique (reprise de l'autre projet) ───────── */
+.tools-cover { container-type: inline-size; overflow: hidden; box-shadow: 8px 8px 0 #1f2d34; border: 3px solid #1f2d34; }
+.tools-in { padding: 2.744cqw 3.659cqw 3.049cqw; }
+.tb-bo { font-family: var(--font-bodoni), serif; font-weight: 500; letter-spacing: -0.035em; }
+.tb-it { font-family: var(--font-bodoni), serif; font-style: italic; font-weight: 400; letter-spacing: -0.02em; }
+.tb-sa { font-family: var(--font-jost), sans-serif; font-weight: 300; letter-spacing: -0.03em; }
+.tb-ca { font-family: var(--font-jost), sans-serif; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; }
+.tb-top { display: flex; justify-content: space-between; gap: 16px; }
+.tb-title { margin: 6px 0 0; line-height: 0.92; text-align: center; white-space: nowrap; }
+.tb-strip { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 28px; padding: 10px 0; margin: 0 0 6px; }
+.tb-lw { overflow: visible; }
+.tb-ln { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 24px; padding: 10px 0 14px; line-height: 0.92; }
+.tb-sp { font-family: var(--font-jost), sans-serif; font-weight: 600; font-size: 14px; letter-spacing: 0.1em; vertical-align: top; margin-left: 4px; font-style: normal; -webkit-text-stroke: 0; }
+.tb-vt { align-self: center; display: flex; flex-direction: column; align-items: center; font-family: var(--font-bodoni), serif; line-height: 0.95; }
+.tb-w { display: inline-block; cursor: default; transition: translate 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), rotate 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), color 0.35s; }
+.tb-w:hover { translate: 0 -0.05em; rotate: -1.4deg; }
+.tb-out:hover { color: var(--oc) !important; }
+.tb-w .tb-sp { display: inline-block; transition: transform 0.3s; }
+.tb-w:hover .tb-sp { transform: scale(1.5); }
+.tb-barcode { display: flex; flex-direction: column; align-items: center; gap: 6px; background: #fff; padding: 10px 12px; box-sizing: border-box; }
+.tb-foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; padding-top: 16px; }
+.tb-seal { border-radius: 50%; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transform: rotate(-10deg); }

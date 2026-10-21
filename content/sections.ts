@@ -17,7 +17,7 @@ export const rubriques: Rubrique[] = [
   { id: "parcours", titre: "Parcours", page: 4, fin: 5, accroche: "D'où je viens, où je vais" },
   { id: "experience", titre: "Expérience", page: 6, fin: 7, accroche: "Au travail, sur le terrain" },
   { id: "reportages", titre: "Reportages", page: 8, fin: 15, accroche: "Six projets à la une" },
-  { id: "competences", titre: "Compétences", page: 16, accroche: "Ma boîte à outils" },
+  { id: "competences", titre: "Boîte à outils", page: 16, accroche: "Treize outils, du mobile aux données" },
   { id: "atouts", titre: "Atouts", page: 17, accroche: "Ce qui me définit" },
   { id: "recette", titre: "La Recette", page: 18, accroche: "Ma méthode de travail" },
   { id: "interview", titre: "Interview", page: 19, fin: 20, accroche: "Posez vos questions" },
