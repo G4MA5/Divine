@@ -21,16 +21,16 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
         <div className="absolute inset-0 shadow-[0_30px_60px_-20px_rgba(0,0,0,.55)]" aria-hidden="true" />
 
         {/* page de droite */}
-        <div className="absolute inset-0 bg-[#fff6ec] text-[#1f2d34]" style={{ containerType: "inline-size" }} aria-hidden="true">
+        <div className="absolute inset-0 bg-white text-[#121212]" style={{ containerType: "inline-size" }} aria-hidden="true">
           {fin ? (
             <div className="absolute inset-[7cqw] flex flex-col justify-center text-center">
               <p className="font-sans uppercase tracking-[0.26em] text-ink/60" style={{ fontSize: "2.2cqw" }}>
                 À suivre
               </p>
-              <p className="mt-[5cqw] font-display font-black italic leading-none text-[#e8452f]" style={{ fontSize: "12cqw" }}>
+              <p className="mt-[5cqw] font-display font-black italic leading-none text-accent" style={{ fontSize: "12cqw" }}>
                 Prochain numéro
               </p>
-              <hr className="mx-auto mt-[6cqw] w-[20cqw] border-0 border-t border-[#ff725e]" />
+              <hr className="mx-auto mt-[6cqw] w-[20cqw] border-0 border-t border-[#d99a00]" />
               <p className="mt-[4cqw] font-display italic text-ink/70" style={{ fontSize: "4.4cqw" }}>
                 {identite.email}
               </p>
@@ -45,7 +45,7 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
                   {rubriques.slice(1, 8).map((r) => (
                     <li key={r.id} className="flex items-baseline gap-[2cqw] py-[1.5cqw] font-display italic" style={{ fontSize: "4.6cqw" }}>
                       <span>{r.titre}</span>
-                      <span className="flex-1 border-b border-dotted border-[#ff725e]" />
+                      <span className="flex-1 border-b border-dotted border-[#d99a00]" />
                       <span className="font-sans not-italic tabular-nums text-ink/60" style={{ fontSize: "2.4cqw" }}>
                         {pageLabel(r)}
                       </span>
@@ -67,7 +67,7 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
           </div>
           {/* dos de la couverture = page de gauche */}
           <div
-            className="absolute inset-0 bg-[#fff6ec] text-[#1f2d34]" 
+            className="absolute inset-0 bg-white text-[#121212]" 
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)", containerType: "inline-size" }}
             aria-hidden="true"
           >
@@ -75,16 +75,16 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
               <p className="font-sans uppercase tracking-[0.26em] text-ink/60" style={{ fontSize: "2.2cqw" }}>
                 {identite.magazine}
               </p>
-              <p className="mt-[14cqw] font-display font-black italic leading-none text-[#e8452f]" style={{ fontSize: fin ? "13cqw" : "16cqw" }}>
+              <p className="mt-[14cqw] font-display font-black italic leading-none text-accent" style={{ fontSize: fin ? "13cqw" : "16cqw" }}>
                 {fin ? "Merci" : "Sommaire"}
               </p>
-              <hr className="mt-[6cqw] border-0 border-t border-[#ff725e]" />
+              <hr className="mt-[6cqw] border-0 border-t border-[#d99a00]" />
               <p className="mt-[4cqw] font-display italic text-ink/70" style={{ fontSize: "4cqw" }}>
                 {fin ? "Merci de votre lecture. À très bientôt." : "Six reportages, une interview et quelques surprises."}
               </p>
             </div>
             <p className="absolute bottom-[4cqw] left-[7cqw] font-sans uppercase tracking-[0.2em] text-ink/50" style={{ fontSize: "2cqw" }}>
-              p. {pad(fin ? 21 : 2)}
+              p. {pad(fin ? 23 : 2)}
             </p>
           </div>
         </div>

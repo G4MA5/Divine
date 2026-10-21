@@ -62,11 +62,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  colorScheme: "light dark",
+  colorScheme: "light",
 };
 
-/** Applique le thème mémorisé avant le premier rendu (évite le flash). Le site marche sans localStorage. */
-const themeScript = `try{var t=localStorage.getItem('divnow-theme');if(t==='light'||t==='dark'){document.documentElement.dataset.theme=t}}catch(e){}`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -75,9 +73,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
       className={`${playfair.variable} ${cormorant.variable} ${inter.variable} ${signature.variable} ${bodoni.variable} ${jost.variable} h-full antialiased`}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
       <body className="min-h-full">
         <PrefsProvider>{children}</PrefsProvider>
       </body>

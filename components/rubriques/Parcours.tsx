@@ -6,8 +6,6 @@ import { identite } from "@/content/identite";
 import { PiedDePage } from "../ui/PiedDePage";
 import { gsap, ScrollTrigger, PRIO, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
-import { Illu } from "../ui/Illu";
-
 /**
  * p. 04-05 — Parcours
  * Effet : défilement horizontal épinglé. Le scroll vertical fait glisser une frise panoramique façon double page.
@@ -58,11 +56,7 @@ export function Parcours() {
   });
 
   return (
-    <section id="parcours" ref={ref} data-couleur="bleu" aria-labelledby="parcours-titre" className="relative h-svh overflow-hidden">
-      <Illu src="chapeau.svg" className="right-[9%] top-[14%] z-0 w-[22vw] max-w-[130px]" anim="flotte" rot={10} />
-      <Illu src="soleil-jaune.svg" className="-bottom-[4%] -right-[10%] z-0 w-[42vw] max-w-[260px]" anim="respire" />
-      <Illu src="etoile.svg" className="left-[44%] top-[20%] z-0 w-[6vw] max-w-[34px]" anim="tourne" />
-      <Illu src="nuages.svg" className="-left-[6%] top-[28%] z-0 w-[50vw] max-w-[320px]" />
+    <section id="parcours" ref={ref} aria-labelledby="parcours-titre" className="relative h-svh overflow-hidden">
       <div className="absolute inset-x-0 top-0 z-10 pl-4 pr-10 pt-20 sm:px-8">
         <p className="label flex justify-between">
           <span>{identite.magazine} · Parcours</span>
@@ -79,7 +73,7 @@ export function Parcours() {
 
       <ol data-track className="absolute bottom-0 left-0 top-0 flex items-center gap-8 pl-6 pr-10 pt-24 will-change-transform sm:gap-16 sm:pl-12">
         {parcours.map((e, i) => (
-          <li key={e.titre} data-panel className="relative w-[78vw] shrink-0 border-[3px] border-fg bg-bg-deep p-5 shadow-[7px_7px_0_#ffc727] sm:w-[44vw] sm:max-w-xl sm:p-8">
+          <li key={e.titre} data-panel className="relative w-[78vw] shrink-0 border border-fg bg-bg-deep p-5 shadow-[0_18px_40px_-26px_rgba(0,0,0,.35)] sm:w-[44vw] sm:max-w-xl sm:p-8">
             <p data-an className="titre-xl text-[clamp(3rem,12vw,6.5rem)] text-accent tabular-nums">
               {e.periode}
             </p>

@@ -3,7 +3,6 @@
 import gsap from "gsap";
 import type { Projet } from "@/content/projets";
 import { play } from "@/lib/sound";
-
 /**
  * Les 6 effets d'ouverture des reportages. Chacun a son visuel (OuvertureVisuel) et sa chorégraphie
  * (construireOuverture), qui ajoute ses tweens à une timeline donnée : la pile de reportages la pilote au scroll,

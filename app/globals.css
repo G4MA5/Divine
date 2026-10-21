@@ -1,82 +1,34 @@
 @import "tailwindcss";
 
-/* ───────── La palette de Divine : celle de ses illustrations ─────────
-   corail, orange, jaune soleil, bleu, vert, violet, sur papier crème et encre bleu nuit. */
+/* ───────── Un magazine clair et net : blanc chaud, encre, et une seule couleur, celle du tournesol ───────── */
 :root {
-  --paper: #fff6ec;
-  --ink: #1f2d34;
-  --coral: #ff725e;
-  --orange: #fe8401;
-  --yellow: #ffc727;
-  --blue: #2f5fe0;
-  --green: #22c55e;
-  --violet: #8e3fa6;
-  --teal: #14b8a6;
-  --gold: #ff725e; /* ancien nom de l'accent : désormais le corail */
-  --muted: #5d6b72;
+  --paper: #ffffff;
+  --ink: #121212;
+  --gold: #d99a00; /* le tournesol */
+  --muted: #5b5b57;
 
-  /* sémantique : chaque rubrique peut la redéfinir avec data-couleur */
+  /* anciens noms d'accents : tout ce qui était « coloré » retombe sur l'or du tournesol */
+  --coral: var(--gold);
+  --orange: var(--gold);
+  --yellow: var(--gold);
+  --blue: var(--ink);
+  --green: var(--ink);
+  --violet: var(--ink);
+  --teal: var(--ink);
+
+  /* sémantique : suit le mode clair / sombre */
   --bg: var(--paper);
-  --bg-deep: #ffe9d6;
+  --bg-deep: #f4f4f2;
   --fg: var(--ink);
-  --accent: #e8452f;
-  --soft: #55646b;
-  --line: color-mix(in srgb, var(--fg) 30%, transparent);
-  --grain-opacity: 0.07;
+  --accent: #b87f00;
+  --soft: #5b5b57;
+  --line: color-mix(in srgb, var(--fg) 18%, transparent);
+  --grain-opacity: 0;
   color-scheme: light;
 }
 
-/* ───────── Mode sombre ───────── */
-:root[data-theme="dark"] {
-  --bg: #161f24;
-  --bg-deep: #1f2c33;
-  --fg: #fff6ec;
-  --accent: #ff8a78;
-  --soft: #b4c0c6;
-  --grain-opacity: 0.03;
-  color-scheme: dark;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #161f24;
-    --bg-deep: #1f2c33;
-    --fg: #fff6ec;
-    --accent: #ff8a78;
-    --soft: #b4c0c6;
-    --grain-opacity: 0.03;
-    color-scheme: dark;
-  }
-}
-
-/* ───────── Une couleur par rubrique (toute la section change de monde) ───────── */
-[data-couleur="coral"] { --bg: #ff725e; --bg-deep: #f25a45; --fg: #1f2d34; --accent: #fff6ec; --soft: #3a2a2a; }
-[data-couleur="jaune"] { --bg: #ffc727; --bg-deep: #f4b800; --fg: #1f2d34; --accent: #b42318; --soft: #4a3f12; }
-[data-couleur="bleu"] { --bg: #2f5fe0; --bg-deep: #254ec2; --fg: #fff6ec; --accent: #ffc727; --soft: #d6e0ff; }
-[data-couleur="vert"] { --bg: #22c55e; --bg-deep: #17a84b; --fg: #10281d; --accent: #fff6ec; --soft: #1d4430; }
-[data-couleur="violet"] { --bg: #8e3fa6; --bg-deep: #7a3392; --fg: #fff6ec; --accent: #ffc727; --soft: #ecd2f5; }
-[data-couleur="teal"] { --bg: #14b8a6; --bg-deep: #0e9f8f; --fg: #0d2a27; --accent: #fff6ec; --soft: #17463f; }
-[data-couleur="orange"] { --bg: #fe8401; --bg-deep: #ec7700; --fg: #1f2d34; --accent: #fff6ec; --soft: #4a2a08; }
-[data-couleur="nuit"] { --bg: #1f2d34; --bg-deep: #283a43; --fg: #fff6ec; --accent: #ff8a78; --soft: #b4c0c6; }
-[data-couleur="creme"] { --bg: #fff6ec; --bg-deep: #ffe9d6; --fg: #1f2d34; --accent: #e8452f; --soft: #55646b; }
-
-:root[data-theme="dark"] [data-couleur="coral"] { --bg: #b8402f; --bg-deep: #a23626; --fg: #fff6ec; --accent: #ffd27a; --soft: #ffd9d2; }
-:root[data-theme="dark"] [data-couleur="jaune"] { --bg: #dfab14; --bg-deep: #c99600; --fg: #1f2d34; --accent: #7a1e10; --soft: #4a3f12; }
-:root[data-theme="dark"] [data-couleur="bleu"] { --bg: #2349b5; --bg-deep: #1c3c99; --fg: #fff6ec; --accent: #ffc727; --soft: #cfdbff; }
-:root[data-theme="dark"] [data-couleur="vert"] { --bg: #12803b; --bg-deep: #0e6c32; --fg: #fff6ec; --accent: #ffe08a; --soft: #d3f2dc; }
-:root[data-theme="dark"] [data-couleur="violet"] { --bg: #6d2b85; --bg-deep: #5b2371; --fg: #fff6ec; --accent: #ffc727; --soft: #ecd2f5; }
-:root[data-theme="dark"] [data-couleur="teal"] { --bg: #0c7f73; --bg-deep: #0a6a60; --fg: #fff6ec; --accent: #ffe08a; --soft: #cdeee9; }
-:root[data-theme="dark"] [data-couleur="orange"] { --bg: #b45a00; --bg-deep: #9c4d00; --fg: #fff6ec; --accent: #ffe08a; --soft: #ffe2c2; }
-:root[data-theme="dark"] [data-couleur="creme"] { --bg: #161f24; --bg-deep: #1f2c33; --fg: #fff6ec; --accent: #ff8a78; --soft: #b4c0c6; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) [data-couleur="coral"] { --bg: #b8402f; --bg-deep: #a23626; --fg: #fff6ec; --accent: #ffd27a; --soft: #ffd9d2; }
-  :root:not([data-theme="light"]) [data-couleur="jaune"] { --bg: #dfab14; --bg-deep: #c99600; --fg: #1f2d34; --accent: #7a1e10; --soft: #4a3f12; }
-  :root:not([data-theme="light"]) [data-couleur="bleu"] { --bg: #2349b5; --bg-deep: #1c3c99; --fg: #fff6ec; --accent: #ffc727; --soft: #cfdbff; }
-  :root:not([data-theme="light"]) [data-couleur="vert"] { --bg: #12803b; --bg-deep: #0e6c32; --fg: #fff6ec; --accent: #ffe08a; --soft: #d3f2dc; }
-  :root:not([data-theme="light"]) [data-couleur="violet"] { --bg: #6d2b85; --bg-deep: #5b2371; --fg: #fff6ec; --accent: #ffc727; --soft: #ecd2f5; }
-  :root:not([data-theme="light"]) [data-couleur="teal"] { --bg: #0c7f73; --bg-deep: #0a6a60; --fg: #fff6ec; --accent: #ffe08a; --soft: #cdeee9; }
-  :root:not([data-theme="light"]) [data-couleur="orange"] { --bg: #b45a00; --bg-deep: #9c4d00; --fg: #fff6ec; --accent: #ffe08a; --soft: #ffe2c2; }
-  :root:not([data-theme="light"]) [data-couleur="creme"] { --bg: #161f24; --bg-deep: #1f2c33; --fg: #fff6ec; --accent: #ff8a78; --soft: #b4c0c6; }
-}
+/* un panneau sombre, dans les deux modes (cartes, scènes) */
+[data-couleur="nuit"] { --bg: #111111; --bg-deep: #1b1b1a; --fg: #f4f1ea; --accent: #f2b400; --soft: #a8a59c; }
 
 @theme inline {
   --color-paper: var(--paper);
@@ -120,52 +72,39 @@ body {
 [data-couleur] {
   background: var(--bg);
   color: var(--fg);
-  transition: background-color 0.4s ease, color 0.4s ease;
-}
-
-/* Grain de papier léger */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: var(--grain-opacity);
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
 :focus-visible {
-  outline: 3px solid var(--fg);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
 ::selection {
-  background: var(--yellow);
+  background: var(--gold);
   color: var(--ink);
 }
 
-/* ───────── Codes de magazine, version vivante ───────── */
+/* ───────── Codes de magazine ───────── */
 .label {
   font-family: var(--font-sans);
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.68rem;
+  font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--soft);
 }
 
 .filet {
-  height: 2px;
+  height: 1px;
   background: var(--fg);
-  opacity: 0.85;
+  opacity: 0.9;
   border: 0;
 }
 
 .lettrine::first-letter {
   float: left;
   font-family: var(--font-display);
-  font-weight: 900;
+  font-weight: 800;
   font-size: 4.6em;
   line-height: 0.8;
   padding: 0.06em 0.1em 0 0;
@@ -174,40 +113,42 @@ body::before {
 
 .pull-quote {
   font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: 700;
   font-style: italic;
   font-size: clamp(2rem, 6.8vw, 3.8rem);
   line-height: 1.08;
   letter-spacing: -0.015em;
 }
 
-/* Les grands titres de rubrique : gras, serrés, pleins de caractère */
+/* Les grands titres de rubrique : gras, serrés ; les mots montent depuis la ligne de base */
 .titre-xl {
   font-family: var(--font-display);
   font-weight: 900;
-  font-style: italic;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
   line-height: 0.95;
 }
+.mot-monte {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
 
-/* Un bouton franc, comme un autocollant de magazine */
+/* Boutons en pastille, sobres */
 .btn {
   display: inline-block;
   font-family: var(--font-sans);
-  font-size: 0.74rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  padding: 0.95rem 1.25rem;
-  border: 2px solid var(--fg);
+  padding: 0.9rem 1.4rem;
+  border: 1.5px solid var(--fg);
+  border-radius: 999px;
   color: var(--fg);
   background: transparent;
-  box-shadow: 4px 4px 0 var(--fg);
-  transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s, color 0.15s;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
 }
 .btn:hover {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 var(--fg);
   background: var(--fg);
   color: var(--bg);
 }
@@ -216,25 +157,20 @@ body::before {
   color: var(--bg);
 }
 .btn-plein:hover {
-  background: var(--bg);
-  color: var(--fg);
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
 }
 
-/* Les illustrations flottent, tournent, respirent */
-@keyframes flotte {
-  0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
-  50% { transform: translateY(-14px) rotate(calc(var(--r, 0deg) + 3deg)); }
+/* Un tournesol qui se balance (le champ du pied de page) */
+@keyframes balance {
+  0%, 100% { transform: rotate(calc(var(--r, 0deg) - 2.5deg)); }
+  50% { transform: rotate(calc(var(--r, 0deg) + 2.5deg)); }
 }
-@keyframes tourne {
-  to { transform: rotate(360deg); }
+.balance {
+  transform-origin: 50% 100%;
+  animation: balance 5s ease-in-out infinite;
 }
-@keyframes respire {
-  0%, 100% { transform: scale(1) rotate(var(--r, 0deg)); }
-  50% { transform: scale(1.07) rotate(calc(var(--r, 0deg) - 3deg)); }
-}
-.flotte { animation: flotte 6s ease-in-out infinite; }
-.tourne { animation: tourne 40s linear infinite; }
-.respire { animation: respire 5s ease-in-out infinite; }
 
 @media (min-width: 768px) {
   body {
@@ -253,7 +189,7 @@ body::before {
 }
 
 /* ───────── Boîte à outils : la couverture typographique (reprise de l'autre projet) ───────── */
-.tools-cover { container-type: inline-size; overflow: hidden; box-shadow: 8px 8px 0 #1f2d34; border: 3px solid #1f2d34; }
+.tools-cover { container-type: inline-size; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(0,0,0,.45); }
 .tools-in { padding: 2.744cqw 3.659cqw 3.049cqw; }
 .tb-bo { font-family: var(--font-bodoni), serif; font-weight: 500; letter-spacing: -0.035em; }
 .tb-it { font-family: var(--font-bodoni), serif; font-style: italic; font-weight: 400; letter-spacing: -0.02em; }

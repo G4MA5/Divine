@@ -7,8 +7,7 @@ import { identite } from "@/content/identite";
 import { Avatar, type AvatarId } from "../avatar/Avatar";
 import { allerA } from "../SmoothScroll";
 import { play } from "@/lib/sound";
-import { Illu } from "../ui/Illu";
-
+import { Chargement } from "./Chargement";
 type Etape = "son" | "avatar" | "retour";
 
 /**
@@ -21,7 +20,13 @@ export function IntroGate({ children }: { children: ReactNode }) {
   const [ouvert, setOuvert] = useState(true);
   const [etape, setEtape] = useState<Etape>("son");
   const [introVisible, setIntroVisible] = useState(true);
+  const [chargement, setChargement] = useState(true);
   const carte = useRef<HTMLDivElement>(null);
+
+  // mouvement réduit : pas d'intro animée
+  useEffect(() => {
+    if (ready && reducedMotion) setChargement(false);
+  }, [ready, reducedMotion]);
 
   // le visiteur déjà venu : « Reprendre la lecture » / « Changer d'avatar »
   useEffect(() => {
@@ -87,6 +92,7 @@ export function IntroGate({ children }: { children: ReactNode }) {
   const surprenez = () => choisirAvatar(avatars[Math.floor(Math.random() * avatars.length)].id);
 
   const passer = () => {
+    setChargement(false);
     if (!avatar) setAvatar(avatars[Math.floor(Math.random() * avatars.length)].id);
     setOuvert(false);
     setTimeout(() => allerA("sommaire", true), 80);
@@ -103,27 +109,22 @@ export function IntroGate({ children }: { children: ReactNode }) {
       {/* tant que l'écran d'accueil est ouvert, le reste de la page est inerte (ni clavier ni lecteur d'écran) */}
       <div inert={ouvert}>{children}</div>
 
+      {chargement && <Chargement onFin={() => setChargement(false)} />}
+
       {ouvert && (
         <div
+          inert={chargement}
           role="dialog"
           aria-modal="true"
           aria-label="Bienvenue dans le magazine"
-          data-couleur="coral"
-          className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto px-4 py-10"
-        >
-          {/* tes illustrations, pour que ça vive dès la première seconde */}
-          <Illu src="soleil-jaune.svg" className="left-[-6%] top-[4%] w-[44vw] max-w-[300px]" anim="respire" />
-          <Illu src="avion.svg" className="right-[6%] top-[9%] w-[16vw] max-w-[90px]" anim="flotte" rot={-8} />
-          <Illu src="nuages.svg" className="right-[-4%] top-[16%] w-[42vw] max-w-[280px]" />
-          <Illu src="oiseaux.svg" className="left-[22%] top-[10%] w-[14vw] max-w-[80px]" anim="flotte" delai={1} />
-          <Illu src="plante-bleue.svg" className="bottom-[-1%] left-[2%] w-[22vw] max-w-[140px]" anim="respire" />
-          <Illu src="plante-jaune.svg" className="bottom-[-1%] right-[3%] w-[20vw] max-w-[130px]" anim="respire" delai={1.5} />
-          <Illu src="etoile.svg" className="bottom-[22%] right-[7%] w-[7vw] max-w-[36px]" anim="tourne" />
 
-          <div className="relative z-10 w-full max-w-md border-[3px] border-ink bg-paper text-ink shadow-[8px_8px_0_#1f2d34]">
+          className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-white px-4 py-10"
+        >
+
+          <div className="relative z-10 w-full max-w-md border border-ink/15 bg-white text-ink">
             <div ref={carte} className="px-6 pb-8 pt-10 text-center sm:px-9">
               <p className="label !text-ink">Édition numérique · {identite.numero}</p>
-              <p className="titre-xl mt-3 text-5xl text-[#e8452f] sm:text-6xl">{identite.magazine}</p>
+              <p className="titre-xl mt-3 text-5xl sm:text-6xl">{identite.magazine}</p>
               <p className="mt-2 italic text-ink/70">Le magazine de Divine, développeuse à Abidjan</p>
 
               {etape === "son" && (
@@ -154,11 +155,11 @@ export function IntroGate({ children }: { children: ReactNode }) {
                           type="button"
                           onClick={() => choisirAvatar(a.id)}
                           aria-label={`${a.rubrique} : ${a.description}`}
-                          className="carton-avatar group flex w-full flex-col items-center gap-2 border-2 border-ink px-2 pb-3 pt-3 shadow-[3px_3px_0_#1f2d34] transition-transform hover:-translate-y-1"
-                          style={{ background: ["#2f5fe0", "#ff725e", "#22c55e", "#ffc727"][i] }}
+                          className="carton-avatar group flex w-full flex-col items-center gap-2 border-2 border-ink px-2 pb-3 pt-3 shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)] transition-colors hover:bg-[#fbf3dc]"
+                          
                         >
                           <Avatar id={a.id as AvatarId} className="h-28 w-auto transition-transform group-hover:scale-105" />
-                          <span className="font-sans text-[0.72rem] font-extrabold uppercase leading-tight tracking-[0.12em]" style={{ color: i === 0 ? "#fff6ec" : "#1f2d34" }}>
+                          <span className="font-sans text-[0.72rem] font-extrabold uppercase leading-tight tracking-[0.12em]" >
                             {a.rubrique}
                           </span>
                         </button>
@@ -195,7 +196,7 @@ export function IntroGate({ children }: { children: ReactNode }) {
         <button
           type="button"
           onClick={passer}
-          className="label fixed bottom-4 right-4 z-[70] border-2 border-ink bg-paper px-3 py-3 !text-ink shadow-[3px_3px_0_#1f2d34] transition-transform hover:translate-x-px hover:translate-y-px sm:bottom-5"
+          className="label fixed bottom-4 right-4 z-[70] rounded-full border border-ink/30 bg-white px-4 py-3 !text-ink transition-colors hover:bg-ink hover:!text-white sm:bottom-5"
         >
           Passer l&apos;intro
         </button>
@@ -204,20 +205,20 @@ export function IntroGate({ children }: { children: ReactNode }) {
       <style>{`
         .carton-btn {
           font-family: var(--font-sans);
-          font-size: 0.74rem;
-          font-weight: 800;
-          letter-spacing: 0.2em;
+          font-size: 0.72rem;
+          font-weight: 700;
+          letter-spacing: 0.18em;
           text-transform: uppercase;
-          padding: 0.95rem 1rem;
-          border: 2px solid #1f2d34;
-          color: #1f2d34;
-          background: #fff6ec;
-          box-shadow: 3px 3px 0 #1f2d34;
-          transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
+          padding: 0.95rem 1.2rem;
+          border: 1.5px solid #121212;
+          border-radius: 999px;
+          color: #121212;
+          background: #ffffff;
+          transition: background-color 0.2s, color 0.2s;
         }
-        .carton-btn:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1f2d34; background: #ffc727; }
-        .carton-btn--plein { background: #1f2d34; color: #fff6ec; }
-        .carton-btn--plein:hover { background: #ff725e; color: #1f2d34; }
+        .carton-btn:hover { background: #121212; color: #ffffff; }
+        .carton-btn--plein { background: #121212; color: #ffffff; }
+        .carton-btn--plein:hover { background: #d99a00; border-color: #d99a00; color: #121212; }
       `}</style>
     </>
   );

@@ -7,8 +7,6 @@ import { PiedDePage } from "../ui/PiedDePage";
 import { allerA } from "../SmoothScroll";
 import { gsap, ScrollTrigger, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
-import { Illu } from "../ui/Illu";
-
 /**
  * p. 02 — Sommaire
  * Effet : les lignes sont tapées une à une, comme à la machine à écrire, et les points de conduite
@@ -51,23 +49,17 @@ export function Sommaire() {
   return (
     <section
       id="sommaire"
-      data-couleur="coral"
+
       ref={ref}
       aria-labelledby="sommaire-titre"
       className="relative z-10 -mt-[100svh] min-h-svh overflow-hidden pb-16 pl-4 pr-10 pt-24 sm:px-8"
     >
-      <Illu src="soleil-jaune.svg" className="-right-[14%] top-[2%] w-[58vw] max-w-[420px]" anim="respire" vitesse={1.5} />
-      <Illu src="avion.svg" className="left-[6%] top-[14%] w-[16vw] max-w-[90px]" anim="flotte" rot={-12} vitesse={-2} />
-      <Illu src="nuages.svg" className="left-[-6%] top-[18%] w-[56vw] max-w-[360px]" vitesse={1} />
-      <Illu src="plante-jaune.svg" className="-bottom-[1%] -left-[3%] w-[28vw] max-w-[180px]" anim="respire" vitesse={-1} />
-      <Illu src="plante-bleue.svg" className="-bottom-[1%] right-[0%] w-[24vw] max-w-[150px]" anim="respire" delai={1.2} vitesse={-1.5} />
-      <Illu src="etoile.svg" className="right-[8%] top-[42%] w-[7vw] max-w-[40px]" anim="tourne" />
       <div className="relative z-10 mx-auto max-w-2xl">
         <p className="label flex justify-between !text-fg">
           <span>{identite.magazine} · {identite.numero}</span>
           <span className="tabular-nums">p. 02</span>
         </p>
-        <h2 id="sommaire-titre" className="titre-xl mt-3 text-[clamp(4.2rem,19vw,9.5rem)] text-accent [text-shadow:4px_4px_0_#1f2d34]">
+        <h2 id="sommaire-titre" className="titre-xl mt-3 text-[clamp(4.2rem,19vw,9.5rem)] text-fg">
           Sommaire
         </h2>
         <hr className="filet mt-6" />
@@ -88,7 +80,7 @@ export function Sommaire() {
                     className="group flex items-baseline gap-3 py-3"
                   >
                     <span className="sr-only">{r.titre}</span>
-                    <span aria-hidden="true" className="whitespace-pre font-display text-3xl font-black italic transition-colors group-hover:text-accent sm:text-4xl">
+                    <span aria-hidden="true" className="whitespace-pre font-display text-3xl font-black italic transition-colors group-hover:text-fg sm:text-4xl">
                       {[...r.titre].map((c, i) => (
                         <span key={i} data-c>
                           {c}

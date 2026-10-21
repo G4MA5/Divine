@@ -9,7 +9,7 @@ export type Rubrique = {
   accroche: string;
 };
 
-export const TOTAL_PAGES = 21;
+export const TOTAL_PAGES = 23;
 
 export const rubriques: Rubrique[] = [
   { id: "sommaire", titre: "Sommaire", page: 2, accroche: "Ce qu'il y a dans ce numéro" },
@@ -17,11 +17,12 @@ export const rubriques: Rubrique[] = [
   { id: "parcours", titre: "Parcours", page: 4, fin: 5, accroche: "D'où je viens, où je vais" },
   { id: "experience", titre: "Expérience", page: 6, fin: 7, accroche: "Au travail, sur le terrain" },
   { id: "reportages", titre: "Reportages", page: 8, fin: 15, accroche: "Six projets à la une" },
-  { id: "competences", titre: "Boîte à outils", page: 16, accroche: "Treize outils, du mobile aux données" },
+  { id: "competences", titre: "Boîte à outils", page: 16, accroche: "Du mobile à la sécurité, en passant par le DevSecOps" },
   { id: "atouts", titre: "Atouts", page: 17, accroche: "Ce qui me définit" },
   { id: "recette", titre: "La Recette", page: 18, accroche: "Ma méthode de travail" },
-  { id: "interview", titre: "Interview", page: 19, fin: 20, accroche: "Posez vos questions" },
-  { id: "quatrieme", titre: "Quatrième de couverture", page: 21, accroche: "Écrivez-moi" },
+  { id: "peinture", titre: "Divine à la peinture", page: 19, fin: 20, accroche: "La galerie" },
+  { id: "interview", titre: "Interview", page: 21, fin: 22, accroche: "Posez vos questions" },
+  { id: "quatrieme", titre: "Quatrième de couverture", page: 23, accroche: "Écrivez-moi" },
 ];
 
 export const pageLabel = (r: Rubrique) => (r.fin ? `${r.page}-${r.fin}` : `${r.page}`);

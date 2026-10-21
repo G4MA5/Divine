@@ -55,8 +55,8 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const stored = read(KEY.theme);
-    setTheme(stored === "light" || stored === "dark" ? stored : mq.matches ? "dark" : "light");
+    // le fond est un blanc pur et fixe : il n'y a plus de mode sombre
+    setTheme("light");
     const av = read(KEY.avatar);
     setAvatarState(av);
     setSoundState(read(KEY.sound) === "1");

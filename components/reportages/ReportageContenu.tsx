@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import type { Projet } from "@/content/projets";
-import { Illu } from "../ui/Illu";
 
 /** Un reportage en double page : logo, titre, chapô, « photos de presse » avec légendes, fiche technique encadrée. */
 export function ReportageContenu({
@@ -22,7 +21,6 @@ export function ReportageContenu({
 
   return (
     <article className="relative mx-auto w-full max-w-3xl">
-      <Illu src={projet.illu} className={`-top-6 right-[-4%] z-0 ${compact ? "w-[30vw] max-w-[130px] sm:max-w-[190px]" : "w-[34vw] max-w-[220px]"}`} anim="flotte" rot={6} />
 
       <p className="label relative z-10 flex justify-between !text-fg">
         <span>Reportage · {projet.rubrique}</span>
@@ -34,7 +32,7 @@ export function ReportageContenu({
           <img
             src={`/images/logos/${projet.logo}`}
             alt={`Logo ${projet.titre}`}
-            className={`h-auto rounded-xl border-2 border-ink bg-white object-contain p-1.5 shadow-[3px_3px_0_#1f2d34] ${compact ? "w-16 sm:w-24" : "w-24 sm:w-32"}`}
+            className={`h-auto rounded-xl border-2 border-ink bg-white object-contain p-1.5 shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)] ${compact ? "w-16 sm:w-24" : "w-24 sm:w-32"}`}
           />
         )}
         <H className={`titre-xl ${compact ? "text-[clamp(2.6rem,11vw,5.2rem)]" : "text-[clamp(3.2rem,14vw,7rem)]"}`}>{projet.titre}</H>
@@ -61,7 +59,7 @@ export function ReportageContenu({
           <div className={`grid grid-cols-2 gap-3 ${compact ? "hidden [@media(min-height:880px)]:grid" : ""}`}>
             {captures.map((c, i) => (
               <figure key={i}>
-                <div className="flex aspect-[4/3] items-center justify-center border-2 border-fg bg-bg-deep p-2 text-center shadow-[3px_3px_0_var(--fg)]">
+                <div className="flex aspect-[4/3] items-center justify-center border-2 border-fg bg-bg-deep p-2 text-center shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)]">
                   <span className="label !normal-case !tracking-normal !text-fg">{c ?? "[À FOURNIR : capture d'écran]"}</span>
                 </div>
                 <figcaption className="label mt-2 !text-[0.6rem] !text-fg">
@@ -73,8 +71,8 @@ export function ReportageContenu({
         </div>
 
         {/* encadré : la fiche technique */}
-        <aside aria-label="Fiche technique" className="self-start border-[3px] border-fg bg-paper p-4 text-ink shadow-[6px_6px_0_var(--fg)]">
-          <h4 className="label !text-[#e8452f]">Fiche technique</h4>
+        <aside aria-label="Fiche technique" className="self-start border border-fg bg-paper p-4 text-ink shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)]">
+          <h4 className="label !text-accent">Fiche technique</h4>
           <dl className="mt-3 space-y-2 text-base">
             {(
               [

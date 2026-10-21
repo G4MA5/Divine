@@ -18,10 +18,10 @@ type Style = {
 };
 
 export const STYLES: Record<AvatarId, Style> = {
-  recruteur: { skin: "#8a5a3c", hair: "#1b1512", outfit: "#2f5fe0", outfit2: "#fff6ec", trousers: "#1f2d34", shoes: "#111" },
-  curieuse: { skin: "#c68b62", hair: "#1a110d", outfit: "#ff725e", outfit2: "#ffc727", trousers: "#ff725e", shoes: "#1f2d34" },
-  client: { skin: "#efc7a4", hair: "#5a3b2a", outfit: "#22c55e", outfit2: "#fff6ec", trousers: "#1f2d34", shoes: "#fff6ec" },
-  etudiante: { skin: "#6b4330", hair: "#0f0a08", outfit: "#8e3fa6", outfit2: "#ffc727", trousers: "#1f2d34", shoes: "#ffc727" },
+  recruteur: { skin: "#8a5a3c", hair: "#1b1512", outfit: "#1b1b1b", outfit2: "#ffffff", trousers: "#111111", shoes: "#111111" },
+  curieuse: { skin: "#c68b62", hair: "#1a110d", outfit: "#e9e6dd", outfit2: "#d99a00", trousers: "#e9e6dd", shoes: "#1b1b1b" },
+  client: { skin: "#efc7a4", hair: "#5a3b2a", outfit: "#5b5b57", outfit2: "#ffffff", trousers: "#2b2b2b", shoes: "#ffffff" },
+  etudiante: { skin: "#6b4330", hair: "#0f0a08", outfit: "#2b2b2b", outfit2: "#d99a00", trousers: "#111111", shoes: "#ffffff" },
 };
 
 /** Pivots (coordonnées du viewBox) : chaque partie mobile tourne autour de son point d'attache. */
@@ -82,7 +82,7 @@ function Outfit({ id, s }: { id: AvatarId; s: Style }) {
         <g data-part="body">
           <rect x="46" y="118" width="68" height="116" rx="22" fill={s.outfit} />
           <path d="M70 118l10 36 10-36Z" fill={s.outfit2} />
-          <path d="M77 124h6l3 38-6 8-6-8Z" fill="#ff725e" />
+          <path d="M77 124h6l3 38-6 8-6-8Z" fill="#d99a00" />
         </g>
       );
     case "curieuse":
@@ -162,7 +162,7 @@ export const Avatar = forwardRef<SVGSVGElement, { id: AvatarId; className?: stri
       <Mobile part="armR" rot={pose === "assis" ? -62 : undefined}>
         <rect x="103" y="128" width="15" height="92" rx="7.5" fill={id === "curieuse" ? s.skin : s.outfit} />
         <circle cx="110.5" cy="224" r="8.5" fill={s.skin} />
-        {pose === "assis" && <rect x="100" y="206" width="26" height="34" rx="3" fill="#f1e9da" stroke="#ff725e" strokeWidth="2" />}
+        {pose === "assis" && <rect x="100" y="206" width="26" height="34" rx="3" fill="#f1e9da" stroke="#d99a00" strokeWidth="2" />}
       </Mobile>
       {/* tête */}
       <Mobile part="head">

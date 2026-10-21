@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { pageLabel, pad, rubriques } from "@/content/sections";
 import { allerA } from "../SmoothScroll";
 import { play } from "@/lib/sound";
-
 /** Icône livre : ouvre le sommaire à tout moment. */
 export function BoutonSommaire() {
   const [ouvert, setOuvert] = useState(false);
@@ -60,7 +59,7 @@ export function BoutonSommaire() {
         aria-label="Ouvrir le sommaire"
         aria-haspopup="dialog"
         title="Sommaire"
-        className="fixed left-4 top-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border-2 border-ink bg-yellow text-ink shadow-[2px_2px_0_#1f2d34] transition-transform hover:translate-x-px hover:translate-y-px"
+        className="fixed left-4 top-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-ink/30 bg-white text-ink transition-colors hover:bg-ink hover:text-white"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" aria-hidden="true">
           <path d="M12 6.2C10 4.8 7 4.4 3.5 5v13c3.5-.6 6.5-.2 8.5 1.2 2-1.4 5-1.8 8.5-1.2V5c-3.5-.6-6.5-.2-8.5 1.2Z" />
@@ -73,7 +72,7 @@ export function BoutonSommaire() {
           role="dialog"
           aria-modal="true"
           aria-label="Sommaire"
-          data-couleur="coral" className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto px-4 py-16"
+ className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-white px-4 py-16"
         >
           <div ref={boite} className="w-full max-w-xl">
             <div className="flex items-baseline justify-between">

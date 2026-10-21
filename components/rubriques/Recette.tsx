@@ -5,8 +5,6 @@ import { recette } from "@/content/recette";
 import { Page } from "./Page";
 import { gsap, ScrollTrigger, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
-import { Illu } from "../ui/Illu";
-
 /**
  * p. 18 — La Recette · motif : la cuisine
  * Effet : ma méthode de travail présentée comme une recette de magazine culinaire. Au scroll, les ingrédients
@@ -54,23 +52,23 @@ function Fiche() {
           </svg>
         </div>
         <svg viewBox="0 0 400 200" className="absolute inset-x-0 bottom-0 z-0 w-full">
-          <ellipse cx="200" cy="70" rx="168" ry="30" fill="#c43d28" stroke="#1f2d34" strokeWidth="4" />
+          <ellipse cx="200" cy="70" rx="168" ry="30" fill="#e9e6dd" stroke="#121212" strokeWidth="3" />
         </svg>
         <ul className="absolute inset-x-6 bottom-16 z-10 flex flex-wrap justify-center gap-2">
           {recette.ingredients.map((x) => (
-            <li key={x} data-ing className="border-[3px] border-ink bg-paper px-3 py-1 font-display font-bold italic text-ink shadow-[3px_3px_0_#1f2d34]">
+            <li key={x} data-ing className="border border-ink/20 bg-paper px-3 py-1 font-display font-bold italic text-ink shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)]">
               {x}
             </li>
           ))}
         </ul>
         <svg viewBox="0 0 400 200" className="absolute inset-x-0 bottom-0 z-20 w-full">
-          <path d="M32 70C40 160 120 190 200 190s160-30 168-120C320 96 80 96 32 70Z" fill="#ff725e" stroke="#1f2d34" strokeWidth="4" />
-          <path d="M80 118c40 18 200 18 240 0" fill="none" stroke="#fff6ec" strokeOpacity=".7" strokeWidth="4" strokeLinecap="round" />
+          <path d="M32 70C40 160 120 190 200 190s160-30 168-120C320 96 80 96 32 70Z" fill="#ffffff" stroke="#121212" strokeWidth="3" />
+          <path d="M80 118c40 18 200 18 240 0" fill="none" stroke="#d99a00" strokeOpacity=".8" strokeWidth="3" strokeLinecap="round" />
         </svg>
       </div>
 
       {/* la fiche recette */}
-      <section aria-label="Fiche recette" className="mt-8 border-[3px] border-ink bg-paper p-5 text-ink shadow-[7px_7px_0_#1f2d34] sm:p-8">
+      <section aria-label="Fiche recette" className="mt-8 border border-ink/20 bg-paper p-5 text-ink shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)] sm:p-8">
         <dl className="grid grid-cols-3 gap-3 border-b-2 border-ink pb-4 text-center">
           {(
             [
@@ -85,13 +83,13 @@ function Fiche() {
             </div>
           ))}
         </dl>
-        <h3 className="label mt-5 !text-[#e8452f]">Ingrédients</h3>
+        <h3 className="label mt-5 !text-accent">Ingrédients</h3>
         <p className="mt-1">{recette.ingredients.join(" · ")}</p>
-        <h3 className="label mt-6 !text-[#e8452f]">Préparation</h3>
+        <h3 className="label mt-6 !text-accent">Préparation</h3>
         <ol data-etapes className="mt-3 space-y-4">
           {recette.etapes.map((e, i) => (
             <li key={i} data-etape className="flex gap-4">
-              <span className="titre-xl text-5xl text-[#e8452f] tabular-nums">{i + 1}</span>
+              <span className="titre-xl text-5xl text-accent tabular-nums">{i + 1}</span>
               <span>{e}</span>
             </li>
           ))}
@@ -106,15 +104,6 @@ export function Recette() {
     <Page
       id="recette"
       titre="La Recette"
-      couleur="jaune"
-      decor={
-        <>
-          <Illu src="soleil-orange.svg" className="-left-[10%] top-[4%] w-[36vw] max-w-[230px]" anim="respire" vitesse={1.5} />
-          <Illu src="emoji-sourire.svg" className="right-[6%] top-[7%] w-[16vw] max-w-[90px]" anim="flotte" rot={10} />
-          <Illu src="coeur.svg" className="right-[24%] top-[3%] w-[6vw] max-w-[34px]" anim="flotte" rot={-12} delai={1} />
-          <Illu src="plante-corail.svg" className="-bottom-[1%] -right-[2%] w-[22vw] max-w-[130px]" anim="respire" vitesse={-1} />
-        </>
-      }
     >
       <Fiche />
     </Page>

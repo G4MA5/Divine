@@ -20,6 +20,13 @@ Tout est cherchable dans le code avec `[À FOURNIR` ou `[À CONFIRMER`.
   - Metro : description, stack, captures, et l'effet d'ouverture à définir
   - UPB Student's : lien de la bibliothèque
 
+## Galerie « Divine à la peinture »
+- [ ] **Images des tableaux** → `public/images/peinture/`, puis les déclarer dans `content/peinture.ts` (`image`, `titre`, `annee`, `technique`, `dimensions`, `ratio` = largeur / hauteur). Tant qu'elles manquent, des cadres vides s'affichent.
+- [ ] Texte de présentation de la peinture (`peintureIntro.texte`).
+
+## DevSecOps et sécurité (Boîte à outils)
+- [ ] **À CONFIRMER** : `content/devsecops.ts` contient la chaîne DevSecOps classique (STRIDE, Gitleaks, SonarQube, Trivy, OWASP ZAP, Dependabot, SBOM…). Garder uniquement les outils que tu utilises vraiment, et ajuster le texte des « réflexes sécurité ».
+
 ## Liens et décisions
 - [x] GitHub, Instagram, WhatsApp : repris de l'ancien site
 - [ ] LinkedIn : lien (`content/identite.ts`)

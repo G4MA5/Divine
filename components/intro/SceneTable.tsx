@@ -157,18 +157,12 @@ export function SceneTable() {
       {/* la table */}
       <div data-s="table" className="scene-table absolute inset-0" aria-hidden="true" />
 
-      {/* les accessoires : le soleil, une tasse, des plantes (tes illustrations) */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img data-s="prop" aria-hidden="true" alt="" src="/images/illu/soleil-orange.svg" className="pointer-events-none absolute left-[2%] top-[3%] w-[26vw] max-w-[180px]" />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img data-s="prop" aria-hidden="true" alt="" src="/images/illu/plante-bleue.svg" className="pointer-events-none absolute right-[3%] top-[3%] w-[22vw] max-w-[150px]" />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img data-s="prop" aria-hidden="true" alt="" src="/images/illu/plante-corail.svg" className="pointer-events-none absolute bottom-[4%] right-[2%] w-[24vw] max-w-[170px]" />
+      {/* un seul accessoire : une tasse de café */}
       <svg data-s="prop" aria-hidden="true" viewBox="0 0 110 110" className="absolute right-[4%] top-[38%] w-[19vw] max-w-[120px]">
-        <ellipse cx="55" cy="62" rx="48" ry="40" fill="#fff6ec" />
-        <ellipse cx="55" cy="58" rx="34" ry="28" fill="#fff" stroke="#1f2d34" strokeWidth="2" />
+        <ellipse cx="55" cy="62" rx="48" ry="40" fill="#ffffff" />
+        <ellipse cx="55" cy="58" rx="34" ry="28" fill="#fff" stroke="#121212" strokeWidth="2" />
         <ellipse cx="55" cy="58" rx="27" ry="21" fill="#4a2f1d" />
-        <path d="M86 52c14 0 14 18 0 18" fill="none" stroke="#fff6ec" strokeWidth="7" />
+        <path d="M86 52c14 0 14 18 0 18" fill="none" stroke="#ffffff" strokeWidth="7" />
         <path d="M44 56c6-4 14-4 20 0" stroke="#c89a6b" strokeWidth="2.4" fill="none" strokeLinecap="round" />
       </svg>
 
@@ -185,13 +179,11 @@ export function SceneTable() {
       <style>{`
         .scene .scene-table {
           background:
-            radial-gradient(circle at 20% 15%, rgba(255,255,255,.35), transparent 45%),
-            repeating-linear-gradient(135deg, rgba(31,45,52,.07) 0 3px, transparent 3px 22px),
-            linear-gradient(180deg, #ffd24d, #ffc727 55%, #f5b300);
+            radial-gradient(circle at 25% 15%, rgba(255,255,255,.7), transparent 50%),
+            linear-gradient(180deg, #ecebe7, #e2e0da);
         }
         .scene[data-reduced] .scene-table, .scene[data-reduced] [data-s=prop], .scene[data-reduced] [data-s=avatar] { display: none; }
-        html[data-theme="dark"] .scene .scene-table { filter: brightness(0.62) saturate(0.9); }
-      `}</style>
+              `}</style>
     </section>
   );
 }

@@ -9,13 +9,11 @@ import { MagazineObject } from "../intro/MagazineObject";
 import { usePrefs } from "../PrefsProvider";
 import { PRIO, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
-import { Illu } from "../ui/Illu";
-
 const A_FOURNIR = "[À FOURNIR";
 const ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT;
 
 /** Remonte tout en haut, sur la couverture. */
-function relire() {
+export function allerEnHaut() {
   play("page");
   const lenis = (window as unknown as { __lenis?: { scrollTo: (n: number, o?: object) => void } }).__lenis;
   if (lenis) lenis.scrollTo(0, { duration: 2.4 });
@@ -67,7 +65,7 @@ function Formulaire() {
     }
   };
 
-  const champ = "mt-1 w-full border-[3px] border-ink bg-paper px-3 py-3 font-serif text-lg font-semibold normal-case tracking-normal text-ink outline-none shadow-[3px_3px_0_#1f2d34] transition-shadow focus:shadow-[1px_1px_0_#1f2d34]";
+  const champ = "mt-1 w-full border border-ink/20 bg-paper px-3 py-3 font-serif text-lg font-semibold normal-case tracking-normal text-ink outline-none shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)] transition-shadow focus:shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)]";
 
   return (
     <form onSubmit={envoyer} className="grid gap-4" aria-label="Écrire à Divine">
@@ -199,8 +197,8 @@ function ScenneFin() {
         <p className="font-display text-2xl italic text-ink sm:text-3xl">Fin du numéro</p>
         <button
           type="button"
-          onClick={relire}
-          className="label border border-ink bg-paper/90 px-5 py-3 !text-ink transition-colors hover:bg-ink hover:!text-paper"
+          onClick={allerEnHaut}
+          className="label border border-ink/20 bg-paper/90 px-5 py-3 !text-ink transition-colors hover:bg-ink hover:!text-paper"
         >
           ↑ Relire depuis la couverture
         </button>
@@ -217,16 +215,11 @@ function ScenneFin() {
 export function Quatrieme() {
   return (
     <section id="quatrieme" aria-labelledby="quatrieme-titre">
-      <div data-couleur="coral" className="relative overflow-hidden pb-6 pl-4 pr-10 pt-24 sm:px-8">
-        <Illu src="soleil-jaune.svg" className="-left-[12%] top-[2%] w-[44vw] max-w-[280px]" anim="respire" vitesse={1.5} />
-        <Illu src="coeur.svg" className="right-[8%] top-[5%] w-[12vw] max-w-[70px]" anim="respire" rot={12} />
-        <Illu src="etoile.svg" className="right-[28%] top-[3%] w-[6vw] max-w-[34px]" anim="tourne" />
-        <Illu src="avion.svg" className="right-[10%] top-[22%] w-[14vw] max-w-[80px]" anim="flotte" rot={-10} vitesse={-2} />
-        <Illu src="plante-jaune.svg" className="-bottom-[1%] -left-[2%] w-[22vw] max-w-[140px]" anim="respire" />
+      <div className="relative overflow-hidden pb-6 pl-4 pr-10 pt-24 sm:px-8">
         <div className="relative z-10 mx-auto max-w-3xl">
           <p className="label flex justify-between">
             <span>{identite.magazine} · Quatrième de couverture</span>
-            <span className="tabular-nums">p. 21</span>
+            <span className="tabular-nums">p. 23</span>
           </p>
           <h2 id="quatrieme-titre" className="titre-xl mt-3 text-[clamp(3.4rem,15vw,8rem)]">
             Écrivez-moi
@@ -254,8 +247,8 @@ export function Quatrieme() {
             <Formulaire />
           </div>
 
-          <aside aria-label="Prochain numéro" className="mt-12 border-[3px] border-ink bg-paper p-5 text-center text-ink shadow-[7px_7px_0_#1f2d34]">
-            <h3 className="label !text-[#e8452f]">Prochain numéro</h3>
+          <aside aria-label="Prochain numéro" className="mt-12 border border-ink/20 bg-paper p-5 text-center text-ink shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)]">
+            <h3 className="label !text-accent">Prochain numéro</h3>
             <p className="mt-2 font-display text-xl font-bold italic">[À FOURNIR : le prochain numéro]</p>
           </aside>
 
@@ -263,11 +256,11 @@ export function Quatrieme() {
             <a href={identite.cv} download className="btn btn-plein">
               Télécharger le CV
             </a>
-            <button type="button" onClick={relire} className="btn">
+            <button type="button" onClick={allerEnHaut} className="btn">
               Relire depuis la couverture
             </button>
           </div>
-          <PiedDePage page="21" />
+          <PiedDePage page="23" />
         </div>
       </div>
       <ScenneFin />

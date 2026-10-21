@@ -9,7 +9,6 @@ import { ReportageContenu } from "../reportages/ReportageContenu";
 import { usePrefs } from "../PrefsProvider";
 import { gsap, PRIO, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
-
 /** Numéro de page de chaque reportage dans la plage p. 08-15. */
 const pageDe = (i: number) => pad(8 + Math.floor((i * 8) / projets.length));
 
@@ -68,7 +67,7 @@ export function Reportages() {
         </div>
         <div className="mt-10">
           {projets.map((p, i) => (
-            <div key={p.slug} data-couleur={p.couleur} className="relative overflow-hidden px-4 py-14 pr-10 sm:px-8">
+            <div key={p.slug} className="relative overflow-hidden px-4 py-14 pr-10 sm:px-8">
               <ReportageContenu projet={p} page={pageDe(i)} lien />
             </div>
           ))}
@@ -87,7 +86,7 @@ export function Reportages() {
           <div
             key={p.slug}
             data-rp
-            data-couleur={p.couleur}
+
             className="absolute inset-0 overflow-hidden bg-bg pb-14 pl-4 pr-10 pt-20 shadow-[0_0_40px_rgba(0,0,0,.25)] sm:px-8"
             style={{ zIndex: projets.length - i, backfaceVisibility: "hidden" }}
           >

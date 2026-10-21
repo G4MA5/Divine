@@ -9,8 +9,6 @@ import { Citation } from "../ui/Citation";
 import { Page } from "./Page";
 import { gsap } from "@/lib/useScene";
 import { play } from "@/lib/sound";
-import { Illu } from "../ui/Illu";
-
 const A_FOURNIR = "[À FOURNIR";
 
 /** Première phrase d'une réponse, pour la citation en grand format. */
@@ -67,7 +65,7 @@ function Salon() {
   return (
     <div className="mt-10">
       {/* le salon d'interview */}
-      <div className="grid grid-cols-[1fr_1fr] items-end gap-2 border-b-[3px] border-fg pb-0 sm:gap-8" aria-hidden="true">
+      <div className="grid grid-cols-[1fr_1fr] items-end gap-2 border-b border-fg pb-0 sm:gap-8" aria-hidden="true">
         <Avatar id={id} pose="assis" className="mx-auto h-44 w-auto sm:h-64" />
         <Portrait className="mx-auto h-44 w-auto sm:h-64" />
       </div>
@@ -96,17 +94,17 @@ function Salon() {
                 <button
                   type="button"
                   onClick={() => poser(x)}
-                  className="relative w-full border-[3px] border-ink bg-paper px-5 py-4 text-left font-display text-lg font-bold italic leading-snug text-ink shadow-[5px_5px_0_#1f2d34] transition-transform hover:-translate-y-0.5 hover:bg-yellow sm:text-xl"
+                  className="relative w-full border border-ink/20 bg-paper px-5 py-4 text-left font-display text-lg font-bold italic leading-snug text-ink shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)] transition-transform hover:-translate-y-0.5 hover:bg-yellow sm:text-xl"
                 >
                   {parId(x).question}
-                  <span aria-hidden="true" className="absolute -bottom-[9px] left-8 h-4 w-4 rotate-45 border-b-[3px] border-r-[3px] border-ink bg-paper" />
+                  <span aria-hidden="true" className="absolute -bottom-[9px] left-8 h-4 w-4 rotate-45 border-b border-r border-ink/20 bg-paper" />
                 </button>
               </li>
             ))}
           </ul>
         </div>
       ) : (
-        <div className="border-y-[3px] border-fg py-6 text-center">
+        <div className="border-y border-fg py-6 text-center">
           <p className="font-display text-2xl italic">Toutes les questions ont été posées.</p>
           <button
             type="button"
@@ -152,15 +150,6 @@ export function Interview() {
     <Page
       id="interview"
       titre="L'Interview"
-      couleur="violet"
-      decor={
-        <>
-          <Illu src="soleil-violet.svg" className="-right-[10%] top-[3%] w-[38vw] max-w-[240px]" anim="respire" vitesse={1.5} />
-          <Illu src="etoile.svg" className="left-[6%] top-[9%] w-[7vw] max-w-[40px]" anim="tourne" />
-          <Illu src="coeur.svg" className="right-[30%] top-[2%] w-[6vw] max-w-[34px]" anim="flotte" rot={10} />
-          <Illu src="femme-bulle.svg" className="-bottom-[1%] -left-[4%] w-[44vw] max-w-[260px]" vitesse={-1} />
-        </>
-      }
     >
       <p className="mt-5 text-xl font-semibold italic">Posez vos questions : trois au choix, puis trois nouvelles.</p>
       <Salon />

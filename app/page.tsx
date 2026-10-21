@@ -8,6 +8,8 @@ import { Reportages } from "@/components/rubriques/Reportages";
 import { Competences } from "@/components/rubriques/Competences";
 import { Atouts } from "@/components/rubriques/Atouts";
 import { Recette } from "@/components/rubriques/Recette";
+import { Peinture } from "@/components/rubriques/Peinture";
+import { Pied } from "@/components/rubriques/Pied";
 import { Interview } from "@/components/rubriques/Interview";
 import { Quatrieme } from "@/components/rubriques/Quatrieme";
 import { identite } from "@/content/identite";
@@ -16,11 +18,9 @@ import { PortraitProvider } from "@/components/PortraitContext";
 import { portraitExiste } from "@/lib/portrait";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { BoutonSon } from "@/components/ui/BoutonSon";
-import { BoutonTheme } from "@/components/ui/BoutonTheme";
 import { BoutonSommaire } from "@/components/ui/BoutonSommaire";
 import { MarquePage } from "@/components/ui/MarquePage";
 import { IndicateurPage } from "@/components/ui/IndicateurPage";
-import { Parallaxe } from "@/components/ui/Parallaxe";
 
 const donneesStructurees = {
   "@context": "https://schema.org",
@@ -41,7 +41,6 @@ export default function Accueil() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(donneesStructurees) }} />
       <SmoothScroll />
       <BoutonSommaire />
-      <BoutonTheme />
       <BoutonSon />
       <MarquePage />
       <IndicateurPage />
@@ -55,10 +54,11 @@ export default function Accueil() {
         <Competences />
         <Atouts />
         <Recette />
+        <Peinture />
         <Interview />
         <Quatrieme />
+        <Pied />
       </main>
-      <Parallaxe />
     </IntroGate>
     </PortraitProvider>
   );

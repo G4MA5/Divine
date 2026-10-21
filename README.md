@@ -33,6 +33,8 @@ Tous les textes sont dans `/content` — jamais dans les composants :
 | `edito.ts`, `recette.ts`, `interview.ts` | les textes à fournir |
 | `sections.ts` | les rubriques, leur numéro de page, le sommaire |
 | `avatars.ts` | les 4 avatars du visiteur |
+| `peinture.ts` | la galerie de tableaux (images dans `public/images/peinture/`) |
+| `devsecops.ts` | la chaîne DevSecOps et les réflexes sécurité |
 
 Tout ce qui reste à fournir est listé dans `TODO-CONTENU.md`.
 
@@ -46,5 +48,5 @@ Ajouter un objet dans `content/projets.ts` (slug unique). Choisir une valeur de 
   Sans fichier, le son est synthétisé par le navigateur (Web Audio).
 
 ## Règles du projet
-Mobile d'abord, mode clair/sombre, son coupé par défaut, mouvement réduit respecté, un effet par section,
+Mobile d'abord, fond blanc pur et fixe (pas de mode sombre), son coupé par défaut, mouvement réduit respecté, un effet par section,
 bouton « Passer l'intro » toujours visible pendant l'intro, tout le site en français.

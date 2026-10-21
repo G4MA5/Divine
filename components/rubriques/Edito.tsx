@@ -4,10 +4,8 @@ import { useRef } from "react";
 import { edito } from "@/content/edito";
 import { Page } from "./Page";
 import { Portrait } from "../ui/Portrait";
-import { Illu } from "../ui/Illu";
 import { gsap, ScrollTrigger, mots, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
-
 /**
  * p. 03 — Édito · motif : la lecture
  * Effet : le texte se révèle mot par mot au rythme du scroll, comme de l'encre qui sèche (opacité + léger flou
@@ -73,12 +71,12 @@ function Contenu() {
 
       {/* la photo, sur son soleil */}
       <div className="relative order-first mx-auto w-[78%] max-w-sm sm:order-last sm:w-full">
-        <div data-rayons aria-hidden="true" className="absolute left-1/2 top-[8%] aspect-square w-[118%] -translate-x-1/2 rounded-full" style={{ background: "repeating-conic-gradient(from 0deg, #ffc727 0 7deg, #ffd95e 7deg 14deg)" }} />
-        <div aria-hidden="true" className="absolute left-1/2 top-[14%] aspect-square w-[92%] -translate-x-1/2 rounded-full bg-yellow" />
+        <div data-rayons aria-hidden="true" className="absolute left-1/2 top-[8%] aspect-square w-[104%] -translate-x-1/2 rounded-full border border-gold" />
+        <div aria-hidden="true" className="absolute left-1/2 top-[14%] aspect-square w-[90%] -translate-x-1/2 rounded-full bg-[#fbf3dc]" />
         <div data-photo className="relative">
-          <Portrait className="relative z-10 mx-auto h-auto w-[84%] drop-shadow-[6px_8px_0_rgba(31,45,52,.35)]" />
+          <Portrait className="relative z-10 mx-auto h-auto w-[84%] " />
         </div>
-        <span className="label absolute -bottom-2 left-1/2 z-20 -translate-x-1/2 -rotate-3 whitespace-nowrap border-2 border-ink bg-coral px-3 py-2 !text-ink shadow-[3px_3px_0_#1f2d34]">
+        <span className="label absolute -bottom-2 left-1/2 z-20 -translate-x-1/2 -rotate-3 whitespace-nowrap border-2 border-ink bg-coral px-3 py-2 !text-ink shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)]">
           Divine, à Abidjan
         </span>
       </div>
@@ -90,7 +88,7 @@ function Contenu() {
             return (
               <p key={i} className={`mb-6 text-[1.25em] font-semibold leading-snug ${i === 0 ? "lettrine" : ""}`}>
                 {dernier ? (
-                  <span data-marqueur className="box-decoration-clone px-1 [background:linear-gradient(transparent_18%,#ffc727_18%,#ffc727_92%,transparent_92%)_no-repeat] [background-size:0%_100%]">
+                  <span data-marqueur className="box-decoration-clone px-1 [background:linear-gradient(transparent_18%,#f6d36b_18%,#f6d36b_92%,transparent_92%)_no-repeat] [background-size:0%_100%]">
                     {mots(p).map((w, j) => (
                       <span key={j} data-w className="inline-block">
                         {w}
@@ -110,7 +108,7 @@ function Contenu() {
             );
           })}
         </div>
-        <p data-signature aria-label={`Signature : ${edito.signature}`} className="mt-2 font-signature text-7xl text-[#e8452f] sm:text-8xl">
+        <p data-signature aria-label={`Signature : ${edito.signature}`} className="mt-2 font-signature text-7xl text-accent sm:text-8xl">
           {edito.signature}
         </p>
       </div>
@@ -122,17 +120,7 @@ export function Edito() {
   return (
     <Page
       id="edito"
-      couleur="creme"
       large
-      decor={
-        <>
-          <Illu src="soleil-orange.svg" className="-left-[8%] top-[6%] w-[34vw] max-w-[220px]" anim="respire" vitesse={1.5} />
-          <Illu src="etoile.svg" className="right-[6%] top-[9%] w-[8vw] max-w-[44px]" anim="tourne" />
-          <Illu src="coeur.svg" className="left-[44%] top-[3%] w-[7vw] max-w-[36px]" anim="flotte" rot={12} />
-          <Illu src="plante-corail.svg" className="-bottom-[1%] -left-[2%] w-[24vw] max-w-[150px]" anim="respire" vitesse={-1} />
-          <Illu src="oiseaux.svg" className="right-[2%] top-[28%] w-[20vw] max-w-[120px]" anim="flotte" vitesse={-2} />
-        </>
-      }
     >
       <Contenu />
     </Page>

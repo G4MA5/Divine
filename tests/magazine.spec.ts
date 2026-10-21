@@ -19,8 +19,8 @@ const defiler = (page: Page, y: number) =>
     await new Promise((r) => setTimeout(r, 450));
   }, y);
 
-for (const scheme of ["light", "dark"] as const) {
-  test(`rien ne déborde à l'horizontale, mode ${scheme}`, async ({ page }, info) => {
+for (const scheme of ["light"] as const) {
+  test(`rien ne déborde à l'horizontale (fond blanc fixe)`, async ({ page }, info) => {
     await page.emulateMedia({ colorScheme: scheme });
     await entrer(page);
     const total = await page.evaluate(() => document.documentElement.scrollHeight);
@@ -75,6 +75,8 @@ test("« Passer l'intro » mène au sommaire", async ({ page }) => {
 
 test("navigation au clavier : le focus est visible dès l'écran d'accueil", async ({ page }) => {
   await page.goto("/");
+  // l'écran de chargement (le petit personnage) passe d'abord
+  await page.locator('[aria-label="Chargement du magazine"]').waitFor({ state: "detached", timeout: 15_000 });
   await page.keyboard.press("Tab");
   const focus = await page.evaluate(() => {
     const el = document.activeElement as HTMLElement | null;

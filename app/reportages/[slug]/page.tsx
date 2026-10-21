@@ -6,7 +6,6 @@ import { identite } from "@/content/identite";
 import { ReportageContenu } from "@/components/reportages/ReportageContenu";
 import { OuvertureAuto } from "@/components/reportages/OuvertureAuto";
 import { BoutonSon } from "@/components/ui/BoutonSon";
-import { BoutonTheme } from "@/components/ui/BoutonTheme";
 import { PiedDePage } from "@/components/ui/PiedDePage";
 
 export function generateStaticParams() {
@@ -37,9 +36,8 @@ export default async function PageReportage(props: PageProps<"/reportages/[slug]
   return (
     <>
       <OuvertureAuto type={p.ouverture} />
-      <BoutonTheme />
       <BoutonSon />
-      <main data-couleur={p.couleur} className="min-h-svh overflow-hidden pb-10 pl-4 pr-10 pt-20 sm:px-8">
+      <main className="min-h-svh overflow-hidden pb-10 pl-4 pr-10 pt-20 sm:px-8">
         <div className="mx-auto max-w-3xl">
         <Link href="/#reportages" className="btn">
           ← Retour au magazine
