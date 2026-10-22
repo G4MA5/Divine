@@ -71,7 +71,7 @@ export function Pied() {
       </div>
 
       {/* le champ de tournesols */}
-      <Tournesols className="block h-auto w-full" />
+      <Tournesols />
     </footer>
   );
 }

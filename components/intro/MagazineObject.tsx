@@ -52,6 +52,8 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
 
   return (
     <div ref={racine} className="absolute inset-0 flex items-center justify-center" style={{ perspective: "1600px" }}>
+      {/* le titre de la page : il reste pour les lecteurs d'écran même quand le magazine CSS est masqué */}
+      {!fin && <h1 className="sr-only">{identite.magazine} — {identite.nom}, {identite.titre}</h1>}
       {src && (
         <Secours>
           <Livre3D variante={variant} src={src} onPret={() => setPret3d(true)} portrait={portraitOk ? identite.portrait : null} cvDispo={cvDispo} />
@@ -61,7 +63,7 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
       <div
         data-s="mag-pos"
         className="relative will-change-transform"
-        style={{ width: "var(--mw)", height: "calc(var(--mw) * 4 / 3)", transformStyle: "preserve-3d", opacity: pret3d ? 0 : 1, pointerEvents: pret3d ? "none" : undefined }}
+        style={{ width: "var(--mw)", height: "calc(var(--mw) * 4 / 3)", transformStyle: "preserve-3d", opacity: pret3d ? 0 : 1, visibility: pret3d ? "hidden" : undefined }}
       >
         {/* page de droite */}
         <div className="absolute inset-0 bg-white text-[#121212]" style={{ containerType: "inline-size" }} aria-hidden="true">
@@ -106,7 +108,7 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
         {/* la couverture, qui pivote autour de la reliure */}
         <div data-s="cover-flip" className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
           <div className="absolute inset-0" style={{ backfaceVisibility: "hidden" }}>
-            <Couverture titre={fin ? "p" : "h1"} />
+            <Couverture titre="p" />
           </div>
           {/* dos de la couverture = page de gauche */}
           <div

@@ -15,13 +15,40 @@ export function SmoothScroll() {
 
   useEffect(() => {
     if (!ready || reducedMotion) return;
-    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+    // défilement lissé à durée fixe : il garde le même rythme même si la machine tombe à quelques images par seconde
+    const lenis = new Lenis({ duration: 1.1, smoothWheel: true, wheelMultiplier: 1 });
     lenis.on("scroll", ScrollTrigger.update);
     const tick = (t: number) => lenis.raf(t * 1000);
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
     (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+
+    // la hauteur de la page change (conversation du contact, polices, images) : on recalcule les scènes épinglées
+    let minuteur: ReturnType<typeof setTimeout>;
+    let hauteur = document.documentElement.scrollHeight;
+    const ro = new ResizeObserver(() => {
+      const h = document.documentElement.scrollHeight;
+      if (Math.abs(h - hauteur) < 4) return;
+      hauteur = h;
+      clearTimeout(minuteur);
+      minuteur = setTimeout(() => {
+        ScrollTrigger.refresh();
+        lenis.resize();
+      }, 250);
+    });
+    ro.observe(document.body);
+
+    // garde-fou : si le défilement est resté bloqué sans raison (aucune fenêtre ouverte), on le relance à la prochaine molette
+    const secours = () => {
+      if (lenis.isStopped && !document.querySelector("[role=dialog][aria-modal=true], .staggered-menu-wrapper[data-open], [class*='z-[96]']")) lenis.start();
+    };
+    window.addEventListener("wheel", secours, { passive: true });
+    window.addEventListener("touchstart", secours, { passive: true });
     return () => {
+      ro.disconnect();
+      clearTimeout(minuteur);
+      window.removeEventListener("wheel", secours);
+      window.removeEventListener("touchstart", secours);
       gsap.ticker.remove(tick);
       lenis.destroy();
       delete (window as unknown as { __lenis?: Lenis }).__lenis;

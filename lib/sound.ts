@@ -171,6 +171,34 @@ export function play(name: SoundName) {
   synth[name](c, c.currentTime + 0.01);
 }
 
+/**
+ * Une note de clochette (les tournesols chantent) : un son de carillon, c'est-à-dire un fondamental et des harmoniques
+ * non entiers qui s'éteignent à des vitesses différentes. Ne joue rien si le son est coupé.
+ */
+export function cloche(freq: number, delaiSecondes = 0, force = 1) {
+  if (!enabled) return;
+  const c = getCtx();
+  if (!c || !master) return;
+  if (c.state === "suspended") void c.resume();
+  const t = c.currentTime + 0.01 + delaiSecondes;
+  const partiels: [number, number, number][] = [
+    [1, 0.5, 2.4],
+    [2.76, 0.22, 1.3],
+    [5.4, 0.1, 0.7],
+    [8.93, 0.05, 0.4],
+  ];
+  partiels.forEach(([ratio, amp, dur]) => {
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(freq * ratio, t);
+    env(g, t, amp * 0.5 * force, 0.004, dur);
+    o.connect(g).connect(master!);
+    o.start(t);
+    o.stop(t + dur + 0.05);
+  });
+}
+
 /** Grain de vinyle : bruit très doux, seulement pendant la rubrique concernée. */
 export function startLoop(name: "vinyle") {
   if (!enabled || loops.has(name)) return;

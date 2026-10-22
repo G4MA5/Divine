@@ -50,7 +50,9 @@ function creerOmbre() {
   return new CanvasTexture(c);
 }
 
-function Livre({ tex, src }: { tex: JeuTextures; src: Sources }) {
+function Livre({ tex, src, actif }: { tex: JeuTextures; src: Sources; actif: boolean }) {
+  const actifRef = useRef(actif);
+  actifRef.current = actif;
   const { size } = useThree();
   const groupe = useRef<Group>(null);
   const charniere = useRef<Group>(null);
@@ -65,43 +67,47 @@ function Livre({ tex, src }: { tex: JeuTextures; src: Sources }) {
   const c = W * 0.014; // épaisseur de la couverture
   const ombre = useMemo(creerOmbre, []);
   const invalider = useThree((st) => st.invalidate);
+  const etat = useRef({ x: 0, y: 0, s: 1, rx: 0, ouvert: 0, o: 0 });
+  const reduit = useMemo(() => !!src.pos.closest("[data-reduced]"), [src]);
 
-  // rendu à la demande : on ne redessine que si la scène GSAP a bougé (ou tant que la table est visible, pour la vapeur)
+  // rendu à la demande : une seule lecture par image de la scène GSAP (sans getComputedStyle), et on ne redessine que si elle a bougé
+  // (ou, une image sur deux, tant que la table est visible, pour la vapeur de la tasse)
   useEffect(() => {
     let dernier = "";
+    let n = 0;
     const tick = () => {
-      const o = src.table ? lire(src.table, "opacity", 0) : 0;
-      const sig = [lire(src.pos, "x", 0), lire(src.pos, "y", 0), lire(src.pos, "scale", 1), lire(src.pos, "rotationX", 0), lire(src.cover, "rotationY", 0), o].map((v) => v.toFixed(2)).join("|");
-      if (sig !== dernier || o > 0.01) {
+      const e = etat.current;
+      e.x = lire(src.pos, "x", 0);
+      e.y = lire(src.pos, "y", 0);
+      e.s = lire(src.pos, "scale", 1);
+      e.rx = lire(src.pos, "rotationX", 0);
+      e.ouvert = lire(src.cover, "rotationY", 0);
+      const brut = src.table ? parseFloat(src.table.style.opacity) : 0;
+      e.o = reduit || !Number.isFinite(brut) ? 0 : Math.min(1, Math.max(0, brut));
+      const sig = `${e.x.toFixed(1)}|${e.y.toFixed(1)}|${e.s.toFixed(3)}|${e.rx.toFixed(2)}|${e.ouvert.toFixed(2)}|${e.o.toFixed(2)}`;
+      if (!actifRef.current) return;
+      if (sig !== dernier || (e.o > 0.01 && ++n % 2 === 0)) {
         dernier = sig;
         invalider();
       }
     };
     gsap.ticker.add(tick);
     return () => gsap.ticker.remove(tick);
-  }, [src, invalider]);
+  }, [src, invalider, reduit]);
 
   useFrame(() => {
     const g = groupe.current;
     const h = charniere.current;
     if (!g || !h) return;
-    const x = lire(src.pos, "x", 0);
-    const y = lire(src.pos, "y", 0);
-    const s = lire(src.pos, "scale", 1);
-    const rx = lire(src.pos, "rotationX", 0);
-    const ouvert = lire(src.cover, "rotationY", 0);
+    const { x, y, s, rx, ouvert, o } = etat.current;
     g.position.set(x, -y, 0);
     g.scale.setScalar(s);
     g.rotation.x = -rx * DEG;
     h.rotation.y = ouvert * DEG;
     if (ombreG.current) ombreG.current.scale.x = 1 + Math.min(1, Math.abs(ouvert) / 178);
-    // l'ombre n'existe vraiment que lorsque le livre est posé sur la table (incliné)
     // la table apparaît quand la caméra recule : son opacité est pilotée par la scène (data-s=table)
-    if (voile.current) {
-      const reduit = !!src.pos.closest("[data-reduced]");
-      const o = reduit || !src.table ? 0 : lire(src.table, "opacity", 0);
-      voile.current.opacity = 1 - Math.min(1, Math.max(0, o));
-    }
+    if (voile.current) voile.current.opacity = 1 - o;
+    // l'ombre n'existe vraiment que lorsque le livre est posé sur la table (incliné)
     if (matOmbre.current) matOmbre.current.opacity = 0.18 + 0.82 * Math.min(1, Math.max(0, rx) / 40);
   });
 
@@ -165,7 +171,7 @@ function Livre({ tex, src }: { tex: JeuTextures; src: Sources }) {
   );
 }
 
-function Scene({ variante, src, onPret, portrait, cvDispo }: { variante: Variante; src: Sources; onPret: () => void; portrait: string | null; cvDispo: boolean }) {
+function Scene({ actif, variante, src, onPret, portrait, cvDispo }: { actif: boolean; variante: Variante; src: Sources; onPret: () => void; portrait: string | null; cvDispo: boolean }) {
   const [tex, setTex] = useState<JeuTextures | null>(null);
 
   useEffect(() => {
@@ -197,7 +203,7 @@ function Scene({ variante, src, onPret, portrait, cvDispo }: { variante: Variant
       <Camera />
       <ambientLight intensity={2.1} />
       <directionalLight position={[-500, 800, 1100]} intensity={1.35} />
-      {tex && <Livre tex={tex} src={src} />}
+      {tex && <Livre tex={tex} src={src} actif={actif} />}
     </>
   );
 }
@@ -217,8 +223,8 @@ export default function Livre3D({ variante, src, onPret, portrait, cvDispo }: { 
 
   return (
     <div ref={boite} aria-hidden="true" className="pointer-events-none absolute inset-0 z-[1]">
-      <Canvas flat dpr={[1, 1.5]} frameloop={visible ? "demand" : "never"} gl={{ alpha: true, antialias: true }} camera={{ position: [0, 0, DISTANCE], fov: 30 }} style={{ background: "transparent" }}>
-        <Scene variante={variante} src={src} onPret={onPret} portrait={portrait} cvDispo={cvDispo} />
+      <Canvas flat dpr={[1, 1.25]} frameloop="demand" gl={{ alpha: true, antialias: false, powerPreference: "high-performance" }} camera={{ position: [0, 0, DISTANCE], fov: 30 }} style={{ background: "transparent" }}>
+        <Scene actif={visible} variante={variante} src={src} onPret={onPret} portrait={portrait} cvDispo={cvDispo} />
       </Canvas>
     </div>
   );

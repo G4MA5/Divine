@@ -20,7 +20,7 @@ function canvas(w: number, h = w) {
 const tex = (c: HTMLCanvasElement, repeat = false) => {
   const t = new CanvasTexture(c);
   t.colorSpace = SRGBColorSpace;
-  t.anisotropy = 8;
+  t.anisotropy = 4;
   if (repeat) t.wrapS = t.wrapT = RepeatWrapping;
   t.needsUpdate = true;
   return t;

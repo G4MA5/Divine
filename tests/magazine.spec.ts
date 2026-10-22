@@ -263,3 +263,19 @@ test("le livre est rendu en 3D (un canvas WebGL) tout en gardant le titre h1 acc
   await expect(page.locator("#scene canvas")).toHaveCount(1, { timeout: 15_000 });
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
 });
+
+test("on peut défiler jusqu'au bout de la page, et les tournesols chantent en bas", async ({ page }) => {
+  await entrer(page);
+  const max = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
+  await page.evaluate((m) => (window as unknown as { __lenis?: Lenis }).__lenis?.scrollTo(m - 3000, { immediate: true }), max);
+  await page.mouse.move(300, 300);
+  // molette réelle jusqu'à la fin
+  for (let i = 0; i < 60; i++) {
+    await page.mouse.wheel(0, 500);
+    await page.waitForTimeout(60);
+    if ((await page.evaluate(() => scrollY)) >= max - 2) break;
+  }
+  await expect.poll(() => page.evaluate(() => Math.round(scrollY)), { timeout: 20_000 }).toBeGreaterThanOrEqual(max - 4);
+  // arrivés en bas : une note monte au-dessus d'un tournesol
+  await expect(page.locator(".champ [data-notes] text").first()).toBeAttached({ timeout: 15_000 });
+});

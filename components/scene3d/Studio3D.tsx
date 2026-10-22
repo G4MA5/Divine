@@ -200,6 +200,13 @@ function Salon({ t, parle }: { t: Textures; parle: number }) {
 
 function Contenu({ avatarId, parle, onPret }: { avatarId: AvatarId; parle: number; onPret: () => void }) {
   const [t, setT] = useState<Textures | null>(null);
+  const invalider = useThree((st) => st.invalidate);
+
+  // rendu à environ 30 images par seconde : assez pour la respiration des personnages, deux fois moins lourd
+  useEffect(() => {
+    const id = setInterval(invalider, 33);
+    return () => clearInterval(id);
+  }, [invalider]);
 
   useEffect(() => {
     let vivant = true;
@@ -242,7 +249,7 @@ export default function Studio3D({ avatarId, parle, onPret }: { avatarId: Avatar
 
   return (
     <div ref={boite} aria-hidden="true" className="absolute inset-0">
-      <Canvas flat dpr={[1, 1.5]} frameloop={visible ? "always" : "never"} camera={{ fov: 33, near: 0.1, far: 60 }} gl={{ alpha: true, antialias: true }} style={{ background: "transparent" }}>
+      <Canvas flat dpr={[1, 1.5]} frameloop={visible ? "demand" : "never"} camera={{ fov: 33, near: 0.1, far: 60 }} gl={{ alpha: true, antialias: true }} style={{ background: "transparent" }}>
         <Suspense fallback={null}>
           <Contenu avatarId={avatarId} parle={parle} onPret={onPret} />
         </Suspense>

@@ -171,6 +171,13 @@ body {
   transform-origin: 50% 100%;
   animation: balance 5s ease-in-out infinite;
 }
+/* le champ ne se balance que lorsqu'il est à l'écran (il coûte cher à repeindre) */
+.champ .balance {
+  will-change: transform;
+}
+.champ:not([data-actif]) .balance {
+  animation-play-state: paused;
+}
 
 @media (min-width: 768px) {
   body {

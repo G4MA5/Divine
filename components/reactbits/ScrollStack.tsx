@@ -330,7 +330,8 @@ const ScrollStack = ({
     observer.observe(root);
     observer.observe(inner);
     target.addEventListener('scroll', onScroll, { passive: true });
-    target.addEventListener('wheel', onWheel, { passive: false });
+    // l'écouteur « wheel » non passif ne sert qu'au défilement lissé de Scroll Stack : sans lui, le navigateur n'attend pas le script pour défiler
+    if (settingsRef.current?.smoothScroll) target.addEventListener('wheel', onWheel, { passive: false });
     target.addEventListener('pointerdown', onPress, { passive: true });
     window.addEventListener('pointerup', onRelease, { passive: true });
     window.addEventListener('pointercancel', onRelease, { passive: true });
