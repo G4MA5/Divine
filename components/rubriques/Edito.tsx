@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 import { edito } from "@/content/edito";
 import { Page } from "./Page";
 import { Portrait } from "../ui/Portrait";
@@ -17,7 +17,8 @@ function rendreMot(w: string, j: number) {
   if (w.startsWith("GAMA§Labs")) {
     const suite = w.slice("GAMA§Labs".length);
     return (
-      <span key={j} data-w className="inline-block">
+      <Fragment key={j}>
+      <span data-w className="inline-block">
         <a
           href="https://gama-labs.com"
           target="_blank"
@@ -26,14 +27,17 @@ function rendreMot(w: string, j: number) {
         >
           GAMA&nbsp;Labs
         </a>
-        {suite}{" "}
-      </span>
+        {suite}
+      </span>{" "}
+      </Fragment>
     );
   }
   return (
-    <span key={j} data-w className="inline-block">
-      {w}{" "}
-    </span>
+    <Fragment key={j}>
+      <span data-w className="inline-block">
+        {w}
+      </span>{" "}
+    </Fragment>
   );
 }
 

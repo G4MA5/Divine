@@ -3,10 +3,12 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { identite } from "@/content/identite";
+import Lightfall from "../reactbits/Lightfall";
 
 /**
  * Écran de chargement : un compteur de 0 à 100 en très grands chiffres, le titre dont les lettres montent depuis la ligne
- * de base, un filet qui se remplit. À 100, le rideau noir se lève en gardant un bord arrondi (il « s'envole »).
+ * de base, un filet qui se remplit, sur un fond de traînées de lumière dorées qui tombent (React Bits « Lightfall »).
+ * À 100, le rideau noir se lève en gardant un bord arrondi (il « s'envole »).
  */
 export function Chargement({ onFin }: { onFin: () => void }) {
   const racine = useRef<HTMLDivElement>(null);
@@ -56,6 +58,17 @@ export function Chargement({ onFin }: { onFin: () => void }) {
       className="fixed inset-0 z-[65] flex flex-col items-center justify-center bg-[#0b0b0b] text-[#f4f1ea]"
       style={{ borderBottomLeftRadius: "50% 7vh", borderBottomRightRadius: "50% 7vh" }}
     >
+      <div aria-hidden="true" className="absolute inset-0 overflow-hidden" style={{ borderRadius: "inherit" }}>
+        <Lightfall
+          colors={["#f2b400", "#ffd45c", "#ffffff"]}
+          backgroundColor="#0b0b0b"
+          speed={0.9}
+          intro={false}
+          mouseInteraction={false}
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div>
+      <div className="relative z-10 flex flex-col items-center">
       <p data-compteur aria-hidden="true" className="font-display font-black leading-none tabular-nums" style={{ fontSize: "clamp(6rem, 26vw, 19rem)", letterSpacing: "-0.04em" }}>
         000
       </p>
@@ -67,6 +80,7 @@ export function Chargement({ onFin }: { onFin: () => void }) {
         ))}
       </p>
       <p className="label mt-3 !text-[#a8a59c]">{identite.numero} · chargement</p>
+      </div>
       <span aria-hidden="true" className="absolute inset-x-6 bottom-8 h-px bg-white/15 sm:inset-x-10">
         <span data-filet className="block h-full w-full bg-gold" />
       </span>

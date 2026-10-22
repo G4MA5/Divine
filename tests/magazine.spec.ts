@@ -37,7 +37,8 @@ for (const scheme of ["light"] as const) {
 
 test("le scroll arrière rembobine la scène de la table", async ({ page }) => {
   await entrer(page);
-  const etat = () => page.locator("[data-s=mag-pos]").first().evaluate((el) => (el as HTMLElement).style.transform);
+  // GSAP écrit parfois « translate3d(0px, 0px, 0px) » en plus : c'est le même état, on le neutralise
+  const etat = () => page.locator("[data-s=mag-pos]").first().evaluate((el) => (el as HTMLElement).style.transform.replace(/\s*translate3d\(0px, 0px, 0px\)/g, "").trim());
   await defiler(page, 0);
   await page.waitForTimeout(900);
   const depart = await etat();
@@ -138,4 +139,72 @@ test("la couverture d'un dossier s'ouvre en iris et se referme avec Échap", asy
   await expect(dossier).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(dossier).toHaveCount(0, { timeout: 5000 });
+});
+
+test("le bouton Sommaire ouvre le menu (Staggered Menu) et mène à la rubrique choisie", async ({ page }) => {
+  await entrer(page);
+  const bouton = page.getByRole("button", { name: /Open menu/i });
+  await bouton.click();
+  await expect(page.locator(".sm-panel-item").first()).toBeVisible();
+  await page.locator(".sm-panel-item", { hasText: "Parcours" }).click();
+  await expect(page.locator("#parcours")).toBeInViewport({ timeout: 8000 });
+  // le panneau est refermé : ses liens ne sont plus atteignables au clavier
+  await expect(page.locator("#staggered-menu-panel")).toHaveAttribute("inert", "");
+});
+
+test("la messagerie pose ses questions une à une puis propose le Sling Button", async ({ page }) => {
+  await entrer(page);
+  await page.locator("#quatrieme").scrollIntoViewIfNeeded();
+  await page.evaluate(() => {
+    const l = (window as unknown as { __lenis?: Lenis }).__lenis;
+    const y = document.querySelector("#quatrieme")!.getBoundingClientRect().top + scrollY + 300;
+    l?.scrollTo(y, { immediate: true });
+  });
+  const champ = page.locator("#reponse-contact");
+  const repondre = async (v: string) => {
+    await expect(champ).toBeEnabled({ timeout: 15_000 });
+    await champ.fill(v);
+    await champ.press("Enter");
+  };
+  await repondre("Awa");
+  await repondre("Un projet de site");
+  await expect(champ).toBeEnabled({ timeout: 15_000 });
+  await champ.fill("pas un mail");
+  await champ.press("Enter");
+  await expect(page.locator("#erreur-contact")).toContainText("e-mail");
+  await repondre("awa@exemple.com");
+  await repondre("");
+  await expect(page.getByRole("button", { name: "Envoyer le message" })).toBeVisible({ timeout: 15_000 });
+});
+
+test("les mots de l'Édito sont séparés par des espaces", async ({ page }) => {
+  await page.goto("/");
+  const texte = await page.locator("#edito [data-texte]").first().innerText();
+  expect(texte).toMatch(/\w+ \w+ \w+/);
+  expect(texte).not.toMatch(/[a-zé]{18,}/i);
+});
+
+test("les cartes d'expérience s'empilent et portent un logo ou un monogramme", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("#experience article")).toHaveCount(4);
+  await expect(page.locator("#experience img")).not.toHaveCount(0);
+});
+
+test("la galerie affiche les Bounce Cards et la visionneuse s'ouvre", async ({ page }) => {
+  await entrer(page);
+  await page.locator("#peinture").scrollIntoViewIfNeeded();
+  await page.evaluate(() => {
+    const l = (window as unknown as { __lenis?: Lenis }).__lenis;
+    const y = document.querySelector("#peinture")!.getBoundingClientRect().top + scrollY + 330;
+    l?.scrollTo(y, { immediate: true });
+  });
+  const cartes = page.locator("#peinture [role=button]");
+  await expect(cartes).toHaveCount(6, { timeout: 8000 });
+  // BounceCards écoute le pointeur sur toute la zone : on clique au centre de la 3e carte
+  const boite = (await cartes.nth(2).boundingBox())!;
+  await page.mouse.move(boite.x + boite.width / 2, boite.y + boite.height / 2);
+  await page.mouse.click(boite.x + boite.width / 2, boite.y + boite.height / 2);
+  await expect(page.getByRole("dialog", { name: /Tableau n°/ })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: /Tableau n°/ })).toHaveCount(0);
 });

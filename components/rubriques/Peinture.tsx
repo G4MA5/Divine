@@ -2,49 +2,18 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { peintureIntro, tableaux, type Tableau } from "@/content/peinture";
+import { peintureIntro, tableaux } from "@/content/peinture";
 import { Page } from "./Page";
 import { Machine } from "../ui/Effets";
-import { gsap, useScene } from "@/lib/useScene";
+import BounceCards from "../reactbits/BounceCards";
 import { play } from "@/lib/sound";
 
 /**
  * p. 19-20 — Divine à la peinture : la galerie.
- * Effet : l'accrochage. Chaque tableau descend du plafond au bout de son fil, se balance comme un pendule puis se pose
- * dans son cadre ; au survol il se soulève et son cartel apparaît ; un clic l'ouvre en grand (flèches et Échap au clavier).
- * Son : un « tic » à chaque tableau accroché.
+ * Effet : React Bits « Bounce Cards ». Les tableaux rebondissent en éventail à l'arrivée de la galerie ; au survol, le
+ * tableau se redresse et les voisins s'écartent ; un clic l'ouvre en grand (flèches et Échap au clavier).
+ * Son : un « tic » à l'arrivée, un froissement à l'ouverture.
  */
-
-function Cadre({ t, onOuvrir, indice }: { t: Tableau; onOuvrir: () => void; indice: number }) {
-  return (
-    <figure data-tableau className="group mb-10 inline-block w-full break-inside-avoid sm:mb-14">
-      <button
-        type="button"
-        onClick={onOuvrir}
-        aria-label={t.titre ? `Voir « ${t.titre} » en grand` : `Voir le tableau n° ${indice + 1} en grand`}
-        className="relative block w-full origin-top text-left transition-transform duration-500 group-hover:-translate-y-1"
-      >
-        {/* le fil */}
-        <span aria-hidden="true" data-fil className="absolute -top-10 left-1/2 h-10 w-px bg-ink/40" />
-        {/* le cadre */}
-        <span className="block border border-ink/80 bg-white p-3 duration-500 sm:p-5">
-          <span className="relative block w-full overflow-hidden bg-[#f3f2ee]" style={{ aspectRatio: String(t.ratio) }}>
-            {t.image ? (
-              <Image src={t.image} alt={t.titre ?? `Tableau n° ${indice + 1}`} fill sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 30vw" className="object-cover" />
-            ) : (
-                <span aria-hidden="true" className="absolute inset-0" />
-              )}
-          </span>
-        </span>
-      </button>
-      {/* le cartel, comme au musée */}
-      <figcaption className="mt-4 translate-y-1 opacity-70 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-        {t.titre && <p className="font-display text-lg font-bold italic leading-tight">{t.titre}</p>}
-        <p className="label mt-1">{[t.annee, t.technique, t.dimensions].filter(Boolean).join(" · ") || `N° ${String(indice + 1).padStart(2, "0")}`}</p>
-      </figcaption>
-    </figure>
-  );
-}
 
 function Lightbox({ index, onClose, onNav }: { index: number; onClose: () => void; onNav: (d: number) => void }) {
   const t = tableaux[index];
@@ -103,47 +72,77 @@ function Lightbox({ index, onClose, onNav }: { index: number; onClose: () => voi
   );
 }
 
+/** Cadre vide (en attendant les images) : un fond de toile doux avec un fin liseré. */
+const TOILE =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#f3f2ee"/><rect x="9" y="9" width="82" height="82" fill="none" stroke="#121212" stroke-opacity=".18" stroke-width=".8"/></svg>',
+  );
+
 function Galerie() {
   const ref = useRef<HTMLDivElement>(null);
   const [ouvert, setOuvert] = useState<number | null>(null);
+  const [visible, setVisible] = useState(false);
+  const [largeur, setLargeur] = useState(0);
 
-  useScene(ref, (root) => {
-    const cadres = gsap.utils.toArray<HTMLElement>("[data-tableau]", root);
-    cadres.forEach((c, i) => {
-      const bouton = c.querySelector("button") as HTMLElement;
-      gsap.set(bouton, { yPercent: -45, opacity: 0, rotation: i % 2 ? 7 : -7 });
-      gsap.to(bouton, {
-        yPercent: 0,
-        opacity: 1,
-        duration: 0.5,
-        ease: "power2.out",
-        scrollTrigger: { trigger: c, start: "top 92%", once: true, onEnter: () => play("tic") },
-      });
-      // le pendule : il se balance puis se stabilise
-      gsap.to(bouton, {
-        rotation: 0,
-        duration: 2.6,
-        ease: "elastic.out(1, 0.28)",
-        scrollTrigger: { trigger: c, start: "top 92%", once: true },
-      });
-    });
-  });
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const mesurer = () => setLargeur(el.clientWidth);
+    mesurer();
+    const ro = new ResizeObserver(mesurer);
+    ro.observe(el);
+    // les cartes ne rebondissent qu'à l'arrivée de la galerie à l'écran
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setVisible(true);
+          play("tic");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(el);
+    return () => {
+      ro.disconnect();
+      io.disconnect();
+    };
+  }, []);
+
+  const n = tableaux.length;
+  const petit = largeur > 0 && largeur < 640;
+  const carte = petit ? Math.min(170, Math.round(largeur * 0.46)) : Math.min(230, Math.round(largeur / 4.2));
+  const pas = n > 1 ? Math.min(carte * 0.78, (largeur - carte * 1.25) / (n - 1)) : 0;
+  const images = tableaux.map((t, i) => ({ src: t.image ?? TOILE, alt: t.titre ?? `Tableau n° ${i + 1}` }));
 
   return (
     <div ref={ref} className="mt-14">
-      <div className="columns-1 gap-10 sm:columns-2 lg:columns-3">
-        {tableaux.map((t, i) => (
-          <Cadre
-            key={t.id}
-            t={t}
-            indice={i}
-            onOuvrir={() => {
+      <div className="flex justify-center" style={{ minHeight: carte * 1.5 }}>
+        {visible && largeur > 0 && (
+          <BounceCards
+            key={`${carte}-${Math.round(pas)}`}
+            images={images}
+            containerWidth={largeur}
+            containerHeight={Math.round(carte * 1.5)}
+            cardSize={carte}
+            spread={pas}
+            rotation={petit ? 7 : 9}
+            borderWidth={4}
+            borderColor="#121212"
+            radius={4}
+            shadow={false}
+            pushDistance={petit ? 24 : Math.round(carte * 0.7)}
+            animationDelay={0.1}
+            animationStagger={0.12}
+            onCardClick={(i) => {
               play("papier");
               setOuvert(i);
             }}
           />
-        ))}
+        )}
       </div>
+      <p className="label mt-6 text-center">{petit ? "Touchez un tableau pour l'ouvrir" : "Survolez les tableaux, cliquez pour les ouvrir"}</p>
       {ouvert !== null && <Lightbox index={ouvert} onClose={() => setOuvert(null)} onNav={(d) => setOuvert((i) => ((i ?? 0) + d + tableaux.length) % tableaux.length)} />}
     </div>
   );

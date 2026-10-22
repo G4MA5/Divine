@@ -1,16 +1,16 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
 import { identite } from "@/content/identite";
 import { PiedDePage } from "../ui/PiedDePage";
+import { Messagerie } from "./Messagerie";
 import { Avatar, type AvatarId } from "../avatar/Avatar";
 import { MagazineObject } from "../intro/MagazineObject";
 import { usePrefs } from "../PrefsProvider";
 import { useCvDisponible } from "../PortraitContext";
 import { PRIO, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
-const ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT;
 
 /** Remonte tout en haut, sur la couverture. */
 export function allerEnHaut() {
@@ -33,72 +33,6 @@ function Lien({ label, valeur, href }: { label: string; valeur: string; href?: s
         )}
       </dd>
     </div>
-  );
-}
-
-/** Formulaire court (nom, entreprise, objet, message). Sans service configuré, repli sur un lien mailto. */
-function Formulaire() {
-  const [etat, setEtat] = useState<"repos" | "envoi" | "ok" | "erreur">("repos");
-
-  const envoyer = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const f = new FormData(e.currentTarget);
-    if (f.get("_gotcha")) return; // champ piège anti-spam
-    const nom = String(f.get("nom") ?? "");
-    const entreprise = String(f.get("entreprise") ?? "");
-    const objet = String(f.get("objet") ?? "") || "Message depuis le portfolio";
-    const message = String(f.get("message") ?? "");
-    play("clic");
-
-    if (!ENDPOINT) {
-      const corps = `${message}\n\n— ${nom}${entreprise ? `, ${entreprise}` : ""}`;
-      window.location.href = `mailto:${identite.email}?subject=${encodeURIComponent(objet)}&body=${encodeURIComponent(corps)}`;
-      return;
-    }
-    setEtat("envoi");
-    try {
-      const r = await fetch(ENDPOINT, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify({ nom, entreprise, objet, message }) });
-      setEtat(r.ok ? "ok" : "erreur");
-      if (r.ok) e.currentTarget.reset();
-    } catch {
-      setEtat("erreur");
-    }
-  };
-
-  const champ = "mt-1 w-full border border-ink/20 bg-paper px-3 py-3 font-serif text-lg font-semibold normal-case tracking-normal text-ink outline-none focus:shadow-[0_12px_30px_-20px_rgba(0,0,0,.4)]";
-
-  return (
-    <form onSubmit={envoyer} className="grid gap-4" aria-label="Écrire à Divine">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="label block">
-          Nom
-          <input name="nom" required autoComplete="name" className={champ} />
-        </label>
-        <label className="label block">
-          Entreprise
-          <input name="entreprise" autoComplete="organization" className={champ} />
-        </label>
-      </div>
-      <label className="label block">
-        Objet
-        <input name="objet" className={champ} />
-      </label>
-      <label className="label block">
-        Message
-        <textarea name="message" required rows={5} className={champ} />
-      </label>
-      <input name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 opacity-0" />
-      <div className="flex flex-wrap items-center gap-4">
-        <button type="submit" disabled={etat === "envoi"} className="btn btn-plein disabled:opacity-50">
-          {etat === "envoi" ? "Envoi…" : "Envoyer"}
-        </button>
-        <p role="status" className="font-display italic">
-          {etat === "ok" && "Merci, votre message est parti."}
-          {etat === "erreur" && `L'envoi a échoué : écrivez-moi directement à ${identite.email}.`}
-          {etat === "repos" && !ENDPOINT && <span className="text-soft">Ouvre votre messagerie avec le message prérempli.</span>}
-        </p>
-      </div>
-    </form>
   );
 }
 
@@ -209,7 +143,7 @@ function ScenneFin() {
 
 /**
  * p. 21 — Quatrième de couverture
- * Contact, langues, formulaire, CV. Au dernier scroll, l'avatar referme le magazine
+ * Contact, langues, messagerie (formulaire en conversation), CV. Au dernier scroll, l'avatar referme le magazine
  * et le repose sur la table. Son : une page qui se ferme.
  */
 export function Quatrieme() {
@@ -245,7 +179,7 @@ export function Quatrieme() {
           </dl>
 
           <div className="mt-10">
-            <Formulaire />
+            <Messagerie />
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3">

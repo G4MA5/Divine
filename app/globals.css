@@ -238,3 +238,6 @@ body {
 .vc--bottom .vc-big { left: 6cqw; bottom: 4cqw; display: flex; flex-direction: column; font-size: 16cqw; line-height: 0.88; }
 .vc--vertical .vc-big { left: 5cqw; top: 24cqw; display: flex; gap: 1.5cqw; font-size: 8cqw; letter-spacing: -0.06em; line-height: 1; }
 .vc--vertical .vc-big span { writing-mode: vertical-rl; text-orientation: upright; }
+
+/* lettres creuses (bandes des Atouts) */
+.texte-creux { color: transparent; -webkit-text-stroke: 1.5px #121212; }

@@ -2,98 +2,86 @@
 
 import { useRef } from "react";
 import { atouts } from "@/content/competences";
-import { identite } from "@/content/identite";
-import { gsap, PRIO, useScene } from "@/lib/useScene";
-import { play } from "@/lib/sound";
-const ANGLES = [0, 90, 180, -90];
+import { Page } from "./Page";
+import { gsap, useScene } from "@/lib/useScene";
 
 /**
- * p. 17 — Atouts · motif : le kung-fu
- * Effet : chaque atout arrive comme un coup. La page se fend en deux (découpe nette en diagonale) et le mot
- * apparaît dans l'ouverture, en Playfair très grand. Mouvement net et rapide, élégant, jamais violent.
- * Son : un souffle (« woosh »).
+ * p. 17 — Atouts
+ * Quatre bandes de texte géantes : chaque atout défile en boucle, une bande vers la gauche, la suivante vers la droite,
+ * en alternant lettres pleines et lettres creuses. Le défilement réagit au scroll : plus on défile vite, plus les bandes
+ * accélèrent (et changent de sens avec le scroll), puis reviennent à leur allure tranquille.
  */
-export function Atouts() {
-  const ref = useRef<HTMLElement>(null);
+const REPETITIONS = 6;
+
+function Bande({ texte, i }: { texte: string; i: number }) {
+  const creux = i % 2 === 1;
+  const morceau = (k: number) => (
+    <span key={k} className="flex shrink-0 items-center gap-[0.35em] pr-[0.35em]">
+      <span className={creux ? "texte-creux" : ""}>{texte}</span>
+      <span aria-hidden="true" className="inline-block h-[0.28em] w-[0.28em] rounded-full bg-gold" />
+    </span>
+  );
+  return (
+    <li
+      data-bande
+      data-sens={i % 2 === 0 ? -1 : 1}
+      className="titre-xl overflow-hidden border-b border-ink/15 py-[0.12em] text-[clamp(2.6rem,9vw,6.5rem)] first:border-t"
+    >
+      <span className="sr-only">{texte}</span>
+      <div aria-hidden="true" data-piste className="flex w-max whitespace-nowrap will-change-transform">
+        {Array.from({ length: REPETITIONS }, (_, k) => morceau(k))}
+      </div>
+    </li>
+  );
+}
+
+function Bandes() {
+  const ref = useRef<HTMLUListElement>(null);
 
   useScene(ref, (root) => {
-    const groupe = root.querySelector("[data-coupe]") as HTMLElement;
-    const A = root.querySelector("[data-a]") as HTMLElement;
-    const B = root.querySelector("[data-b]") as HTMLElement;
-    const mots = gsap.utils.toArray<HTMLElement>("[data-mot]", root);
-    const compteur = root.querySelector("[data-n]") as HTMLElement;
-    gsap.set(mots, { opacity: 0, scale: 0.9 });
-    gsap.set(groupe, { rotation: ANGLES[0] });
+    const pistes = gsap.utils.toArray<HTMLElement>("[data-piste]", root);
+    const etat = pistes.map((p, i) => ({ el: p, x: 0, sens: i % 2 === 0 ? -1 : 1, largeur: 0 }));
+    const mesurer = () => etat.forEach((e) => (e.largeur = e.el.scrollWidth / REPETITIONS));
+    mesurer();
+    // les bandes qui vont vers la droite démarrent décalées d'un morceau pour ne jamais montrer de vide
+    etat.forEach((e) => (e.x = e.sens === 1 ? -e.largeur : 0));
+    let boost = 0;
 
-    const tl = gsap.timeline({
-      defaults: { ease: "none" },
-      scrollTrigger: { trigger: root, start: "top top", end: `+=${atouts.length * 130}%`, pin: true, scrub: 0.5, anticipatePin: 1, refreshPriority: PRIO.atouts },
-    });
-    const SEG = 3;
-    mots.forEach((m, k) => {
-      const b = k * SEG;
-      tl.set(groupe, { rotation: ANGLES[k % ANGLES.length] }, b)
-        .set(compteur, { textContent: `${k + 1} / ${atouts.length}` }, b)
-        .call(() => play("woosh"), [], b + 0.3)
-        .to(A, { xPercent: -62, yPercent: -62, duration: 0.3, ease: "expo.out" }, b + 0.3)
-        .to(B, { xPercent: 62, yPercent: 62, duration: 0.3, ease: "expo.out" }, b + 0.3)
-        .fromTo(m, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" }, b + 0.4)
-        .to(m, { opacity: 0, scale: 1.06, duration: 0.3 }, b + 2.2)
-        .to(A, { xPercent: 0, yPercent: 0, duration: 0.25, ease: "power4.in" }, b + 2.35)
-        .to(B, { xPercent: 0, yPercent: 0, duration: 0.25, ease: "power4.in" }, b + 2.35);
-    });
+    const tick = (_t: number, dt: number) => {
+      const lenis = (window as unknown as { __lenis?: { velocity: number } }).__lenis;
+      const v = lenis?.velocity ?? 0;
+      boost += (Math.min(Math.abs(v), 40) * Math.sign(v) - boost) * 0.08;
+      const pas = dt / 1000;
+      etat.forEach((e, i) => {
+        if (!e.largeur) return;
+        const vitesse = 36 + i * 6; // px/s au repos
+        e.x += e.sens * (vitesse * pas + Math.abs(boost) * 2.2 * pas * 60 * 0.12) * (boost < 0 ? -1 : 1);
+        if (e.x <= -e.largeur) e.x += e.largeur;
+        if (e.x > 0) e.x -= e.largeur;
+        gsap.set(e.el, { x: e.x });
+      });
+    };
+    gsap.ticker.add(tick);
+    window.addEventListener("resize", mesurer);
+    return () => {
+      gsap.ticker.remove(tick);
+      window.removeEventListener("resize", mesurer);
+    };
   });
 
   return (
-    <section id="atouts" ref={ref} data-couleur="nuit" aria-labelledby="atouts-titre" className="relative h-svh overflow-hidden">
-      <h2 id="atouts-titre" className="sr-only">
-        Atouts
-      </h2>
-      {/* les mots, derrière la page */}
-      <ul className="absolute inset-0 flex items-center justify-center px-6 pr-12 text-center">
-        {atouts.map((a) => (
-          <li key={a} data-mot className="titre-xl absolute z-[1] max-w-[14ch] text-[clamp(2.8rem,13vw,8.5rem)] text-gold sm:max-w-[16ch]">
-            {a}
-          </li>
-        ))}
-      </ul>
+    <ul ref={ref} className="-mx-4 mt-10 sm:-mx-8" aria-label="Mes atouts">
+      {atouts.map((a, i) => (
+        <Bande key={a} texte={a} i={i} />
+      ))}
+    </ul>
+  );
+}
 
-      {/* la page qui se fend */}
-      <div data-coupe aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-[160vmax] w-[160vmax] -translate-x-1/2 -translate-y-1/2">
-        <div
-          data-a
-          className="absolute inset-0"
-          style={{
-            clipPath: "polygon(0 0, 100% 0, 0 100%)",
-            background: "linear-gradient(to bottom right, #ffffff 0 calc(50% - 2px), #d99a00 calc(50% - 2px) 50%)",
-            filter: "drop-shadow(0 0 18px rgba(0,0,0,.25))",
-          }}
-        />
-        <div data-b className="absolute inset-0" style={{ background: "#ffffff", clipPath: "polygon(100% 0, 100% 100%, 0 100%)", filter: "drop-shadow(0 0 18px rgba(0,0,0,.25))" }} />
-      </div>
-
-      {/* l'en-tête reste au-dessus de la page */}
-      <div className="absolute inset-x-0 top-0 z-20 pl-4 pr-10 pt-20 sm:px-8">
-        <div className="mx-auto max-w-3xl">
-          <div className="inline-block bg-white px-4 py-3 text-ink">
-            <p className="label !text-ink">
-              {identite.magazine} · Atouts · p. 17
-            </p>
-            <p className="titre-xl mt-1 text-5xl sm:text-7xl">Atouts</p>
-            <p data-n className="label mt-1 tabular-nums !text-ink">
-              1 / {atouts.length}
-            </p>
-          </div>
-        </div>
-      </div>
-      <div className="absolute inset-x-0 bottom-0 z-20 pl-4 pr-10 sm:px-8">
-        <div className="mx-auto max-w-3xl">
-          <p className="label mb-3 flex justify-between !text-ink">
-            <span className="bg-paper px-2 py-1">{identite.magazine}</span>
-            <span className="bg-paper px-2 py-1 tabular-nums">p. 17</span>
-          </p>
-        </div>
-      </div>
-    </section>
+export function Atouts() {
+  return (
+    <Page id="atouts" large>
+      <Bandes />
+    </Page>
   );
 }

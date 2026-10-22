@@ -43,6 +43,7 @@ function Fiche() {
   return (
     <div ref={ref}>
       <p className="mt-5 text-xl font-semibold italic">{recette.sousTitre}</p>
+      <p className="mt-2 max-w-2xl text-lg text-soft">{recette.intro}</p>
 
       {/* le bol */}
       <div data-bol className="relative mx-auto mt-10 h-72 w-full max-w-md" aria-hidden="true">
@@ -92,9 +93,12 @@ function Fiche() {
         <h3 className="label mt-6 !text-accent">Préparation</h3>
         <ol data-etapes className="mt-3 space-y-4">
           {recette.etapes.map((e, i) => (
-            <li key={i} data-etape className="flex gap-4">
-              <span className="titre-xl text-5xl text-accent tabular-nums">{i + 1}</span>
-              <span>{e}</span>
+            <li key={e.nom} data-etape className="flex gap-4">
+              <span className="titre-xl w-10 shrink-0 text-5xl text-accent tabular-nums">{i + 1}</span>
+              <span>
+                <strong className="block font-display text-xl italic">{e.nom}</strong>
+                {e.texte}
+              </span>
             </li>
           ))}
         </ol>

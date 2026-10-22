@@ -19,6 +19,7 @@ import { portraitExiste, cvExiste } from "@/lib/portrait";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { BoutonSon } from "@/components/ui/BoutonSon";
 import { BoutonSommaire } from "@/components/ui/BoutonSommaire";
+import { CurseurLueur } from "@/components/ui/CurseurLueur";
 import { IndicateurPage } from "@/components/ui/IndicateurPage";
 import { Filigranes, NavFlottante, Aimants } from "@/components/ui/Effets";
 
@@ -45,6 +46,7 @@ export default function Accueil() {
       <IndicateurPage />
       <NavFlottante />
       <Aimants />
+      <CurseurLueur />
       <main>
         <SceneTable />
         <Sommaire />

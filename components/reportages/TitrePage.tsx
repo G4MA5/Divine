@@ -16,8 +16,8 @@ export function TitrePage({ children }: { children: ReactNode }) {
       .split(" ")
       .map((m) => `<span aria-hidden="true" style="display:inline-block;transform-origin:50% 100%" data-m>${m}</span>`)
       .join(" ");
-    gsap.from(t.querySelectorAll("[data-m]"), { scaleY: 0, yPercent: 25, duration: 0.8, ease: "power3.out", stagger: 0.1, delay: 0.2 });
-    gsap.from(root.querySelectorAll("article > div"), { y: 30, opacity: 0, duration: 0.8, ease: "power3.out", stagger: 0.1 });
+    gsap.fromTo(t.querySelectorAll("[data-m]"), { scaleY: 0, yPercent: 25 }, { scaleY: 1, yPercent: 0, duration: 0.8, ease: "power3.out", stagger: 0.1, delay: 0.2 });
+    gsap.fromTo(root.querySelectorAll("article > div"), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", stagger: 0.1, clearProps: "opacity,transform" });
   });
 
   return <div ref={ref}>{children}</div>;

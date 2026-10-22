@@ -11,8 +11,13 @@ Le site n'affiche plus aucun texte « à fournir » : un champ vide disparaît t
 
 ## Textes (dans `/content`)
 - `interview.ts` : renseigner `reponse` pour chaque question : dès qu'il y en a, l'interview devient interactive (sinon c'est un teaser du prochain numéro).
-- `recette.ts` : `temps`, `difficulte`, `etapes`.
+- `recette.ts` : la recette (ma méthode de travail) est rédigée ; à relire et à ajuster avec tes mots.
 - `projets.ts` : `stack`, `role`, `lien` pour chaque projet ; `captures`.
-- `experience.ts` : la période et les missions du BDE.
+- `experience.ts` : la période et les missions du BDE ; les logos de Transsion et de Top Telecom Services (en attendant, un monogramme coloré s'affiche ; déposer le fichier dans `public/images/logos/` et renseigner `logo`).
 - `identite.ts` : `linkedin`, `afficherTelephone`.
 - `competences.ts` : confirmer les outils DevSecOps et sécurité.
+
+## Composants React Bits utilisés (dans `components/reactbits/`)
+Scroll Stack (Expérience), Bounce Cards (Peinture), Staggered Menu (bouton Sommaire), Flowing Menu (page Sommaire),
+Sling Button (envoi du message), Lightfall (écran de chargement), Glow Cursor (curseur orange).
+Ils ont été adaptés : pas d'ombres portées, pas de dépendance à Hugeicons, libellés en français.

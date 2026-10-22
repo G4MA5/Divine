@@ -8,6 +8,12 @@ export type Experience = {
   /** une phrase de contexte sous le poste */
   resume?: string;
   missions: string[];
+  /** couleur de fond de la carte (teinte douce propre à l'organisation) et couleur d'accent */
+  fond: string;
+  accent: string;
+  /** logo : une image dans /public, sinon un monogramme */
+  logo?: string;
+  monogramme: string;
   /** un lien vers l'organisation */
   lien?: { texte: string; href: string };
 };
@@ -15,6 +21,10 @@ export type Experience = {
 export const experiences: Experience[] = [
   {
     id: "gama",
+    fond: "#fdf1c9",
+    accent: "#d99a00",
+    logo: "/images/logos/logo-gama-cube.webp",
+    monogramme: "G",
     periode: "Depuis 2023",
     poste: "Co-fondatrice",
     entreprise: "GAMA Labs",
@@ -29,6 +39,10 @@ export const experiences: Experience[] = [
   },
   {
     id: "bde",
+    fond: "#dff0e3",
+    accent: "#2f7d4f",
+    logo: "/images/logos/upb-logo.webp",
+    monogramme: "BDE",
     poste: "Secrétaire générale du BDE",
     entreprise: "Bureau des étudiants, 6e promotion de l'UPB",
     lieu: "Bingerville",
@@ -36,6 +50,9 @@ export const experiences: Experience[] = [
   },
   {
     id: "transsion",
+    fond: "#dfeaf9",
+    accent: "#2b5fb8",
+    monogramme: "T",
     periode: "Juin 2024 – Décembre 2024",
     poste: "Data Annotator",
     entreprise: "Transsion Holding",
@@ -48,6 +65,9 @@ export const experiences: Experience[] = [
   },
   {
     id: "ttsc",
+    fond: "#fbe3da",
+    accent: "#c4502a",
+    monogramme: "TTS",
     periode: "Mai 2026 – Novembre 2026",
     poste: "Support IT",
     entreprise: "Top Telecom Services",

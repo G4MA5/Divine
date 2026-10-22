@@ -58,17 +58,18 @@ function Dossier({ index, origine, onClose }: { index: number; origine: Origine;
     if (!reducedMotion) {
       play("page");
       gsap.fromTo(el, { clipPath: iris(0) }, { clipPath: iris(rayon()), duration: 0.95, ease: "power3.inOut" });
-      gsap.from(el.querySelectorAll("[data-entre]"), { y: 36, opacity: 0, duration: 0.7, ease: "power3.out", stagger: 0.09, delay: 0.55 });
+      gsap.fromTo(el.querySelectorAll("[data-entre]"), { y: 36, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "power3.out", stagger: 0.09, delay: 0.55, clearProps: "opacity,transform" });
       // le titre : ses mots montent depuis la ligne de base
       const t = el.querySelector("[data-titre-dossier]");
       if (t) {
         const mots = (t.textContent ?? "").split(" ");
         t.setAttribute("aria-label", t.textContent ?? "");
         t.innerHTML = mots.map((m) => `<span aria-hidden="true" style="display:inline-block;transform-origin:50% 100%" data-m>${m}</span>`).join(" ");
-        gsap.from(t.querySelectorAll("[data-m]"), { scaleY: 0, yPercent: 25, duration: 0.8, ease: "power3.out", stagger: 0.1, delay: 0.7 });
+        gsap.fromTo(t.querySelectorAll("[data-m]"), { scaleY: 0, yPercent: 25 }, { scaleY: 1, yPercent: 0, duration: 0.8, ease: "power3.out", stagger: 0.1, delay: 0.7, clearProps: "transform" });
       }
     }
     return () => {
+      gsap.killTweensOf(el.querySelectorAll("[data-entre], [data-m]"));
       window.removeEventListener("keydown", onKey);
       document.documentElement.style.overflow = prev;
       lenis?.start();
