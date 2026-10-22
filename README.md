@@ -1,52 +1,67 @@
 # [div_dev_Now] — le portfolio magazine de Divine
 
-Next.js (App Router) + TypeScript + Tailwind + GSAP/ScrollTrigger + Lenis + Howler.
+Un portfolio raconté comme un magazine : une couverture 3D, un livre qui s'ouvre sur une table, des personnages à tête de
+fleur, des reportages (projets), une interview, une galerie de peinture, et des tournesols qui chantent en bas de page.
 
+**Technologies** : Next.js 16 (App Router, Cache Components) · React 19 · TypeScript · Tailwind 4 · GSAP + ScrollTrigger · Lenis ·
+three.js (React Three Fiber) · Web Audio / Howler · Supabase (contenu) · Playwright (tests).
+
+## Démarrer
+Node.js ≥ 20.9 (voir `.nvmrc`).
 ```bash
-npm install
-npm run dev      # http://localhost:3000
-npm run build
+npm ci                    # installe exactement les versions du fichier package-lock.json
+npm run dev               # http://localhost:3000
+npm run build && npm start
 ```
+Le site fonctionne sans configuration : il affiche le contenu du dossier `content/`. Les polices sont hébergées dans le
+projet (`app/fonts/`) : la construction n'a besoin d'aucun accès à Google Fonts.
 
-## Variables d'environnement (Vercel)
+## Le contenu vient de Supabase
+Copier `.env.example` en `.env.local` et renseigner :
+
 | Variable | Rôle |
-|---|---|
-| `NEXT_PUBLIC_SITE_URL` | adresse publique avec le nom de domaine (sitemap, cartes d'aperçu, balises canoniques) |
-| `NEXT_PUBLIC_FORM_ENDPOINT` | adresse du formulaire (Formspree ou route Resend). Sans elle, le formulaire ouvre un `mailto:` |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | la base (clé publique « anon » uniquement). Sans elles : contenu du dossier `content/` |
+| `REVALIDATE_SECRET` | autorise l'application de commande à rafraîchir le site tout de suite (`POST /api/revalidate`) |
+| `NEXT_PUBLIC_SITE_URL` | adresse publique (plan du site, aperçus de partage, balises canoniques) |
+| `NEXT_PUBLIC_FORM_ENDPOINT` | facultatif : service de formulaire, utilisé seulement sans Supabase |
+
+La base se prépare avec `supabase/schema.sql` puis `supabase/seed.sql` (voir `supabase/README.md`). Le contenu se modifie
+ensuite depuis l'application mobile `app-de-control-portfolio`. Les messages du formulaire de contact arrivent dans la table
+`messages`, lisible seulement par l'administratrice.
+
+Sans Supabase, tout le texte se trouve dans `content/` (jamais dans les composants) ; `npm run db:seed` régénère `seed.sql`
+à partir de ces fichiers.
 
 ## Tests
 ```bash
+npm run lint
+npx tsc --noEmit
 npm run build
-npx playwright test     # 390 px et 1280 px, clair / sombre, mouvement réduit, clavier, URLs directes
+npx playwright test         # 390 px et 1280 px, mouvement réduit, clavier, URLs directes, scènes 3D, contact…
+npm run db:verify           # schema.sql + seed.sql dans un vrai Postgres en mémoire, avec les règles de sécurité
+npm run test:supabase       # le site contre un faux Supabase : lecture, mise à jour, revalidation, messages
+```
+Pour construire sans toucher au dossier `.next` d'un serveur de développement : `NEXT_DIST_DIR=.next-build npm run build`.
+
+## Structure
+```
+app/            pages (accueil, reportages/[slug]), API /api/revalidate, polices
+components/     rubriques/ (les pages du magazine), scene3d/ (livre, table, personnages, salon d'interview),
+                reactbits/ (composants de reactbits.dev adaptés), ui/, intro/
+content/        les textes d'origine (repli quand Supabase est absent)
+lib/            contenu.ts (lecture de Supabase), son, scènes GSAP
+supabase/       schema.sql, seed.sql
+scripts/        export-sql.mjs, verifier-sql.mjs, mock-supabase.mjs, e2e-supabase.mjs
+tests/          Playwright
 ```
 
-## Modifier le contenu
-Tous les textes sont dans `/content` — jamais dans les composants :
-
-| Fichier | Contenu |
-|---|---|
-| `identite.ts` | nom, titre, contact, langues, centres d'intérêt, chemin du portrait et du CV |
-| `parcours.ts` | formation |
-| `experience.ts` | expériences pro |
-| `projets.ts` | les reportages (un objet par projet) |
-| `competences.ts` | compétences et atouts |
-| `edito.ts`, `recette.ts`, `interview.ts` | les textes à fournir |
-| `sections.ts` | les rubriques, leur numéro de page, le sommaire |
-| `avatars.ts` | les 4 avatars du visiteur |
-| `peinture.ts` | la galerie de tableaux (images dans `public/images/peinture/`) |
-| `devsecops.ts` | la chaîne DevSecOps et les réflexes sécurité |
-
-Tout ce qui reste à fournir est listé dans `TODO-CONTENU.md`.
-
-## Ajouter un projet
-Ajouter un objet dans `content/projets.ts` (slug unique). Choisir une valeur de `ouverture` parmi
-`rendez-vous`, `badge`, `livres`, `stock`, `ticket`, `metro`.
-
-## Remplacer un avatar ou un son
-- Avatar : voir `RIVE-SPEC.md`.
-- Son : déposer le fichier dans `public/sounds/` et renseigner son nom dans `FILES` de `lib/sound.ts`.
-  Sans fichier, le son est synthétisé par le navigateur (Web Audio).
+## Réglages utiles
+- Avatar ou son : `components/scene3d/Personnage.ts` (personnages 3D), `lib/sound.ts` (sons synthétisés ; un vrai fichier
+  déposé dans `public/sounds/` prend le pas).
+- Images des projets : dans l'application (stockage Supabase) ou dans `public/images/` avec `captures` dans `content/projets.ts`.
+- `TODO-CONTENU.md` liste ce qui reste à renseigner.
 
 ## Règles du projet
-Mobile d'abord, fond blanc pur et fixe (pas de mode sombre), son coupé par défaut, mouvement réduit respecté, un effet par section,
-bouton « Passer l'intro » toujours visible pendant l'intro, tout le site en français.
+Fond blanc fixe (pas de mode sombre), une seule couleur d'accent (le tournesol), son coupé par défaut, mouvement réduit
+respecté, bouton « Passer l'intro » toujours visible pendant l'intro, tout le site en français, personnages sans genre.

@@ -155,7 +155,7 @@ export function IntroGate({ children }: { children: ReactNode }) {
                     Qui êtes-vous ?
                   </p>
                   <ul className="mt-5 grid grid-cols-2 gap-3">
-                    {avatars.map((a, i) => (
+                    {avatars.map((a) => (
                       <li key={a.id}>
                         <button
                           type="button"

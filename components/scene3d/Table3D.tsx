@@ -118,9 +118,9 @@ export function Environnement({ W }: { W: number }) {
     t.repeat.set(5, 5);
     return t;
   }, []);
-  const lumiere = useMemo(dessinerLumiere, []);
-  const ombre = useMemo(dessinerOmbre, []);
-  const vapeur = useMemo(dessinerVapeur, []);
+  const lumiere = useMemo(() => dessinerLumiere(), []);
+  const ombre = useMemo(() => dessinerOmbre(), []);
+  const vapeur = useMemo(() => dessinerVapeur(), []);
   const fumee = useRef<(Sprite | null)[]>([]);
 
   // la vapeur monte de la tasse, en boucle

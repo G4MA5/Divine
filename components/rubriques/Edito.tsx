@@ -139,7 +139,6 @@ function Contenu() {
 }
 
 export function Edito() {
-  const { edito } = useContenu();
   return (
     <Page
       id="edito"

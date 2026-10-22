@@ -324,7 +324,6 @@ function Familles() {
 }
 
 export function Competences() {
-  const { competences } = useContenu();
   return (
     <Page
       id="competences"

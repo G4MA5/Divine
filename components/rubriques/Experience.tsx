@@ -3,7 +3,7 @@
 import { useContenu } from "@/components/ContenuProvider";
 
 import Image from "next/image";
-import { experiences, type Experience as Xp } from "@/content/experience";
+import type { Experience as Xp } from "@/content/experience";
 import { PiedDePage } from "../ui/PiedDePage";
 import { TitreAnime } from "../ui/TitreAnime";
 import ScrollStack, { ScrollStackItem } from "../reactbits/ScrollStack";

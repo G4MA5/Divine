@@ -81,7 +81,6 @@ function Bandes() {
 }
 
 export function Atouts() {
-  const { atouts } = useContenu();
   return (
     <Page id="atouts" large>
       <Bandes />

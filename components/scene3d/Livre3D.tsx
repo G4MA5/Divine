@@ -68,7 +68,7 @@ function Livre({ tex, src, actif }: { tex: JeuTextures; src: Sources; actif: boo
   const tR = T / 2;
   const tL = T / 2;
   const c = W * 0.014; // épaisseur de la couverture
-  const ombre = useMemo(creerOmbre, []);
+  const ombre = useMemo(() => creerOmbre(), []);
   const invalider = useThree((st) => st.invalidate);
   const etat = useRef({ x: 0, y: 0, s: 1, rx: 0, ouvert: 0, o: 0 });
   const reduit = useMemo(() => !!src.pos.closest("[data-reduced]"), [src]);

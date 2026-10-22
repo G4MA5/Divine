@@ -103,7 +103,7 @@ function Salon() {
   const fil = useRef<HTMLDivElement>(null);
 
   // le tirage est mélangé une fois, côté client (pas d'écart serveur / client)
-  useEffect(() => setOrdre(melange(repondues.map((q) => q.id))), []);
+  useEffect(() => setOrdre(melange(repondues.map((q) => q.id))), [repondues]);
 
   const restantes = ordre.filter((x) => !posees.includes(x));
   const propositions = restantes.slice(0, 3);

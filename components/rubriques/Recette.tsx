@@ -112,7 +112,6 @@ function Fiche() {
 }
 
 export function Recette() {
-  const { recette } = useContenu();
   return (
     <Page
       id="recette"

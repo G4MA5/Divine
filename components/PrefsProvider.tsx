@@ -54,7 +54,6 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
     // le fond est un blanc pur et fixe : il n'y a plus de mode sombre
     setTheme("light");
     const av = read(KEY.avatar);
@@ -67,16 +66,6 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
     rm.addEventListener("change", onRm);
     setReady(true);
     return () => rm.removeEventListener("change", onRm);
-  }, []);
-
-  // suit le système tant que le visiteur n'a rien choisi
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => {
-      if (read(KEY.theme) === null) setTheme(mq.matches ? "dark" : "light");
-    };
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
   }, []);
 
   useEffect(() => {
