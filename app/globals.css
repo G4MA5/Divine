@@ -241,3 +241,19 @@ body {
 
 /* lettres creuses (bandes des Atouts) */
 .texte-creux { color: transparent; -webkit-text-stroke: 1.5px #121212; }
+
+/* Parcours : liste complète par défaut, scène épinglée quand l'animation est active (.vy-actif) */
+.vy-anim { display: none; } /* masqué tant que la scène n'est pas active */
+.vy-panneau { margin-bottom: 2rem; }
+.vy-actif .vy-anim { display: block; }
+.vy-actif .vy-grille { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); }
+.vy-actif .vy-panneaux { position: relative; min-height: 17rem; }
+.vy-actif .vy-panneau { position: absolute; left: 0; right: 0; top: 0; margin: 0; border-bottom: 0; }
+.vy-actif .vy-fin { display: none; }
+.vy-actif ~ .vy-pied { display: none; }
+@media (min-width: 640px) {
+  .vy-actif .vy-grille { grid-template-columns: 5rem minmax(0, 1fr) minmax(0, 0.7fr); }
+}
+@media (max-width: 639px) {
+  .vy-actif .vy-odo { display: none; }
+}

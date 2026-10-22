@@ -558,7 +558,11 @@ function FlowingMenu({
 
   useEffect(() => {
     const loop = engine.current;
-    return () => cancelAnimationFrame(loop.raf);
+    return () => {
+      cancelAnimationFrame(loop.raf);
+      // en mode strict (dev), le démontage simulé ne doit pas laisser un identifiant de frame périmé : le moteur ne repartirait plus
+      loop.raf = 0;
+    };
   }, []);
 
   const onPointerMove = (event: ReactPointerEvent<HTMLUListElement>) => {

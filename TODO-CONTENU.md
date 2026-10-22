@@ -10,11 +10,11 @@ Le site n'affiche plus aucun texte « à fournir » : un champ vide disparaît t
 - `public/rive/` : les avatars Rive (voir `RIVE-SPEC.md`).
 
 ## Textes (dans `/content`)
-- `interview.ts` : renseigner `reponse` pour chaque question : dès qu'il y en a, l'interview devient interactive (sinon c'est un teaser du prochain numéro).
+- `interview.ts` : 9 réponses rédigées (à relire et corriger avec tes mots) ; il manque les questions 8 (lecture), 9 (plat signature) et 10 (musique) : elles restent des teasers tant que `reponse` est vide.
 - `recette.ts` : la recette (ma méthode de travail) est rédigée ; à relire et à ajuster avec tes mots.
 - `projets.ts` : `stack`, `role`, `lien` pour chaque projet ; `captures`.
 - `experience.ts` : la période et les missions du BDE ; les logos de Transsion et de Top Telecom Services (en attendant, un monogramme coloré s'affiche ; déposer le fichier dans `public/images/logos/` et renseigner `logo`).
-- `identite.ts` : `linkedin`, `afficherTelephone`.
+- `identite.ts` : `linkedin` (à fournir ; le lien n'apparaît qu'une fois renseigné). Le téléphone est affiché.
 - `competences.ts` : confirmer les outils DevSecOps et sécurité.
 
 ## Composants React Bits utilisés (dans `components/reactbits/`)

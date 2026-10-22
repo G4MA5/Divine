@@ -39,6 +39,7 @@ export const experiences: Experience[] = [
   },
   {
     id: "bde",
+    periode: "Année scolaire 2025-2026",
     fond: "#dff0e3",
     accent: "#2f7d4f",
     logo: "/images/logos/upb-logo.webp",
@@ -46,7 +47,10 @@ export const experiences: Experience[] = [
     poste: "Secrétaire générale du BDE",
     entreprise: "Bureau des étudiants, 6e promotion de l'UPB",
     lieu: "Bingerville",
-    missions: [],
+    missions: [
+      "Rédaction des comptes rendus et suivi administratif du bureau",
+      "Relais entre les étudiants et l'administration de l'université",
+    ],
   },
   {
     id: "transsion",

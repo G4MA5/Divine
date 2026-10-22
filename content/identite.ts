@@ -9,7 +9,7 @@ export const identite = {
   email: "Graouroudivine@gmail.com",
   telephone: "(+225) 07 78 30 42 87",
   /** afficher ou non le téléphone sur le site */
-  afficherTelephone: false,
+  afficherTelephone: true,
   github: "https://github.com/divine-dev-now/",
   instagram: "https://www.instagram.com/divin____e/",
   whatsapp: "https://wa.me/2250778304287",

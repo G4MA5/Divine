@@ -55,7 +55,7 @@ export function SceneTable() {
       };
 
       gsap.set(table, { opacity: 0 });
-      gsap.set(props, { opacity: 0, y: 30 });
+      if (props.length) gsap.set(props, { opacity: 0, y: 30 });
       gsap.set(magPos, { transformPerspective: 1600, transformOrigin: "50% 50%" });
       gsap.set(cover, { transformOrigin: "0% 50%", rotationY: 0 });
       gsap.set(avatarEl, { x: () => -geo().vw * 0.75 });
@@ -78,7 +78,7 @@ export function SceneTable() {
       // 1 · recul de caméra : la couverture devient un magazine posé sur la table
       tl.to(magPos, { scale: () => (geo().mobile ? 0.5 : 0.44), rotationX: 54, y: () => geo().vh * 0.04, ease: "power2.inOut", duration: 2 }, 0)
         .to(table, { opacity: 1, duration: 1.6 }, 0.4)
-        .to(props, { opacity: 1, y: 0, stagger: 0.12, duration: 1 }, 0.9);
+        .to(props.length ? props : {}, props.length ? { opacity: 1, y: 0, stagger: 0.12, duration: 1 } : { duration: 0.01 }, 0.9);
 
       // 2 · l'avatar entre et marche vers la table, un pas par cran
       tl.to(avatarEl, { x: () => (geo().mobile ? geo().vw * 0.02 : geo().vw * 0.1), duration: 3.2, ease: "power1.out" }, 2)

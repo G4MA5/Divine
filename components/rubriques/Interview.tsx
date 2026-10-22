@@ -1,14 +1,30 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Component, useEffect, useRef, useState, type ReactNode } from "react";
+import dynamic from "next/dynamic";
 import { questions, type QuestionInterview } from "@/content/interview";
 import { Avatar, type AvatarId } from "../avatar/Avatar";
 import { usePrefs } from "../PrefsProvider";
 import { Portrait } from "../ui/Portrait";
+import { usePortraitDisponible } from "../PortraitContext";
+import { identite } from "@/content/identite";
 import { Citation } from "../ui/Citation";
 import { Page } from "./Page";
 import { gsap } from "@/lib/useScene";
 import { play } from "@/lib/sound";
+
+const Studio3D = dynamic(() => import("../scene3d/Studio3D"), { ssr: false });
+
+/** Si WebGL est indisponible, la version à plat reste affichée. */
+class Secours extends Component<{ children: ReactNode }, { erreur: boolean }> {
+  state = { erreur: false };
+  static getDerivedStateFromError() {
+    return { erreur: true };
+  }
+  render() {
+    return this.state.erreur ? null : this.props.children;
+  }
+}
 
 /** Les questions qui ont une réponse : seules celles-là sont jouables. */
 const repondues = questions.filter((q) => !!q.reponse);
@@ -34,14 +50,22 @@ function QR({ q, premier }: { q: QuestionInterview; premier: boolean }) {
   );
 }
 
-function Scene() {
+function Scene({ parle = 0 }: { parle?: number }) {
   const { avatar } = usePrefs();
+  const portraitOk = usePortraitDisponible();
   const id = (avatar ?? "curieuse") as AvatarId;
+  const [pret3d, setPret3d] = useState(false);
   return (
     <>
-      <div className="grid grid-cols-[1fr_1fr] items-end gap-2 border-b border-ink sm:gap-8" aria-hidden="true">
-        <Avatar id={id} pose="assis" className="mx-auto h-44 w-auto sm:h-64" />
-        <Portrait className="mx-auto h-44 w-auto sm:h-64" />
+      {/* le salon en 3D ; la version à plat reste dessous tant que la 3D n'est pas prête (ou si WebGL manque) */}
+      <div className="relative h-72 border-b border-ink sm:h-[24rem]" aria-hidden="true">
+        <div className="absolute inset-0 grid grid-cols-[1fr_1fr] items-end gap-2 transition-opacity duration-500 sm:gap-8" style={{ opacity: pret3d ? 0 : 1 }}>
+          <Avatar id={id} pose="assis" className="mx-auto h-44 w-auto sm:h-64" />
+          <Portrait className="mx-auto h-44 w-auto sm:h-64" />
+        </div>
+        <Secours>
+          <Studio3D avatarId={id} parle={parle} portrait={portraitOk ? identite.portrait : null} onPret={() => setPret3d(true)} />
+        </Secours>
       </div>
       <p className="label mt-2 flex justify-between">
         <span>L&apos;intervieweur</span>
@@ -99,7 +123,7 @@ function Salon() {
 
   return (
     <div className="mt-10">
-      <Scene />
+      <Scene parle={posees.length} />
 
       <div ref={fil} className="mt-8" aria-live="polite">
         {posees.map((x, i) => (

@@ -208,3 +208,58 @@ test("la galerie affiche les Bounce Cards et la visionneuse s'ouvre", async ({ p
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog", { name: /Tableau n°/ })).toHaveCount(0);
 });
+
+test("le survol d'une ligne du Sommaire fait apparaître la bande dorée (Flowing Menu)", async ({ page, isMobile }) => {
+  test.skip(!!isMobile, "le survol n'existe pas au toucher");
+  await entrer(page);
+  await page.evaluate(() => {
+    const l = (window as unknown as { __lenis?: Lenis }).__lenis;
+    const y = document.querySelector("#sommaire")!.getBoundingClientRect().top + scrollY + 300;
+    l?.scrollTo(y, { immediate: true });
+  });
+  const menu = page.locator('nav[aria-label="Sommaire du magazine"]');
+  await expect(menu).toBeVisible();
+  const ligne = (await menu.locator("li").nth(3).boundingBox())!;
+  for (let i = 0; i < 10; i++) {
+    await page.mouse.move(ligne.x + 200 + i * 20, ligne.y + ligne.height / 2);
+    await page.waitForTimeout(40);
+  }
+  await expect
+    .poll(() => menu.evaluate((n) => [...n.querySelectorAll("li > div")].filter((d) => getComputedStyle(d).visibility === "visible").length), { timeout: 5000 })
+    .toBeGreaterThan(0);
+});
+
+test("un clic loin dans le Sommaire passe par le rideau et arrive sur la bonne page", async ({ page }) => {
+  await entrer(page);
+  await page.evaluate(() => {
+    const l = (window as unknown as { __lenis?: Lenis }).__lenis;
+    l?.scrollTo(document.documentElement.scrollHeight, { immediate: true });
+  });
+  await page.waitForTimeout(800);
+  await page.getByRole("link", { name: "Peinture" }).first().click();
+  await expect.poll(() => page.evaluate(() => Math.round(document.getElementById("peinture")!.getBoundingClientRect().top)), { timeout: 10_000 }).toBeLessThanOrEqual(2);
+  // le rideau est retiré
+  await expect(page.locator('[class*="z-[96]"]')).toHaveCount(0);
+});
+
+test("le parcours est une scène épinglée : la commande git et l'étape changent avec le scroll", async ({ page }) => {
+  await entrer(page);
+  const aller = (dy: number) =>
+    page.evaluate(async (d) => {
+      const l = (window as unknown as { __lenis?: Lenis }).__lenis;
+      const y = document.querySelector("#parcours")!.getBoundingClientRect().top + scrollY + d;
+      l?.scrollTo(y, { immediate: true });
+      await new Promise((r) => setTimeout(r, 1500));
+    }, dy);
+  await aller(300);
+  const cmd = page.locator("[data-vy-cmd]");
+  await expect(cmd).toContainText("git checkout");
+  await aller(page.viewportSize()!.height * 2.6);
+  await expect(cmd).toContainText(/git s/, { timeout: 10_000 }); // « git switch … » : la frappe suit le scroll avec un léger retard
+});
+
+test("le livre est rendu en 3D (un canvas WebGL) tout en gardant le titre h1 accessible", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("#scene canvas")).toHaveCount(1, { timeout: 15_000 });
+  await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+});

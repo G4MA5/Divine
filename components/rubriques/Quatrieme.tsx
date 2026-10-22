@@ -11,13 +11,12 @@ import { usePrefs } from "../PrefsProvider";
 import { useCvDisponible } from "../PortraitContext";
 import { PRIO, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
+import { allerAuY } from "../SmoothScroll";
 
 /** Remonte tout en haut, sur la couverture. */
 export function allerEnHaut() {
   play("page");
-  const lenis = (window as unknown as { __lenis?: { scrollTo: (n: number, o?: object) => void } }).__lenis;
-  if (lenis) lenis.scrollTo(0, { duration: 2.4 });
-  else window.scrollTo({ top: 0, behavior: "smooth" });
+  allerAuY(0, "Couverture");
 }
 
 function Lien({ label, valeur, href }: { label: string; valeur: string; href?: string }) {
