@@ -3,6 +3,8 @@ export type EtapeParcours = {
   titre: string;
   lieu: string;
   detail?: string;
+  /** une branche git : une étape parallèle qui part de la précédente et revient avant la suivante (ex. un certificat) */
+  branche?: boolean;
 };
 
 export const parcours: EtapeParcours[] = [
@@ -21,6 +23,7 @@ export const parcours: EtapeParcours[] = [
     periode: "Avril 2024",
     titre: "Certificat « Speaking and Presenting – Conversation Starters »",
     lieu: "Université du Michigan, via MTN Skills Academy",
+    branche: true,
   },
   {
     periode: "Depuis 2026",

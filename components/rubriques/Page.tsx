@@ -1,5 +1,7 @@
+"use client";
+
+import { useContenu } from "@/components/ContenuProvider";
 import type { ReactNode } from "react";
-import { identite } from "@/content/identite";
 import { pad, pageLabel, rubriques } from "@/content/sections";
 import { PiedDePage } from "../ui/PiedDePage";
 import { TitreAnime } from "../ui/TitreAnime";
@@ -27,6 +29,7 @@ export function Page({
   /** un trait doré dessiné à la main sous le titre */
   trait?: boolean;
 }) {
+  const { identite } = useContenu();
   const r = rubriques.find((x) => x.id === id)!;
   const num = pageLabel(r).split("-").map((n) => pad(Number(n))).join("-");
   const filigrane = (titre ?? r.titre).split(" ").slice(-1)[0].toUpperCase();

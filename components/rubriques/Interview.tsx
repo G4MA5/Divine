@@ -1,8 +1,9 @@
 "use client";
 
-import { Component, useEffect, useRef, useState, type ReactNode } from "react";
+import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
-import { questions, type QuestionInterview } from "@/content/interview";
+import { useContenu } from "@/components/ContenuProvider";
+import type { QuestionInterview } from "@/content/interview";
 import { Avatar, type AvatarId } from "../avatar/Avatar";
 import { usePrefs } from "../PrefsProvider";
 import { Citation } from "../ui/Citation";
@@ -22,9 +23,6 @@ class Secours extends Component<{ children: ReactNode }, { erreur: boolean }> {
     return this.state.erreur ? null : this.props.children;
   }
 }
-
-/** Les questions qui ont une réponse : seules celles-là sont jouables. */
-const repondues = questions.filter((q) => !!q.reponse);
 
 /** Première phrase d'une réponse, pour la citation en grand format. */
 const citationDe = (r: string) => (r.match(/^.*?[.!?](\s|$)/)?.[0] ?? r).trim();
@@ -73,6 +71,7 @@ function Scene({ parle = 0 }: { parle?: number }) {
 
 /** Tant que les réponses ne sont pas là : les questions, présentées comme le teaser du prochain numéro. */
 function Teaser() {
+  const { interview: questions } = useContenu();
   return (
     <div className="mt-10">
       <Scene />
@@ -96,6 +95,8 @@ function Teaser() {
  * Son : un léger « clic » de stylo à chaque question.
  */
 function Salon() {
+  const { interview: questions } = useContenu();
+  const repondues = useMemo(() => questions.filter((q) => !!q.reponse), [questions]);
   const [ordre, setOrdre] = useState<number[]>(() => repondues.map((q) => q.id));
   const [posees, setPosees] = useState<number[]>([]);
   const [tout, setTout] = useState(false);
@@ -185,6 +186,8 @@ function Salon() {
 }
 
 export function Interview() {
+  const { interview: questions } = useContenu();
+  const repondues = questions.filter((q) => !!q.reponse);
   return (
     <Page id="interview" titre="L'Interview" trait>
       {repondues.length > 0 ? (

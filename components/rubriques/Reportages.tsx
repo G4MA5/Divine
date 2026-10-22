@@ -1,8 +1,9 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { projets } from "@/content/projets";
 import { Page } from "./Page";
 import { CouvertureProjet } from "../reportages/CouvertureProjet";
 import { DossierContenu } from "../reportages/DossierContenu";
@@ -19,6 +20,7 @@ import { play } from "@/lib/sound";
 type Origine = { x: number; y: number };
 
 function Dossier({ index, origine, onClose }: { index: number; origine: Origine; onClose: () => void }) {
+  const { projets } = useContenu();
   const { reducedMotion } = usePrefs();
   const racine = useRef<HTMLDivElement>(null);
   const fermer = useRef<HTMLButtonElement>(null);
@@ -93,6 +95,7 @@ function Dossier({ index, origine, onClose }: { index: number; origine: Origine;
 }
 
 function Grille() {
+  const { projets } = useContenu();
   const ref = useRef<HTMLDivElement>(null);
   const [ouvert, setOuvert] = useState<{ i: number; o: Origine } | null>(null);
   const declencheur = useRef<HTMLElement | null>(null);
@@ -146,9 +149,10 @@ function Grille() {
 }
 
 export function Reportages() {
+  const { projets } = useContenu();
   return (
     <Page id="reportages" large>
-      <p className="mt-6 max-w-2xl font-display text-2xl italic leading-snug sm:text-3xl">Six projets à la une. Choisis une couverture : elle s&apos;ouvre sur le dossier.</p>
+      <p className="mt-6 max-w-2xl font-display text-2xl italic leading-snug sm:text-3xl">{projets.length} projets à la une. Choisis une couverture : elle s&apos;ouvre sur le dossier.</p>
       <Grille />
     </Page>
   );

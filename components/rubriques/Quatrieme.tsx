@@ -1,8 +1,9 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import { useRef } from "react";
 import gsap from "gsap";
-import { identite } from "@/content/identite";
 import { PiedDePage } from "../ui/PiedDePage";
 import { Messagerie } from "./Messagerie";
 import { Avatar, type AvatarId } from "../avatar/Avatar";
@@ -146,6 +147,7 @@ function ScenneFin() {
  * et le repose sur la table. Son : une page qui se ferme.
  */
 export function Quatrieme() {
+  const { identite } = useContenu();
   const cv = useCvDisponible();
   return (
     <section id="quatrieme" aria-labelledby="quatrieme-titre">

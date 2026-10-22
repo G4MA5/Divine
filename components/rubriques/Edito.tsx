@@ -1,7 +1,8 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import { Fragment, useRef } from "react";
-import { edito } from "@/content/edito";
 import { Page } from "./Page";
 import { Portrait } from "../ui/Portrait";
 import { gsap, ScrollTrigger, mots, useScene } from "@/lib/useScene";
@@ -42,6 +43,7 @@ function rendreMot(w: string, j: number) {
 }
 
 function Contenu() {
+  const { edito } = useContenu();
   const ref = useRef<HTMLDivElement>(null);
   // « GAMA Labs » reste un seul mot pour pouvoir être souligné et mené vers le site
   const paragraphes = edito.texte.replace(/GAMA Labs/g, "GAMA§Labs").split(/\n\n+/);
@@ -137,6 +139,7 @@ function Contenu() {
 }
 
 export function Edito() {
+  const { edito } = useContenu();
   return (
     <Page
       id="edito"

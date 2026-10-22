@@ -1,8 +1,9 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import Image from "next/image";
 import { experiences, type Experience as Xp } from "@/content/experience";
-import { identite } from "@/content/identite";
 import { PiedDePage } from "../ui/PiedDePage";
 import { TitreAnime } from "../ui/TitreAnime";
 import ScrollStack, { ScrollStackItem } from "../reactbits/ScrollStack";
@@ -79,6 +80,7 @@ function Carte({ ex, i }: { ex: Xp; i: number }) {
 }
 
 export function Experience() {
+  const { identite, experiences } = useContenu();
   return (
     <section id="experience" aria-labelledby="experience-titre" className="relative bg-white pb-10 pl-4 pr-4 pt-24 sm:px-8">
       <div className="mx-auto max-w-5xl">

@@ -8,6 +8,7 @@ import { creerTextures, type JeuTextures, type Variante } from "./texturesLivre"
 import { Environnement } from "./Table3D";
 import { Perso3D, type SourcePerso } from "./Perso3D";
 import type { IdPerso } from "./Personnage";
+import type { Identite } from "@/lib/contenu";
 
 /**
  * Le magazine en vraie 3D (three.js, via React Three Fiber).
@@ -175,19 +176,19 @@ function Livre({ tex, src, actif }: { tex: JeuTextures; src: Sources; actif: boo
 
 type PersoProps = { id: IdPerso; src: SourcePerso } | null;
 
-function Scene({ actif, variante, src, onPret, portrait, cvDispo, perso }: { perso: PersoProps; actif: boolean; variante: Variante; src: Sources; onPret: () => void; portrait: string | null; cvDispo: boolean }) {
+function Scene({ actif, variante, src, onPret, portrait, cvDispo, perso, identite, nbProjets }: { identite: Identite; nbProjets: number; perso: PersoProps; actif: boolean; variante: Variante; src: Sources; onPret: () => void; portrait: string | null; cvDispo: boolean }) {
   const [tex, setTex] = useState<JeuTextures | null>(null);
 
   useEffect(() => {
     let vivant = true;
-    creerTextures(variante, { portrait, cvDispo }).then((t) => {
+    creerTextures(variante, { portrait, cvDispo, identite, nbProjets }).then((t) => {
       if (!vivant) return;
       setTex(t);
     });
     return () => {
       vivant = false;
     };
-  }, [variante, portrait, cvDispo]);
+  }, [variante, portrait, cvDispo, identite, nbProjets]);
 
   // une fois les textures posées, deux images plus tard le livre 3D est à l'écran : on masque la version CSS
   useEffect(() => {
@@ -213,7 +214,7 @@ function Scene({ actif, variante, src, onPret, portrait, cvDispo, perso }: { per
   );
 }
 
-export default function Livre3D({ variante, src, onPret, portrait, cvDispo, perso = null }: { perso?: PersoProps; variante: Variante; src: Sources; onPret: () => void; portrait: string | null; cvDispo: boolean }) {
+export default function Livre3D({ variante, src, onPret, portrait, cvDispo, identite, nbProjets, perso = null }: { identite: Identite; nbProjets: number; perso?: PersoProps; variante: Variante; src: Sources; onPret: () => void; portrait: string | null; cvDispo: boolean }) {
   const boite = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
 
@@ -229,7 +230,7 @@ export default function Livre3D({ variante, src, onPret, portrait, cvDispo, pers
   return (
     <div ref={boite} aria-hidden="true" className="pointer-events-none absolute inset-0 z-[1]">
       <Canvas flat dpr={[1, 1.25]} frameloop="demand" gl={{ alpha: true, antialias: false, powerPreference: "high-performance" }} camera={{ position: [0, 0, DISTANCE], fov: 30 }} style={{ background: "transparent", pointerEvents: "none" }}>
-        <Scene perso={perso} actif={visible} variante={variante} src={src} onPret={onPret} portrait={portrait} cvDispo={cvDispo} />
+        <Scene identite={identite} nbProjets={nbProjets} perso={perso} actif={visible} variante={variante} src={src} onPret={onPret} portrait={portrait} cvDispo={cvDispo} />
       </Canvas>
     </div>
   );

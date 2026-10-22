@@ -1,9 +1,10 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { usePrefs } from "../PrefsProvider";
 import { avatars } from "@/content/avatars";
-import { identite } from "@/content/identite";
 import { ImagePerso } from "../avatar/ImagePerso";
 import type { IdPerso } from "../scene3d/Personnage";
 import { allerA } from "../SmoothScroll";
@@ -18,6 +19,7 @@ type Etape = "son" | "avatar" | "retour";
  * jusqu'à ce que le visiteur ait choisi, puis le scroll est débloqué.
  */
 export function IntroGate({ children }: { children: ReactNode }) {
+  const { identite } = useContenu();
   const { ready, hasSaved, avatar, setAvatar, sound, setSound, reducedMotion } = usePrefs();
   const [ouvert, setOuvert] = useState(true);
   const [etape, setEtape] = useState<Etape>("son");

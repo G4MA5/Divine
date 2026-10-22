@@ -1,7 +1,8 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import { useRef } from "react";
-import { recette } from "@/content/recette";
 import { Page } from "./Page";
 import { gsap, ScrollTrigger, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
@@ -12,6 +13,7 @@ import { play } from "@/lib/sound";
  * Son : léger grésillement.
  */
 function Fiche() {
+  const { recette } = useContenu();
   const ref = useRef<HTMLDivElement>(null);
 
   useScene(ref, (root) => {
@@ -110,6 +112,7 @@ function Fiche() {
 }
 
 export function Recette() {
+  const { recette } = useContenu();
   return (
     <Page
       id="recette"

@@ -1,7 +1,8 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import { useRef } from "react";
-import { atouts } from "@/content/competences";
 import { Page } from "./Page";
 import { gsap, useScene } from "@/lib/useScene";
 
@@ -36,6 +37,7 @@ function Bande({ texte, i }: { texte: string; i: number }) {
 }
 
 function Bandes() {
+  const { atouts } = useContenu();
   const ref = useRef<HTMLUListElement>(null);
 
   useScene(ref, (root) => {
@@ -79,6 +81,7 @@ function Bandes() {
 }
 
 export function Atouts() {
+  const { atouts } = useContenu();
   return (
     <Page id="atouts" large>
       <Bandes />

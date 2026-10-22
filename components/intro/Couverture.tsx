@@ -1,13 +1,14 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { identite } from "@/content/identite";
-import { projets } from "@/content/projets";
 import { usePortraitDisponible, useCvDisponible } from "../PortraitContext";
 
 /** Date d'édition générée côté client (« Octobre 2026 »). */
 function Edition() {
+  const { identite } = useContenu();
   const [d, setD] = useState("");
   useEffect(() => {
     const s = new Date().toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
@@ -71,6 +72,7 @@ function Sticker({ children, className }: { children: React.ReactNode; className
  * Le titre est DERRIÈRE le portrait, le nom le chevauche.
  */
 export function Couverture({ titre: Titre = "p" }: { titre?: "h1" | "p" }) {
+  const { identite, projets } = useContenu();
   const dispo = usePortraitDisponible();
   const cvDispo = useCvDisponible();
   const [portraitOk, setPortraitOk] = useState(true);

@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:seed": "node scripts/export-sql.mjs",
+    "db:verify": "node scripts/verifier-sql.mjs",
+    "test:supabase": "node scripts/e2e-supabase.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
@@ -22,6 +25,7 @@
     "three": "^0.186.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.11",
     "@playwright/test": "^1.64.1",
     "@tailwindcss/turbopack": "^4",
     "@types/howler": "^2.2.13",

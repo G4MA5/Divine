@@ -1,6 +1,5 @@
 import { CanvasTexture, SRGBColorSpace, RepeatWrapping, LinearMipmapLinearFilter, LinearFilter } from "three";
-import { identite } from "@/content/identite";
-import { projets } from "@/content/projets";
+import type { Identite } from "@/lib/contenu";
 import { rubriques, pad, pageLabel } from "@/content/sections";
 
 /**
@@ -23,6 +22,7 @@ const famille = (variable: string, secours: string) => {
 const charger = (src: string) =>
   new Promise<HTMLImageElement | null>((resolve) => {
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.onload = () => resolve(img);
     img.onerror = () => resolve(null);
     img.src = src;
@@ -76,7 +76,7 @@ const versTexture = (c: HTMLCanvasElement, aniso = 8) => {
 };
 
 /** La couverture (page de droite fermée). */
-async function dessinerCouverture(portrait: string | null, edition: string, cvDispo: boolean) {
+async function dessinerCouverture(identite: Identite, nbProjets: number, portrait: string | null, edition: string, cvDispo: boolean) {
   const W = 1000;
   const H = (W * 4) / 3;
   const u = W / 100;
@@ -155,7 +155,7 @@ async function dessinerCouverture(portrait: string | null, edition: string, cvDi
   sticker(identite.accroches[0], 5 * u, 46 * u);
   sticker(identite.accroches[1], 7 * u, 62 * u);
   sticker(identite.accroches[2], 5 * u, 76 * u);
-  sticker(`${projets.length} projets à la une`, W - 5 * u, 54 * u, true);
+  sticker(`${nbProjets} projets à la une`, W - 5 * u, 54 * u, true);
   sticker("L'interview exclusive", W - 6 * u, 72 * u, true);
 
   // le nom, qui chevauche la photo
@@ -210,7 +210,7 @@ function portraitDeSecours(ctx: CanvasRenderingContext2D, cx: number, H: number,
 }
 
 /** Page de gauche (dos de la couverture) : « Sommaire » ou « Merci ». */
-function dessinerPageGauche(variante: Variante) {
+function dessinerPageGauche(identite: Identite, variante: Variante) {
   const W = 1000;
   const H = (W * 4) / 3;
   const u = W / 100;
@@ -227,14 +227,14 @@ function dessinerPageGauche(variante: Variante) {
   texte(ctx, fin ? "Merci" : "Sommaire", 7 * u, 7 * u + 14 * u + gros * 0.85, { font: `italic 900 {s} ${display}`, size: gros, color: ACCENT });
   ctx.fillStyle = OR;
   ctx.fillRect(7 * u, 7 * u + 14 * u + gros + 6 * u, W - 14 * u, 0.25 * u);
-  const phrase = fin ? ["Merci de votre lecture.", "À très bientôt."] : ["Six reportages, une interview", "et quelques surprises."];
+  const phrase = fin ? ["Merci de votre lecture.", "À très bientôt."] : ["Des reportages, une interview", "et quelques surprises."];
   phrase.forEach((l, i) => texte(ctx, l, 7 * u, 7 * u + 14 * u + gros + 6 * u + 4 * u + 4 * u * 1.1 + i * 5 * u, { font: `italic 400 {s} ${serif}`, size: 4.2 * u, color: "rgba(18,18,18,.75)" }));
   texte(ctx, `P. ${pad(fin ? 23 : 2)}`, 7 * u, H - 4 * u, { font: `400 {s} ${sans}`, size: 2 * u, color: "rgba(18,18,18,.5)", spacing: 0.4 * u });
   return c;
 }
 
 /** Page de droite : le sommaire détaillé, ou « À suivre ». */
-function dessinerPageDroite(variante: Variante) {
+function dessinerPageDroite(identite: Identite, variante: Variante) {
   const W = 1000;
   const H = (W * 4) / 3;
   const u = W / 100;
@@ -301,7 +301,7 @@ export type JeuTextures = {
   papierV: CanvasTexture;
 };
 
-export async function creerTextures(variante: Variante, o: { portrait: string | null; cvDispo: boolean }): Promise<JeuTextures> {
+export async function creerTextures(variante: Variante, o: { portrait: string | null; cvDispo: boolean; identite: Identite; nbProjets: number }): Promise<JeuTextures> {
   // les polices du site doivent être prêtes avant de dessiner
   try {
     await Promise.all([
@@ -317,11 +317,11 @@ export async function creerTextures(variante: Variante, o: { portrait: string | 
   }
   const s = new Date().toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   const edition = s.charAt(0).toUpperCase() + s.slice(1);
-  const couv = await dessinerCouverture(o.portrait, edition, o.cvDispo);
+  const couv = await dessinerCouverture(o.identite, o.nbProjets, o.portrait, edition, o.cvDispo);
   return {
     couverture: versTexture(couv),
-    gauche: versTexture(dessinerPageGauche(variante)),
-    droite: versTexture(dessinerPageDroite(variante)),
+    gauche: versTexture(dessinerPageGauche(o.identite, variante)),
+    droite: versTexture(dessinerPageDroite(o.identite, variante)),
     papierU: dessinerPapier("u"),
     papierV: dessinerPapier("v"),
   };

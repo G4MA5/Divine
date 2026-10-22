@@ -1,12 +1,14 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import Image from "next/image";
 import { useState } from "react";
-import { identite } from "@/content/identite";
 import { usePortraitDisponible } from "../PortraitContext";
 
 /** Mon portrait, ou une silhouette en attendant le fichier (public/images/portrait.png). */
 export function Portrait({ className = "" }: { className?: string }) {
+  const { identite } = useContenu();
   const dispo = usePortraitDisponible();
   const [ok, setOk] = useState(true);
   if (ok && dispo) {

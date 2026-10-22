@@ -1,7 +1,8 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import { useEffect, useRef, useState } from "react";
-import { identite } from "@/content/identite";
 import { usePrefs } from "../PrefsProvider";
 import SlingButton from "../reactbits/SlingButton";
 import { play } from "@/lib/sound";
@@ -9,9 +10,12 @@ import { play } from "@/lib/sound";
 /**
  * Le contact en conversation (idée vue sur marco.fyi/contact) : Divine pose ses questions une à une, le visiteur répond
  * dans la barre de message, puis tire sur le bouton (React Bits « Sling Button ») pour envoyer.
- * Sans service configuré (NEXT_PUBLIC_FORM_ENDPOINT), l'envoi ouvre la messagerie avec le message prérempli.
+ * Le message est enregistré dans la table `messages` de Supabase (lisible seulement par l'administratrice, dans l'application
+ * de commande). Sans Supabase, un service externe (NEXT_PUBLIC_FORM_ENDPOINT) ; sans rien, la messagerie s'ouvre avec le message prérempli.
  */
 const ENDPOINT = process.env.NEXT_PUBLIC_FORM_ENDPOINT;
+const SUPABASE_URL = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace(/\/$/, "");
+const SUPABASE_CLE = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
 type Cle = "nom" | "sujet" | "email" | "plus";
 type Msg = { de: "divine" | "visiteur"; texte: string };
@@ -40,6 +44,7 @@ const question = (cle: Cle, r: Record<string, string>) => {
 const emailValide = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
 
 export function Messagerie() {
+  const { identite } = useContenu();
   const { reducedMotion } = usePrefs();
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [etape, setEtape] = useState(-1); // -1 : pas commencé
@@ -140,7 +145,7 @@ export function Messagerie() {
     const { nom = "", sujet = "", email = "", plus = "" } = reponses;
     const message = [sujet, plus].filter(Boolean).join("\n\n");
     play("clic");
-    if (!ENDPOINT) {
+    if (!ENDPOINT && !(SUPABASE_URL && SUPABASE_CLE)) {
       const corps = `${message}\n\n— ${nom} (${email})`;
       setFin("mail");
       dire(["C'est parti ! Votre messagerie s'ouvre avec le message prérempli : il ne reste qu'à l'envoyer 💌"]);
@@ -149,11 +154,18 @@ export function Messagerie() {
     }
     setFin("envoi");
     try {
-      const r = await fetch(ENDPOINT, {
-        method: "POST",
-        headers: { Accept: "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ nom, email, objet: "Message depuis le portfolio", message }),
-      });
+      const r =
+        SUPABASE_URL && SUPABASE_CLE
+          ? await fetch(`${SUPABASE_URL}/rest/v1/messages`, {
+              method: "POST",
+              headers: { apikey: SUPABASE_CLE, Authorization: `Bearer ${SUPABASE_CLE}`, "Content-Type": "application/json", Prefer: "return=minimal" },
+              body: JSON.stringify({ nom: nom.slice(0, 120), email: email.slice(0, 200), sujet: sujet.slice(0, 300), message: (plus ? `${sujet}\n\n${plus}` : sujet).slice(0, 5000) }),
+            })
+          : await fetch(ENDPOINT as string, {
+              method: "POST",
+              headers: { Accept: "application/json", "Content-Type": "application/json" },
+              body: JSON.stringify({ nom, email, objet: "Message depuis le portfolio", message }),
+            });
       if (r.ok) {
         setFin("ok");
         dire(["Reçu ✨ Je vous réponds dès que possible. À très vite !"]);

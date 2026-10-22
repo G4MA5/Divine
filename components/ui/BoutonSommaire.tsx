@@ -1,7 +1,7 @@
 "use client";
 
 import { pageLabel, pad, rubriques } from "@/content/sections";
-import { identite } from "@/content/identite";
+import { useContenu } from "@/components/ContenuProvider";
 import { allerA } from "../SmoothScroll";
 import { StaggeredMenu } from "../reactbits/StaggeredMenu";
 import { play } from "@/lib/sound";
@@ -19,15 +19,15 @@ const items = rubriques.map((r) => ({
   link: `#${r.id}`,
 }));
 
-const reseaux = [
-  { label: "GitHub", link: identite.github },
-  { label: "Instagram", link: identite.instagram },
-  { label: "WhatsApp", link: identite.whatsapp },
-].filter((s) => !!s.link);
-
 const lenis = () => (window as unknown as { __lenis?: { stop: () => void; start: () => void } }).__lenis;
 
 export function BoutonSommaire() {
+  const { identite } = useContenu();
+  const reseaux = [
+    { label: "GitHub", link: identite.github },
+    { label: "Instagram", link: identite.instagram },
+    { label: "WhatsApp", link: identite.whatsapp },
+  ].filter((s) => !!s.link);
   return (
     <StaggeredMenu
       isFixed

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { peintureIntro, tableaux } from "@/content/peinture";
+import { useContenu } from "@/components/ContenuProvider";
 import { Page } from "./Page";
 import { Machine } from "../ui/Effets";
 import BounceCards from "../reactbits/BounceCards";
@@ -16,6 +16,8 @@ import { play } from "@/lib/sound";
  */
 
 function Lightbox({ index, onClose, onNav }: { index: number; onClose: () => void; onNav: (d: number) => void }) {
+  const { peinture } = useContenu();
+  const tableaux = peinture.tableaux;
   const t = tableaux[index];
   const fermer = useRef<HTMLButtonElement>(null);
 
@@ -80,6 +82,8 @@ const TOILE =
   );
 
 function Galerie() {
+  const { peinture } = useContenu();
+  const tableaux = peinture.tableaux;
   const ref = useRef<HTMLDivElement>(null);
   const [ouvert, setOuvert] = useState<number | null>(null);
   const [visible, setVisible] = useState(false);
@@ -149,6 +153,7 @@ function Galerie() {
 }
 
 export function Peinture() {
+  const { peinture: peintureIntro } = useContenu();
   return (
     <Page id="peinture" titre={peintureIntro.titre} large trait>
       <p className="mt-6 max-w-2xl font-display text-2xl italic leading-snug sm:text-3xl"><Machine texte={peintureIntro.chapo} vitesse={55} /></p>

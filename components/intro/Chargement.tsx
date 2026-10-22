@@ -1,8 +1,9 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { identite } from "@/content/identite";
 import Lightfall from "../reactbits/Lightfall";
 
 /**
@@ -11,6 +12,7 @@ import Lightfall from "../reactbits/Lightfall";
  * À 100, le rideau noir se lève en gardant un bord arrondi (il « s'envole »).
  */
 export function Chargement({ onFin }: { onFin: () => void }) {
+  const { identite } = useContenu();
   const racine = useRef<HTMLDivElement>(null);
   const lettres = [...identite.magazine];
 

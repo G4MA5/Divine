@@ -1,63 +1,70 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Cormorant_Garamond, Inter, Mrs_Saint_Delafield, Bodoni_Moda, Jost } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { PrefsProvider } from "@/components/PrefsProvider";
-import { identite } from "@/content/identite";
+import { getContenu } from "@/lib/contenu-serveur";
+import { ContenuProvider } from "@/components/ContenuProvider";
 import { SITE_URL } from "@/lib/site";
 
-const playfair = Playfair_Display({
+/** Polices hébergées avec le site (voir app/fonts/LICENCES.md) : aucune dépendance à Google Fonts à la construction. */
+const playfair = localFont({
   variable: "--font-playfair",
-  subsets: ["latin"],
-  style: ["normal", "italic"],
   display: "swap",
+  src: [
+    { path: "./fonts/playfair-display-latin-wght-normal.woff2", style: "normal", weight: "400 900" },
+    { path: "./fonts/playfair-display-latin-wght-italic.woff2", style: "italic", weight: "400 900" },
+  ],
 });
 
-const cormorant = Cormorant_Garamond({
+const cormorant = localFont({
   variable: "--font-cormorant",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
   display: "swap",
+  src: [
+    { path: "./fonts/cormorant-garamond-latin-wght-normal.woff2", style: "normal", weight: "300 700" },
+    { path: "./fonts/cormorant-garamond-latin-wght-italic.woff2", style: "italic", weight: "300 700" },
+  ],
 });
 
-const inter = Inter({
+const inter = localFont({
   variable: "--font-inter",
-  subsets: ["latin"],
   display: "swap",
+  src: [{ path: "./fonts/inter-latin-wght-normal.woff2", style: "normal", weight: "100 900" }],
 });
 
-const signature = Mrs_Saint_Delafield({
+const signature = localFont({
   variable: "--font-mrs",
-  subsets: ["latin"],
-  weight: "400",
   display: "swap",
+  src: [{ path: "./fonts/mrs-saint-delafield-latin-400-normal.woff2", style: "normal", weight: "400" }],
 });
 
-const bodoni = Bodoni_Moda({
+const bodoni = localFont({
   variable: "--font-bodoni",
-  subsets: ["latin"],
-  style: ["normal", "italic"],
   display: "swap",
+  src: [
+    { path: "./fonts/bodoni-moda-latin-wght-normal.woff2", style: "normal", weight: "400 900" },
+    { path: "./fonts/bodoni-moda-latin-wght-italic.woff2", style: "italic", weight: "400 900" },
+  ],
 });
 
-const jost = Jost({
+const jost = localFont({
   variable: "--font-jost",
-  subsets: ["latin"],
-  weight: ["300", "400", "600"],
   display: "swap",
+  src: [{ path: "./fonts/jost-latin-wght-normal.woff2", style: "normal", weight: "100 900" }],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: `${identite.magazine} — Divine Graourou, développeuse full stack`,
-  applicationName: identite.magazine,
-  authors: [{ name: identite.nom }],
-  openGraph: { type: "website", locale: "fr_FR", siteName: identite.magazine },
-  twitter: { card: "summary_large_image" },
-  alternates: { canonical: "/" },
-  description:
-    "Le portfolio de Divine Graourou, développeuse full stack, DevOps junior et support IT junior à Abidjan, raconté comme un magazine.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { identite } = await getContenu();
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: `${identite.magazine} — ${identite.prenom} Graourou, développeuse full stack`,
+    applicationName: identite.magazine,
+    authors: [{ name: identite.nom }],
+    openGraph: { type: "website", locale: "fr_FR", siteName: identite.magazine },
+    twitter: { card: "summary_large_image" },
+    alternates: { canonical: "/" },
+    description: `Le portfolio de ${identite.prenom} Graourou, développeuse full stack, DevOps junior et support IT junior à Abidjan, raconté comme un magazine.`,
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -66,7 +73,8 @@ export const viewport: Viewport = {
 };
 
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const contenu = await getContenu();
   return (
     <html
       lang="fr"
@@ -74,7 +82,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${playfair.variable} ${cormorant.variable} ${inter.variable} ${signature.variable} ${bodoni.variable} ${jost.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <PrefsProvider>{children}</PrefsProvider>
+        <ContenuProvider contenu={contenu}>
+          <PrefsProvider>{children}</PrefsProvider>
+        </ContenuProvider>
       </body>
     </html>
   );

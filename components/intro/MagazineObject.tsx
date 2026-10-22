@@ -1,11 +1,12 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import { Component, useEffect, useRef, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { Couverture } from "./Couverture";
 import { usePortraitDisponible, useCvDisponible } from "../PortraitContext";
 import { rubriques, pad, pageLabel } from "@/content/sections";
-import { identite } from "@/content/identite";
 import { usePrefs } from "../PrefsProvider";
 import type { SourcePerso } from "../scene3d/Perso3D";
 import type { IdPerso } from "../scene3d/Personnage";
@@ -30,6 +31,7 @@ class Secours extends Component<{ children: ReactNode }, { erreur: boolean }> {
  * « sommaire » à l'ouverture, « fin » quand l'avatar referme le magazine.
  */
 export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" | "fin" }) {
+  const { identite, projets } = useContenu();
   const fin = variant === "fin";
   const racine = useRef<HTMLDivElement>(null);
   const [src, setSrc] = useState<{ pos: HTMLElement; cover: HTMLElement; table: HTMLElement | null } | null>(null);
@@ -70,7 +72,7 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
       {!fin && <h1 className="sr-only">{identite.magazine} — {identite.nom}, {identite.titre}</h1>}
       {src && (
         <Secours>
-          <Livre3D variante={variant} src={src} onPret={() => setPret3d(true)} portrait={portraitOk ? identite.portrait : null} cvDispo={cvDispo} perso={persoSrc ? { id: ((avatar ?? "curieuse") as IdPerso), src: persoSrc } : null} />
+          <Livre3D variante={variant} src={src} onPret={() => setPret3d(true)} portrait={portraitOk ? identite.portrait : null} cvDispo={cvDispo} identite={identite} nbProjets={projets.length} perso={persoSrc ? { id: ((avatar ?? "curieuse") as IdPerso), src: persoSrc } : null} />
         </Secours>
       )}
       {/* le magazine CSS reste dans le DOM : il porte le texte (h1, lien du CV) et pilote la scène GSAP ; il devient invisible dès que la 3D est à l'écran */}
@@ -139,7 +141,7 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
               </p>
               <hr className="mt-[6cqw] border-0 border-t border-[#d99a00]" />
               <p className="mt-[4cqw] font-display italic text-ink/70" style={{ fontSize: "4cqw" }}>
-                {fin ? "Merci de votre lecture. À très bientôt." : "Six reportages, une interview et quelques surprises."}
+                {fin ? "Merci de votre lecture. À très bientôt." : "Des reportages, une interview et quelques surprises."}
               </p>
             </div>
             <p className="absolute bottom-[4cqw] left-[7cqw] font-sans uppercase tracking-[0.2em] text-ink/50" style={{ fontSize: "2cqw" }}>

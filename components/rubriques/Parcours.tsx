@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef } from "react";
-import { parcours } from "@/content/parcours";
-import { identite } from "@/content/identite";
+import { useMemo, useRef } from "react";
+import { useContenu } from "@/components/ContenuProvider";
+import type { EtapeParcours } from "@/content/parcours";
 import { TitreAnime } from "../ui/TitreAnime";
 import { PiedDePage } from "../ui/PiedDePage";
 import { gsap, PRIO, useScene } from "@/lib/useScene";
@@ -15,10 +15,9 @@ import { play } from "@/lib/sound";
  * qui part de la licence et revient avant le master. Sans animation (mouvement réduit), c'est la liste complète.
  */
 
-// ordre chronologique : bac, licence, certificat (branche), master
-const ORDRE = (p: string) => (/depuis 2026/i.test(p) ? 4 : /avril 2024/i.test(p) ? 2.5 : /2023-2026/.test(p) ? 2 : 1);
-const etapes = [...parcours].sort((a, b) => ORDRE(a.periode) - ORDRE(b.periode));
-const estBranche = (p: string) => /avril 2024/i.test(p);
+const estBranche = (e: EtapeParcours) => !!e.branche;
+/** Le nom de la branche git : le premier mot du titre (« Certificat … » → « certificat »). */
+const nomBranche = (titre: string) => titre.split(" ")[0].toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "") || "branche";
 
 /** Identifiant de commit stable (7 caractères hexadécimaux) calculé à partir du titre. */
 const hash = (t: string) => {
@@ -30,22 +29,33 @@ const hash = (t: string) => {
 /** L'année affichée par le compteur pour chaque étape. */
 const annee = (p: string) => (/depuis (\d{4})/i.exec(p)?.[1] ?? /(\d{4})/.exec(p)?.[0] ?? "");
 
-const commande = (i: number, titre: string) => {
-  if (i === etapes.length - 1) return "git switch master";
-  if (estBranche(etapes[i].periode)) return "git switch -c certificat";
-  return `git checkout ${hash(titre)}`;
-};
-
 // coordonnées du graphe (viewBox 72 × 400)
 const A = 18;
 const B = 52;
-const Y = [40, 140, 250, 360];
-const POINTS = etapes.map((e, i) => ({ x: estBranche(e.periode) ? B : A, y: Y[i] ?? 360 }));
-const iB = etapes.findIndex((e) => estBranche(e.periode));
-const principal = `M${A} ${Y[0]} V ${Y[Y.length - 1]}`;
-const branche = iB > 0 ? `M${A} ${Y[iB - 1]} C ${A} ${Y[iB - 1] + 50}, ${B} ${Y[iB] - 55}, ${B} ${Y[iB]} C ${B} ${Y[iB] + 55}, ${A} ${Y[iB + 1] - 50}, ${A} ${Y[iB + 1]}` : "";
+
+/** Calcule le graphe à partir des étapes, rangées de la plus ancienne à la plus récente. */
+function modele(etapes: EtapeParcours[]) {
+  const n = etapes.length;
+  const Y = etapes.map((_, i) => (n > 1 ? Math.round(40 + (i * 320) / (n - 1)) : 200));
+  const POINTS = etapes.map((e, i) => ({ x: estBranche(e) && i > 0 && i < n - 1 ? B : A, y: Y[i] }));
+  const iB = etapes.findIndex((e, i) => estBranche(e) && i > 0 && i < n - 1);
+  const principal = `M${A} ${Y[0]} V ${Y[n - 1]}`;
+  const branche = iB > 0 ? `M${A} ${Y[iB - 1]} C ${A} ${Y[iB - 1] + 50}, ${B} ${Y[iB] - 55}, ${B} ${Y[iB]} C ${B} ${Y[iB] + 55}, ${A} ${Y[iB + 1] - 50}, ${A} ${Y[iB + 1]}` : "";
+  return { etapes, POINTS, iB, principal, branche };
+}
+type Modele = ReturnType<typeof modele>;
+
+const commande = (M: Modele, i: number) => {
+  const e = M.etapes[i];
+  if (i === M.etapes.length - 1) return "git switch master";
+  if (i === M.iB) return `git switch -c ${nomBranche(e.titre)}`;
+  return `git checkout ${hash(e.titre)}`;
+};
 
 function Voyage() {
+  const { parcours, identite } = useContenu();
+  const M = useMemo(() => modele(parcours), [parcours]);
+  const { etapes, POINTS, iB, principal, branche } = M;
   const ref = useRef<HTMLDivElement>(null);
 
   useScene(ref, (root) => {
@@ -74,7 +84,7 @@ function Voyage() {
     const frappe = { n: 0 };
     panneaux.forEach((p, k) => {
       const t = k * SEG;
-      const texte = commande(k, etapes[k].titre);
+      const texte = commande(M, k);
       // la tête de lecture avance (par la courbe de la branche si besoin) et allume l'étape
       tl.to(tete, { x: POINTS[k].x, y: POINTS[k].y, duration: k ? 0.45 : 0.01, ease: "power2.inOut" }, t)
         .to(noeuds[k], { scale: 1, duration: 0.2, ease: "back.out(3)" }, t + (k ? 0.3 : 0))
@@ -99,7 +109,7 @@ function Voyage() {
       root.classList.remove("vy-actif");
       section.style.minHeight = "";
     };
-  });
+  }, [M]);
 
   return (
     <div ref={ref} className="vy mt-5">
@@ -132,7 +142,7 @@ function Voyage() {
               <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <span className="text-gold">{hash(e.titre)}</span>
                 {i === etapes.length - 1 && <span className="rounded-full bg-ink px-2.5 py-0.5 text-[0.7rem] font-semibold text-white">HEAD → master</span>}
-                {estBranche(e.periode) && <span className="rounded-full border border-ink px-2.5 py-0.5 text-[0.7rem] font-semibold">branche : certificat</span>}
+                {i === iB && <span className="rounded-full border border-ink px-2.5 py-0.5 text-[0.7rem] font-semibold">branche : {nomBranche(e.titre)}</span>}
               </p>
               <h3 className="titre-xl my-1.5 font-display text-[clamp(1.6rem,3.8vw,3rem)] !leading-[1.05]">{e.titre}</h3>
               <p className="text-soft">Date : {e.periode}</p>
@@ -163,6 +173,7 @@ function Voyage() {
 }
 
 export function Parcours() {
+  const { identite } = useContenu();
   return (
     <section id="parcours" aria-labelledby="parcours-titre" className="relative overflow-hidden bg-white">
       <div className="relative mx-auto max-w-5xl px-4 pb-8 pt-24 sm:px-8">

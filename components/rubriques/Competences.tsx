@@ -1,7 +1,8 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import { useRef, type CSSProperties, type ReactNode } from "react";
-import { competences } from "@/content/competences";
 import { Page } from "./Page";
 import { gsap, useScene } from "@/lib/useScene";
 import { play } from "@/lib/sound";
@@ -67,6 +68,7 @@ function Line({ children, last, dir }: { children: ReactNode; last?: boolean; di
 }
 
 function Couverture() {
+  const { competences } = useContenu();
   const ref = useRef<HTMLDivElement>(null);
 
   useScene(ref, (root) => {
@@ -127,7 +129,7 @@ function Couverture() {
 
         <div data-filet aria-hidden="true" style={{ height: 2, background: C.a1, marginTop: 10 }} />
         <div className="tb-ca tb-strip" style={{ fontSize: fs(12, 8), borderBottom: `1px solid ${C.muted}` }}>
-          <span>21 outils</span>
+          <span>{new Set(competences.flatMap((c) => c.items)).size} outils</span>
           <span style={{ color: C.a1 }}>·</span>
           <span>Mobile · Web · Back-end · Données · Sécurité</span>
           <span style={{ color: C.a1 }}>·</span>
@@ -299,6 +301,7 @@ function Couverture() {
 
 /** Tout le détail, par famille (et indexable : le texte reste dans la page). */
 function Familles() {
+  const { competences } = useContenu();
   return (
     <section aria-label="Mes compétences par famille" className="mt-12">
       <h3 className="label !text-fg">Tout le détail, par famille</h3>
@@ -321,6 +324,7 @@ function Familles() {
 }
 
 export function Competences() {
+  const { competences } = useContenu();
   return (
     <Page
       id="competences"

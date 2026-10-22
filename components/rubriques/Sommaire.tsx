@@ -1,7 +1,8 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import { useEffect, useRef, useState } from "react";
-import { identite } from "@/content/identite";
 import { pad, pageLabel, rubriques } from "@/content/sections";
 import { PiedDePage } from "../ui/PiedDePage";
 import { allerA } from "../SmoothScroll";
@@ -22,6 +23,7 @@ const items = lignes.map((r) => ({
 }));
 
 export function Sommaire() {
+  const { identite } = useContenu();
   const zone = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [haut, setHaut] = useState(76);

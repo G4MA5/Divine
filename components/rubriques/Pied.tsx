@@ -1,7 +1,8 @@
 "use client";
 
+import { useContenu } from "@/components/ContenuProvider";
+
 import { useState } from "react";
-import { identite } from "@/content/identite";
 import { TitreAnime } from "../ui/TitreAnime";
 import { Tournesols } from "../ui/Tournesols";
 import { allerEnHaut } from "./Quatrieme";
@@ -12,6 +13,7 @@ import { play } from "@/lib/sound";
  * les contacts sur une grille aux filets fins, et le champ de tournesols (inspiré de danielsun.space).
  */
 export function Pied() {
+  const { identite } = useContenu();
   const [copie, setCopie] = useState(false);
 
   const copier = async () => {

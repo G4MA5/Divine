@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { projetParSlug, projets } from "@/content/projets";
-import { identite } from "@/content/identite";
+import { getContenu } from "@/lib/contenu-serveur";
 import { DossierContenu } from "@/components/reportages/DossierContenu";
 import { TitrePage } from "@/components/reportages/TitrePage";
 import { BoutonSon } from "@/components/ui/BoutonSon";
 import { PiedDePage } from "@/components/ui/PiedDePage";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const { projets } = await getContenu();
   return projets.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata(props: PageProps<"/reportages/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
-  const p = projetParSlug(slug);
+  const { projets, identite } = await getContenu();
+  const p = projets.find((x) => x.slug === slug);
   if (!p) return {};
   return {
     title: `${p.titre} — Reportage · ${identite.magazine}`,
@@ -25,7 +26,8 @@ export async function generateMetadata(props: PageProps<"/reportages/[slug]">): 
 
 export default async function PageReportage(props: PageProps<"/reportages/[slug]">) {
   const { slug } = await props.params;
-  const p = projetParSlug(slug);
+  const { projets } = await getContenu();
+  const p = projets.find((x) => x.slug === slug);
   if (!p) notFound();
 
   const i = projets.findIndex((x) => x.slug === p.slug);

@@ -1,8 +1,11 @@
-import { identite } from "@/content/identite";
+"use client";
+
+import { useContenu } from "@/components/ContenuProvider";
 import { pad } from "@/content/sections";
 
 /** Pied de page de chaque rubrique : « [div_dev_Now] — p. 07 ». */
 export function PiedDePage({ page }: { page: number | string }) {
+  const { identite } = useContenu();
   const num = typeof page === "number" ? pad(page) : page;
   return (
     <footer className="mt-16 sm:mt-24">
