@@ -73,7 +73,7 @@ export const viewport: Viewport = {
 };
 
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const contenu = await getContenu();
   return (
     <html

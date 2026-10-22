@@ -12,7 +12,7 @@ export async function generateStaticParams() {
   return projets.map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata(props: PageProps<"/reportages/[slug]">): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await props.params;
   const { projets, identite } = await getContenu();
   const p = projets.find((x) => x.slug === slug);
@@ -24,7 +24,7 @@ export async function generateMetadata(props: PageProps<"/reportages/[slug]">): 
   };
 }
 
-export default async function PageReportage(props: PageProps<"/reportages/[slug]">) {
+export default async function PageReportage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params;
   const { projets } = await getContenu();
   const p = projets.find((x) => x.slug === slug);

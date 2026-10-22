@@ -20,11 +20,11 @@ insert into public.reglages (cle, valeur) values
   ('peinture.chapo', 'Quand je ne code pas, je peins.')
 on conflict (cle) do nothing;
 
-insert into public.parcours (id, position, periode, titre, lieu, detail) values
-  ('baccalaureat-general-serie-d', 1, '2022-2023', 'Baccalauréat Général, série D', 'Collège Pascal de Koumassi', ''),
-  ('licence-miage', 2, '2023-2026', 'Licence MIAGE', 'Université Polytechnique de Bingerville (UPB)', 'Méthodes Informatiques Appliquées à la Gestion des Entreprises'),
-  ('certificat-speaking-and-presenting-conve', 3, 'Avril 2024', 'Certificat « Speaking and Presenting – Conversation Starters »', 'Université du Michigan, via MTN Skills Academy', ''),
-  ('master-ingenierie-cybersecurite-et-ia', 4, 'Depuis 2026', 'Master Ingénierie Cybersécurité et IA', 'Université Polytechnique de Bingerville (UPB)', '')
+insert into public.parcours (id, position, periode, titre, lieu, detail, branche) values
+  ('baccalaureat-general-serie-d', 1, '2022-2023', 'Baccalauréat Général, série D', 'Collège Pascal de Koumassi', '', false),
+  ('licence-miage', 2, '2023-2026', 'Licence MIAGE', 'Université Polytechnique de Bingerville (UPB)', 'Méthodes Informatiques Appliquées à la Gestion des Entreprises', false),
+  ('certificat-speaking-and-presenting-conve', 3, 'Avril 2024', 'Certificat « Speaking and Presenting – Conversation Starters »', 'Université du Michigan, via MTN Skills Academy', '', true),
+  ('master-ingenierie-cybersecurite-et-ia', 4, 'Depuis 2026', 'Master Ingénierie Cybersécurité et IA', 'Université Polytechnique de Bingerville (UPB)', '', false)
 on conflict (id) do nothing;
 
 insert into public.experiences (id, position, periode, poste, entreprise, lieu, resume, missions, lien_texte, lien_href, fond, accent, logo_url, monogramme) values
@@ -90,6 +90,12 @@ insert into public.interview (id, position, question, reponse) overriding system
   (12, 12, 'Pourquoi devrait-on travailler avec toi ?', 'Parce que je livre de bout en bout, que je sécurise ce que je construis et que je travaille bien en équipe. Et parce que j''apprends vite : un nouveau défi est une bonne nouvelle.')
 on conflict (id) do nothing;
 select setval(pg_get_serial_sequence('public.interview', 'id'), (select coalesce(max(id), 1) from public.interview));
+
+insert into public.medias (id, nom, dossier, url, alt, type) values
+  ('media-portrait', 'portrait.png', 'portrait', '/images/portrait.png', 'Portrait de Divine Graourou', 'image'),
+  ('media-logo-gama-cube', 'logo-gama-cube.webp', 'logos', '/images/logos/logo-gama-cube.webp', 'Logo : GAMA Labs', 'image'),
+  ('media-upb-logo', 'upb-logo.webp', 'logos', '/images/logos/upb-logo.webp', 'Logo : Bureau des étudiants, 6e promotion de l''UPB', 'image')
+on conflict (id) do nothing;
 
 insert into public.tableaux (id, position, titre, annee, technique, dimensions, image_url, ratio) values
   ('t1', 1, '', '', '', '', '', 0.75),

@@ -59,7 +59,7 @@ tests/          Playwright
 ## Réglages utiles
 - Avatar ou son : `components/scene3d/Personnage.ts` (personnages 3D), `lib/sound.ts` (sons synthétisés ; un vrai fichier
   déposé dans `public/sounds/` prend le pas).
-- Images des projets : dans l'application (stockage Supabase) ou dans `public/images/` avec `captures` dans `content/projets.ts`.
+- Images : l'application a une rubrique « Images » (médiathèque, table `medias`) ; les formulaires y puisent ou y ajoutent. Captures des projets : dans l'application (stockage Supabase) ou dans `public/images/` avec `captures` dans `content/projets.ts`.
 - `TODO-CONTENU.md` liste ce qui reste à renseigner.
 
 ## Règles du projet

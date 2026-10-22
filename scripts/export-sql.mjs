@@ -168,6 +168,28 @@ ecrire("on conflict (id) do nothing;");
 ecrire("select setval(pg_get_serial_sequence('public.interview', 'id'), (select coalesce(max(id), 1) from public.interview));");
 ecrire();
 
+/* médiathèque : les images actuelles du site (chemins locaux ; scripts/televerser-images.mjs les envoie dans le stockage) */
+const medias = [];
+const vus = new Set();
+const ajouteMedia = (url, dossier, alt, type = "image") => {
+  if (!url || vus.has(url)) return;
+  vus.add(url);
+  medias.push({ id: `media-${slug(path.basename(url, path.extname(url)))}`, nom: path.basename(url), dossier, url, alt, type });
+};
+ajouteMedia(identite.portrait, "portrait", "Portrait de Divine Graourou");
+ajouteMedia(identite.cv, "cv", "CV de Divine Graourou", "fichier");
+experiences.forEach((e) => ajouteMedia(e.logo, "logos", `Logo : ${e.entreprise}`));
+projets.forEach((p) => (p.captures ?? []).forEach((c, i) => ajouteMedia(c, "projets", `${p.titre}, capture ${i + 1}`)));
+tableaux.forEach((t) => ajouteMedia(t.image, "tableaux", t.titre ?? ""));
+// seuls les fichiers qui existent vraiment dans /public sont enregistrés
+const { existsSync } = await import("node:fs");
+const presents = medias.filter((m) => existsSync(path.join(racine, "public", m.url)));
+insere(
+  "medias",
+  ["id", "nom", "dossier", "url", "alt", "type"],
+  presents.map((m) => [q(m.id), q(m.nom), q(m.dossier), q(m.url), q(m.alt), q(m.type)]),
+);
+
 /* peinture */
 insere(
   "tableaux",

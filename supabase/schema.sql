@@ -198,6 +198,19 @@ create table if not exists public.tableaux (
   updated_at timestamptz not null default now()
 );
 
+-- ───────────────────────── médiathèque (images et fichiers) ─────────────────────────
+-- Un enregistrement par fichier envoyé dans le stockage : l'application de commande les liste, les décrit et les supprime.
+-- `url` est l'adresse publique (Supabase Storage) ou, au départ, un chemin du site (/images/...).
+create table if not exists public.medias (
+  id text primary key default gen_random_uuid()::text,
+  created_at timestamptz not null default now(),
+  nom text not null,
+  dossier text not null default 'divers',
+  url text not null,
+  alt text not null default '',
+  type text not null default 'image' check (type in ('image', 'fichier'))
+);
+
 -- ───────────────────────── messages de contact ─────────────────────────
 create table if not exists public.messages (
   id uuid primary key default gen_random_uuid(),
@@ -225,7 +238,7 @@ end $$;
 do $$
 declare t text;
 begin
-  foreach t in array array['identite','edito','reglages','parcours','experiences','competences','atouts','recette','recette_etapes','interview','tableaux']
+  foreach t in array array['identite','edito','reglages','parcours','experiences','competences','atouts','recette','recette_etapes','interview','tableaux','medias']
   loop
     execute format('alter table public.%I enable row level security', t);
     execute format('drop policy if exists lecture_publique on public.%I', t);

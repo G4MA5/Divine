@@ -22,11 +22,14 @@ Les deux fichiers se relancent sans danger : rien n'est jamais supprimé ni écr
 | `identite`, `edito`, `recette` | une seule ligne (`id = 1`) | oui |
 | `reglages` | petits textes (titre et phrase de la galerie de peinture) | oui |
 | `parcours`, `experiences`, `competences`, `atouts`, `recette_etapes`, `interview`, `tableaux` | listes ordonnées (`position`) | oui |
+| `medias` | la médiathèque : un enregistrement par image ou fichier (nom, rangement, description, adresse) | oui |
 | `projets` | un projet par ligne (`slug`), avec `publie` | seulement si `publie = true` |
 | `messages` | messages du formulaire de contact | **non** : les visiteurs ne peuvent qu'écrire |
 | `admins` | e-mails autorisés à modifier | non |
 
 Stockage : le seau public `portfolio` (logos, tableaux, captures, portrait, CV). Lecture pour tous, écriture pour les admins.
+Les images actuelles du site (`public/images/…`) sont inscrites dans `medias` avec leur chemin local ; dès qu'une image est remplacée
+depuis l'application, son adresse devient celle du stockage Supabase.
 
 ## Comment le site lit la base
 - `lib/contenu.ts` lit les tables avec la clé publique et assemble un objet `Contenu`. Si Supabase n'est pas configuré,

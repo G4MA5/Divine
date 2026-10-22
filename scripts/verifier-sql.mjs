@@ -38,7 +38,7 @@ await db.exec(readFileSync(path.join(dir, "seed.sql"), "utf8"));
 verifie(true, "schema.sql et seed.sql s'exécutent, deux fois de suite");
 
 const n = async (t) => Number((await db.query(`select count(*)::int as n from public.${t}`)).rows[0].n);
-const attendu = { identite: 1, edito: 1, reglages: 2, parcours: 4, experiences: 4, projets: 6, competences: 8, atouts: 4, recette: 1, recette_etapes: 7, interview: 12, tableaux: 6 };
+const attendu = { identite: 1, edito: 1, reglages: 2, parcours: 4, experiences: 4, projets: 6, competences: 8, atouts: 4, recette: 1, recette_etapes: 7, interview: 12, tableaux: 6, medias: 3 };
 for (const [t, k] of Object.entries(attendu)) verifie((await n(t)) === k, `${t} : ${await n(t)} ligne(s) (attendu ${k})`);
 
 const sous = async (role, email, sql) => {
@@ -79,6 +79,7 @@ await db.exec("update public.projets set publie = true where slug = 'metro'");
 
 // messages de contact
 verifie(!(await echoue("anon", "", "insert into public.messages (nom, email, message) values ('Awa', 'awa@exemple.com', 'Bonjour')")), "un visiteur peut envoyer un message");
+verifie(!!(await echoue("anon", "", "insert into public.medias (nom, url) values ('x.png', '/x.png')")), "un visiteur ne peut pas ajouter d'image à la médiathèque");
 verifie(!!(await echoue("anon", "", "insert into public.messages (nom, email, message) values ('Awa', 'pas-un-mail', 'Bonjour')")), "un e-mail invalide est refusé");
 verifie(!!(await echoue("anon", "", "insert into public.messages (nom, email, message, lu) values ('Awa', 'awa@exemple.com', 'Bonjour', true)")), "un visiteur ne peut pas se déclarer « lu »");
 verifie((await sous("authenticated", "graouroudivine@gmail.com", "select count(*)::int as n from public.messages")).rows[0].n === 1, "l'administratrice lit le message");
