@@ -489,6 +489,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         </header>
 
         <aside
+          data-lenis-prevent
           id="staggered-menu-panel"
           ref={panelRef}
           className="staggered-menu-panel absolute top-0 right-0 h-full bg-white flex flex-col p-[6em_2em_2em_2em] overflow-y-auto z-10 backdrop-blur-[12px] pointer-events-auto"

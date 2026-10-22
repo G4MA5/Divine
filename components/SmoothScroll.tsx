@@ -85,10 +85,10 @@ function rideau(label: string, saut: () => void) {
   };
   gsap
     .timeline({ onComplete: fin })
-    .to(el, { yPercent: 0, duration: 0.55, ease: "power3.inOut" })
+    .to(el, { yPercent: 0, duration: 0.38, ease: "power3.inOut" })
     .add(saut)
-    .to(trait, { scaleX: 1, duration: 0.45, ease: "power2.out" }, "<0.05")
-    .to(el, { yPercent: -108, duration: 0.65, ease: "power3.inOut" }, "+=0.35");
+    .to(trait, { scaleX: 1, duration: 0.3, ease: "power2.out" }, "<0.05")
+    .to(el, { yPercent: -108, duration: 0.5, ease: "power3.inOut" }, "+=0.12");
 }
 
 /** Défile vers une position (en px) : en douceur si c'est proche, avec le rideau si c'est loin. */

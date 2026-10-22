@@ -64,7 +64,7 @@ function Scene({ parle = 0 }: { parle?: number }) {
         </Secours>
       </div>
       <p className="label mt-2 flex justify-between">
-        <span>L&apos;intervieweur</span>
+        <span>Vous</span>
         <span>Divine</span>
       </p>
     </>

@@ -1,6 +1,7 @@
-import Link from "next/link";
 import type { Projet } from "@/content/projets";
 import { CouvertureProjet } from "./CouvertureProjet";
+import { Apercus } from "./Apercus";
+import { LienDossier } from "./LienDossier";
 
 /**
  * Le contenu d'un dossier : la couverture à gauche, le texte à droite.
@@ -68,11 +69,12 @@ export function DossierContenu({ projet, numero, niveau = 3, lien = false }: { p
 
         {lien && (
           <p className="mt-8">
-            <Link href={`/reportages/${projet.slug}`} className="btn">
-              Ouvrir la page →
-            </Link>
+            <LienDossier slug={projet.slug} titre={projet.titre} />
           </p>
         )}
+      </div>
+      <div className="sm:col-span-2">
+        <Apercus projet={projet} />
       </div>
     </article>
   );

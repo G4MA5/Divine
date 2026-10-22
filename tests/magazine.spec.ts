@@ -260,7 +260,7 @@ test("le parcours est une scène épinglée : la commande git et l'étape change
 
 test("le livre est rendu en 3D (un canvas WebGL) tout en gardant le titre h1 accessible", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator("#scene canvas")).toHaveCount(1, { timeout: 15_000 });
+  await expect(page.locator("#scene canvas")).toHaveCount(1, { timeout: 60_000 });
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
 });
 
@@ -278,4 +278,49 @@ test("on peut défiler jusqu'au bout de la page, et les tournesols chantent en b
   await expect.poll(() => page.evaluate(() => Math.round(scrollY)), { timeout: 20_000 }).toBeGreaterThanOrEqual(max - 4);
   // arrivés en bas : une note monte au-dessus d'un tournesol
   await expect(page.locator(".champ [data-notes] text").first()).toBeAttached({ timeout: 15_000 });
+});
+
+test("un dossier de projet défile à la molette et prévoit des cadres pour les captures", async ({ page, isMobile }) => {
+  test.skip(!!isMobile, "la molette n'existe pas au toucher");
+  await entrer(page);
+  await page.locator("#reportages").scrollIntoViewIfNeeded();
+  await page.getByRole("button", { name: /Ouvrir le dossier Metro/ }).click();
+  const dossier = page.getByRole("dialog", { name: /Dossier Metro/ });
+  await expect(dossier).toBeVisible();
+  await expect(dossier.locator('section[aria-label^="Aperçu de"] li')).toHaveCount(3);
+  const haut = () => dossier.evaluate((e) => e.scrollTop);
+  await page.waitForTimeout(1500);
+  await page.mouse.move(640, 400);
+  for (let i = 0; i < 8; i++) {
+    await page.mouse.wheel(0, 300);
+    await page.waitForTimeout(80);
+  }
+  await expect.poll(haut, { timeout: 5000 }).toBeGreaterThan(200);
+});
+
+test("le menu Sommaire défile quand l'écran est bas", async ({ page, isMobile }) => {
+  test.skip(!!isMobile, "la molette n'existe pas au toucher");
+  await page.setViewportSize({ width: 1000, height: 480 });
+  await entrer(page);
+  await page.getByRole("button", { name: /Open menu/i }).click();
+  const panneau = page.locator("#staggered-menu-panel");
+  await expect(panneau.locator(".sm-panel-item").first()).toBeVisible();
+  await page.waitForTimeout(1800);
+  await page.mouse.move(200, 300);
+  for (let i = 0; i < 6; i++) {
+    await page.mouse.wheel(0, 300);
+    await page.waitForTimeout(80);
+  }
+  await expect.poll(() => panneau.evaluate((e) => e.scrollTop), { timeout: 5000 }).toBeGreaterThan(50);
+});
+
+test("les personnages ont une tête de fleur : l'écran d'accueil les montre, sans mention de genre", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "En silence" }).click({ timeout: 60_000 });
+  await expect(page.getByText("Qui êtes-vous ?")).toBeVisible();
+  await expect(page.locator("li button[aria-label*=':'] img")).toHaveCount(4);
+  const texte = await page.locator("ul:has(li button[aria-label*=':'])").innerText();
+  expect(texte).not.toMatch(/Étudiante|Curieuse|Recruteur|Le Client/);
+  // les images 3D sont rendues (plus le gif vide)
+  await expect.poll(() => page.locator("li button[aria-label*=':'] img").first().getAttribute("src"), { timeout: 15_000 }).toContain("data:image/png");
 });

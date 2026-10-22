@@ -1,46 +1,23 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { CanvasTexture, DoubleSide, SRGBColorSpace, type Group, type Mesh, type MeshBasicMaterial } from "three";
-import { renderToStaticMarkup } from "react-dom/server";
-import { Avatar, type AvatarId, VIEWBOX_H, VIEWBOX_W } from "../avatar/Avatar";
+import { CanvasTexture, SRGBColorSpace, type Group, type Mesh, type MeshBasicMaterial } from "three";
+import { creerPersonnage, type IdPerso } from "./Personnage";
 
 /**
- * Le salon de l'interview en 3D : l'avatar du visiteur (l'intervieweur) et Divine se font face autour d'une petite table.
- * Les personnages sont des silhouettes découpées posées dans l'espace (la caméra suit doucement le pointeur), avec une
- * ombre au sol. Quand une question est posée (`parle` augmente), l'intervieweur sursaute et une bulle « ? » apparaît ;
- * Divine répond d'un petit hochement et d'une bulle « … ».
+ * Le salon de l'interview en 3D : le personnage du visiteur (tête de tournesol) pose les questions à Divine (tête de
+ * lys rose à pois), assis face à face autour d'une petite table. La scène suit doucement le pointeur. Quand une question est
+ * posée (`parle` augmente), le visiteur lève la main et une bulle « ? » apparaît ; Divine répond d'un hochement de tête et
+ * d'une bulle « … ».
  */
-
-const charger = (src: string) =>
-  new Promise<HTMLImageElement | null>((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = () => resolve(null);
-    img.src = src;
-  });
 
 function enTexture(c: HTMLCanvasElement) {
   const t = new CanvasTexture(c);
   t.colorSpace = SRGBColorSpace;
-  t.anisotropy = 8;
+  t.anisotropy = 4;
   t.needsUpdate = true;
   return t;
-}
-
-/** L'avatar SVG devient une texture (le SVG est dessiné dans un canvas). */
-async function textureAvatar(id: AvatarId) {
-  const svg = renderToStaticMarkup(<Avatar id={id} pose="assis" />)
-    .replace("<svg ", `<svg xmlns="http://www.w3.org/2000/svg" width="${VIEWBOX_W * 6}" height="${VIEWBOX_H * 6}" `);
-  const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
-  const img = await charger(url);
-  URL.revokeObjectURL(url);
-  const c = document.createElement("canvas");
-  c.width = VIEWBOX_W * 6;
-  c.height = VIEWBOX_H * 6;
-  if (img) c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
-  return { tex: enTexture(c), ratio: VIEWBOX_W / VIEWBOX_H };
 }
 
 /** Disque doux : sert d'ombre au sol et de tapis. */
@@ -80,23 +57,69 @@ function bulle(texte: string, couleur: string) {
 function Camera() {
   const { camera, size } = useThree();
   useEffect(() => {
-    camera.position.set(0, 0.3, size.width < 560 ? 11.5 : 9.2);
-    camera.lookAt(0, -0.2, 0);
+    camera.position.set(0, 0.5, size.width < 560 ? 10.6 : 8.2);
+    camera.lookAt(0, 0.1, 0);
   }, [camera, size.width]);
   return null;
 }
 
-type Textures = { avatar: { tex: CanvasTexture; ratio: number }; portrait: { tex: CanvasTexture; ratio: number }; ombre: CanvasTexture; tapis: CanvasTexture; ask: CanvasTexture; rep: CanvasTexture };
+type Textures = { ombre: CanvasTexture; tapis: CanvasTexture; ask: CanvasTexture; rep: CanvasTexture };
 
-function Salon({ t, parle }: { t: Textures; parle: number }) {
+const SOL = -1.75;
+
+function Tabouret({ x }: { x: number }) {
+  return (
+    <group position={[x, SOL, 0]}>
+      <mesh position={[0, 0.45, 0]}>
+        <cylinderGeometry args={[0.5, 0.5, 0.08, 28]} />
+        <meshLambertMaterial color="#5a4636" />
+      </mesh>
+      {[
+        [-0.28, -0.28],
+        [0.28, -0.28],
+        [-0.28, 0.28],
+        [0.28, 0.28],
+      ].map(([a, b], i) => (
+        <mesh key={i} position={[a, 0.2, b]}>
+          <cylinderGeometry args={[0.035, 0.035, 0.42, 8]} />
+          <meshLambertMaterial color="#5a4636" />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function Salon({ t, parle, avatarId }: { t: Textures; parle: number; avatarId: IdPerso }) {
   const racine = useRef<Group>(null);
-  const av = useRef<Group>(null);
-  const po = useRef<Group>(null);
   const bAsk = useRef<Mesh>(null);
   const bRep = useRef<Mesh>(null);
   const last = useRef(parle);
   const depuis = useRef(99);
-  const pointer = useThree((s) => s.pointer);
+  const pointer = useRef({ x: 0, y: 0 });
+  const visiteur = useMemo(() => {
+    const p = creerPersonnage(avatarId);
+    p.asseoir(true);
+    p.racine.rotation.y = 0.62;
+    return p;
+  }, [avatarId]);
+  const divine = useMemo(() => {
+    const p = creerPersonnage("divine");
+    p.asseoir(true);
+    p.racine.rotation.y = -0.62;
+    return p;
+  }, []);
+
+  useEffect(() => () => visiteur.liberer(), [visiteur]);
+  useEffect(() => () => divine.liberer(), [divine]);
+
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      pointer.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      pointer.current.y = -((e.clientY / window.innerHeight) * 2 - 1);
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => window.removeEventListener("pointermove", onMove);
+  }, []);
 
   useFrame((s, dt) => {
     const t0 = s.clock.elapsedTime;
@@ -108,19 +131,20 @@ function Salon({ t, parle }: { t: Textures; parle: number }) {
     const d = depuis.current;
     // parallaxe douce vers le pointeur
     if (racine.current) {
-      racine.current.rotation.y += (pointer.x * 0.22 - racine.current.rotation.y) * 0.06;
-      racine.current.rotation.x += (-pointer.y * 0.06 - racine.current.rotation.x) * 0.06;
+      racine.current.rotation.y += (pointer.current.x * 0.2 - racine.current.rotation.y) * 0.06;
+      racine.current.rotation.x += (-pointer.current.y * 0.05 - racine.current.rotation.x) * 0.06;
     }
-    // souffle : les deux personnages respirent
-    if (av.current) {
-      const saut = d < 0.5 ? Math.sin((d / 0.5) * Math.PI) * 0.22 : 0;
-      av.current.position.y = -0.1 + Math.sin(t0 * 1.7) * 0.025 + saut;
-    }
-    if (po.current) {
-      const hoche = d > 0.55 && d < 1.2 ? Math.sin(((d - 0.55) / 0.65) * Math.PI) * 0.05 : 0;
-      po.current.position.y = -0.05 + Math.sin(t0 * 1.3 + 1) * 0.02;
-      po.current.rotation.z = hoche;
-    }
+    // le visiteur respire ; quand il pose sa question, il lève la main
+    const lever = d < 1.4 ? Math.sin(Math.min(1, d / 1.4) * Math.PI) : 0;
+    visiteur.corps.position.y = Math.sin(t0 * 1.7) * 0.02;
+    visiteur.brasD.rotation.x = -2.0 * Math.min(1, lever * 1.4);
+    visiteur.avantBrasD.rotation.x = -0.6 * lever;
+    visiteur.tete.rotation.z = Math.sin(t0 * 1.1) * 0.04 - lever * 0.08;
+    // Divine écoute, puis répond d'un hochement de tête
+    const hoche = d > 0.55 && d < 1.4 ? Math.sin(((d - 0.55) / 0.85) * Math.PI * 2) * 0.16 : 0;
+    divine.corps.position.y = Math.sin(t0 * 1.3 + 1) * 0.018;
+    divine.tete.rotation.x = hoche;
+    divine.tete.rotation.z = Math.sin(t0 * 0.9 + 2) * 0.05;
     // les bulles apparaissent puis s'estompent
     const op = (m: Mesh | null, debut: number) => {
       if (!m) return;
@@ -133,26 +157,26 @@ function Salon({ t, parle }: { t: Textures; parle: number }) {
     op(bRep.current, 0.6);
   });
 
-  const hA = 3.3;
-  const hP = 3.3;
+  // pieds au sol : une fois assis, les pieds sont à 0,43 au-dessus de l'origine du personnage
+  const yPerso = SOL - 0.43 + 0.06;
   return (
     <group ref={racine}>
-      {/* le sol : un tapis clair et des ombres */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.78, 0]}>
-        <planeGeometry args={[9.5, 9.5]} />
+      {/* le sol : un tapis clair et les ombres des tabourets */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, SOL - 0.02, 0]}>
+        <planeGeometry args={[10, 10]} />
         <meshBasicMaterial map={t.tapis} transparent depthWrite={false} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-2.1, -1.76, 0.1]}>
-        <planeGeometry args={[2.6, 1.3]} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-2.0, SOL, 0.1]}>
+        <planeGeometry args={[2.6, 1.8]} />
         <meshBasicMaterial map={t.ombre} transparent depthWrite={false} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[2.0, -1.76, 0.1]}>
-        <planeGeometry args={[2.8, 1.3]} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[2.0, SOL, 0.1]}>
+        <planeGeometry args={[2.6, 1.8]} />
         <meshBasicMaterial map={t.ombre} transparent depthWrite={false} />
       </mesh>
 
       {/* la petite table entre les deux : un plateau doré et un magazine posé dessus */}
-      <group position={[0, -1.35, 0.3]}>
+      <group position={[0, SOL + 0.6, 0.2]}>
         <mesh position={[0, 0.1, 0]}>
           <cylinderGeometry args={[0.62, 0.62, 0.07, 48]} />
           <meshLambertMaterial color="#f2b400" />
@@ -171,25 +195,19 @@ function Salon({ t, parle }: { t: Textures; parle: number }) {
         </mesh>
       </group>
 
-      {/* l'intervieweur (à gauche, tourné vers Divine) */}
-      <group ref={av} position={[-2.0, -0.1, 0]} rotation={[0, 0.38, 0]}>
-        <mesh position={[0, hA / 2 - 1.68, 0]}>
-          <planeGeometry args={[hA * t.avatar.ratio, hA]} />
-          <meshBasicMaterial map={t.avatar.tex} transparent alphaTest={0.02} />
-        </mesh>
-        <mesh ref={bAsk} position={[0.6, hA - 1.95, 0.1]}>
+      {/* le visiteur (à gauche) et Divine (à droite), assis sur leur tabouret */}
+      <Tabouret x={-2.1} />
+      <Tabouret x={2.1} />
+      <group position={[-2.1, yPerso, 0.05]}>
+        <primitive object={visiteur.racine} />
+        <mesh ref={bAsk} position={[0.7, 3.5, 0.3]}>
           <planeGeometry args={[0.85, 0.85]} />
           <meshBasicMaterial map={t.ask} transparent opacity={0} depthWrite={false} />
         </mesh>
       </group>
-
-      {/* Divine (à droite) */}
-      <group ref={po} position={[2.0, -0.05, 0]} rotation={[0, -0.34, 0]}>
-        <mesh position={[0, hP / 2 - 1.68, 0]} scale={[-1, 1, 1]}>
-          <planeGeometry args={[hP * t.portrait.ratio, hP]} />
-          <meshBasicMaterial map={t.portrait.tex} transparent alphaTest={0.02} side={DoubleSide} />
-        </mesh>
-        <mesh ref={bRep} position={[-0.75, hP - 2.05, 0.1]}>
+      <group position={[2.1, yPerso, 0.05]}>
+        <primitive object={divine.racine} />
+        <mesh ref={bRep} position={[-0.75, 3.6, 0.3]}>
           <planeGeometry args={[0.85, 0.85]} />
           <meshBasicMaterial map={t.rep} transparent opacity={0} depthWrite={false} />
         </mesh>
@@ -198,7 +216,7 @@ function Salon({ t, parle }: { t: Textures; parle: number }) {
   );
 }
 
-function Contenu({ avatarId, parle, onPret }: { avatarId: AvatarId; parle: number; onPret: () => void }) {
+function Contenu({ avatarId, parle, onPret }: { avatarId: IdPerso; parle: number; onPret: () => void }) {
   const [t, setT] = useState<Textures | null>(null);
   const invalider = useThree((st) => st.invalidate);
 
@@ -209,15 +227,8 @@ function Contenu({ avatarId, parle, onPret }: { avatarId: AvatarId; parle: numbe
   }, [invalider]);
 
   useEffect(() => {
-    let vivant = true;
-    Promise.all([textureAvatar(avatarId), textureAvatar("divine")]).then(([avatar, por]) => {
-      if (!vivant) return;
-      setT({ avatar, portrait: por, ombre: disque("40,34,20", 0.35, 0.16), tapis: disque("214,208,190", 0.55, 0.3), ask: bulle("?", "#f2b400"), rep: bulle("…", "#121212") });
-    });
-    return () => {
-      vivant = false;
-    };
-  }, [avatarId]);
+    setT({ ombre: disque("40,34,20", 0.35, 0.16), tapis: disque("214,208,190", 0.55, 0.3), ask: bulle("?", "#f2b400"), rep: bulle("…", "#121212") });
+  }, []);
 
   useEffect(() => {
     if (!t) return;
@@ -228,14 +239,14 @@ function Contenu({ avatarId, parle, onPret }: { avatarId: AvatarId; parle: numbe
   return (
     <>
       <Camera />
-      <ambientLight intensity={2.4} />
-      <directionalLight position={[-3, 6, 6]} intensity={1.2} />
-      {t && <Salon t={t} parle={parle} />}
+      <ambientLight intensity={2.1} />
+      <directionalLight position={[-3, 6, 6]} intensity={1.3} />
+      {t && <Salon t={t} parle={parle} avatarId={avatarId} />}
     </>
   );
 }
 
-export default function Studio3D({ avatarId, parle, onPret }: { avatarId: AvatarId; parle: number; onPret: () => void }) {
+export default function Studio3D({ avatarId, parle, onPret }: { avatarId: IdPerso; parle: number; onPret: () => void }) {
   const boite = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
 
@@ -248,8 +259,8 @@ export default function Studio3D({ avatarId, parle, onPret }: { avatarId: Avatar
   }, []);
 
   return (
-    <div ref={boite} aria-hidden="true" className="absolute inset-0">
-      <Canvas flat dpr={[1, 1.5]} frameloop={visible ? "demand" : "never"} camera={{ fov: 33, near: 0.1, far: 60 }} gl={{ alpha: true, antialias: true }} style={{ background: "transparent" }}>
+    <div ref={boite} aria-hidden="true" className="pointer-events-none absolute inset-0">
+      <Canvas flat dpr={[1, 1.5]} frameloop={visible ? "demand" : "never"} camera={{ fov: 33, near: 0.1, far: 60 }} gl={{ alpha: true, antialias: false }} style={{ background: "transparent", pointerEvents: "none" }}>
         <Suspense fallback={null}>
           <Contenu avatarId={avatarId} parle={parle} onPret={onPret} />
         </Suspense>

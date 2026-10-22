@@ -6,6 +6,9 @@ import { Couverture } from "./Couverture";
 import { usePortraitDisponible, useCvDisponible } from "../PortraitContext";
 import { rubriques, pad, pageLabel } from "@/content/sections";
 import { identite } from "@/content/identite";
+import { usePrefs } from "../PrefsProvider";
+import type { SourcePerso } from "../scene3d/Perso3D";
+import type { IdPerso } from "../scene3d/Personnage";
 
 const Livre3D = dynamic(() => import("../scene3d/Livre3D"), { ssr: false });
 
@@ -31,6 +34,8 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
   const racine = useRef<HTMLDivElement>(null);
   const [src, setSrc] = useState<{ pos: HTMLElement; cover: HTMLElement; table: HTMLElement | null } | null>(null);
   const [pret3d, setPret3d] = useState(false);
+  const [persoSrc, setPersoSrc] = useState<SourcePerso | null>(null);
+  const { avatar } = usePrefs();
   const portraitOk = usePortraitDisponible();
   const cvDispo = useCvDisponible();
 
@@ -38,17 +43,26 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
     const r = racine.current;
     if (!r) return;
     const scene = r.closest("section") ?? r.parentElement;
+    const el = scene?.querySelector("[data-s=avatar]") as HTMLElement | null;
+    const svg = el?.querySelector("svg");
+    const part = (n: string) => svg?.querySelector(`[data-part=${n}]`) ?? null;
+    const legL = part("legL"), legR = part("legR"), armL = part("armL"), armR = part("armR"), head = part("head");
+    if (el && legL && legR && armL && armR && head) {
+      setPersoSrc({ el, parts: { legL, legR, armL, armR, head }, ancre: fin ? "droite" : "gauche" });
+    }
     setSrc({
       pos: r.querySelector("[data-s=mag-pos]") as HTMLElement,
       cover: r.querySelector("[data-s=cover-flip]") as HTMLElement,
       table: (scene?.querySelector("[data-s=table]") as HTMLElement | null) ?? null,
     });
-  }, []);
+  }, [fin, avatar]);
 
   // la table dessinée en CSS laisse la place à celle de la 3D
   useEffect(() => {
     if (pret3d && src?.table) src.table.style.visibility = "hidden";
-  }, [pret3d, src]);
+    // l'avatar à plat reste dans le DOM (il pilote le corps 3D) mais devient invisible
+    if (pret3d && persoSrc) persoSrc.el.style.visibility = "hidden";
+  }, [pret3d, src, persoSrc]);
 
   return (
     <div ref={racine} className="absolute inset-0 flex items-center justify-center" style={{ perspective: "1600px" }}>
@@ -56,7 +70,7 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
       {!fin && <h1 className="sr-only">{identite.magazine} — {identite.nom}, {identite.titre}</h1>}
       {src && (
         <Secours>
-          <Livre3D variante={variant} src={src} onPret={() => setPret3d(true)} portrait={portraitOk ? identite.portrait : null} cvDispo={cvDispo} />
+          <Livre3D variante={variant} src={src} onPret={() => setPret3d(true)} portrait={portraitOk ? identite.portrait : null} cvDispo={cvDispo} perso={persoSrc ? { id: ((avatar ?? "curieuse") as IdPerso), src: persoSrc } : null} />
         </Secours>
       )}
       {/* le magazine CSS reste dans le DOM : il porte le texte (h1, lien du CV) et pilote la scène GSAP ; il devient invisible dès que la 3D est à l'écran */}

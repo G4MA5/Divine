@@ -6,6 +6,8 @@ import { CanvasTexture, type Group, type MeshBasicMaterial, type PerspectiveCame
 import gsap from "gsap";
 import { creerTextures, type JeuTextures, type Variante } from "./texturesLivre";
 import { Environnement } from "./Table3D";
+import { Perso3D, type SourcePerso } from "./Perso3D";
+import type { IdPerso } from "./Personnage";
 
 /**
  * Le magazine en vraie 3D (three.js, via React Three Fiber).
@@ -171,7 +173,9 @@ function Livre({ tex, src, actif }: { tex: JeuTextures; src: Sources; actif: boo
   );
 }
 
-function Scene({ actif, variante, src, onPret, portrait, cvDispo }: { actif: boolean; variante: Variante; src: Sources; onPret: () => void; portrait: string | null; cvDispo: boolean }) {
+type PersoProps = { id: IdPerso; src: SourcePerso } | null;
+
+function Scene({ actif, variante, src, onPret, portrait, cvDispo, perso }: { perso: PersoProps; actif: boolean; variante: Variante; src: Sources; onPret: () => void; portrait: string | null; cvDispo: boolean }) {
   const [tex, setTex] = useState<JeuTextures | null>(null);
 
   useEffect(() => {
@@ -204,11 +208,12 @@ function Scene({ actif, variante, src, onPret, portrait, cvDispo }: { actif: boo
       <ambientLight intensity={2.1} />
       <directionalLight position={[-500, 800, 1100]} intensity={1.35} />
       {tex && <Livre tex={tex} src={src} actif={actif} />}
+      {tex && perso && <Perso3D id={perso.id} src={perso.src} reduit={!!src.pos.closest("[data-reduced]")} />}
     </>
   );
 }
 
-export default function Livre3D({ variante, src, onPret, portrait, cvDispo }: { variante: Variante; src: Sources; onPret: () => void; portrait: string | null; cvDispo: boolean }) {
+export default function Livre3D({ variante, src, onPret, portrait, cvDispo, perso = null }: { perso?: PersoProps; variante: Variante; src: Sources; onPret: () => void; portrait: string | null; cvDispo: boolean }) {
   const boite = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
 
@@ -223,8 +228,8 @@ export default function Livre3D({ variante, src, onPret, portrait, cvDispo }: { 
 
   return (
     <div ref={boite} aria-hidden="true" className="pointer-events-none absolute inset-0 z-[1]">
-      <Canvas flat dpr={[1, 1.25]} frameloop="demand" gl={{ alpha: true, antialias: false, powerPreference: "high-performance" }} camera={{ position: [0, 0, DISTANCE], fov: 30 }} style={{ background: "transparent" }}>
-        <Scene actif={visible} variante={variante} src={src} onPret={onPret} portrait={portrait} cvDispo={cvDispo} />
+      <Canvas flat dpr={[1, 1.25]} frameloop="demand" gl={{ alpha: true, antialias: false, powerPreference: "high-performance" }} camera={{ position: [0, 0, DISTANCE], fov: 30 }} style={{ background: "transparent", pointerEvents: "none" }}>
+        <Scene perso={perso} actif={visible} variante={variante} src={src} onPret={onPret} portrait={portrait} cvDispo={cvDispo} />
       </Canvas>
     </div>
   );

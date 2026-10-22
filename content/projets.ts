@@ -27,8 +27,14 @@ export type Projet = {
     credit: string;
     art: NomArt;
   };
-  /** captures d'écran (dans /public/images/projets/) : rien ne s'affiche tant qu'il n'y en a pas */
+  /**
+   * Captures d'écran : déposer les images dans /public/images/projets/<slug>/ puis lister leurs chemins ici
+   * (ex. ["/images/projets/canopee/accueil.png"]). Tant qu'il n'y en a pas, la section « Aperçu » affiche des cadres
+   * vides (fenêtre ou téléphone) prêts à les recevoir.
+   */
   captures?: string[];
+  /** forme des cadres d'aperçu : une fenêtre de navigateur (web) ou un téléphone (mobile) */
+  format?: "web" | "mobile";
 };
 
 export const projets: Projet[] = [
@@ -85,6 +91,7 @@ export const projets: Projet[] = [
     description: "Application mobile de gestion de stock, pensée principalement pour les salons de coiffure. En cours de déploiement au salon PELA Hair.",
     stack: [],
     fonctionnalites: ["Gestion de stock", "Pensée pour les salons de coiffure"],
+    format: "mobile",
     role: "Réalisé seule, de bout en bout",
     statut: "En cours de déploiement chez PELA Hair",
     couverture: { theme: "black", disposition: "vertical", chevauche: true, grand: [{ t: "STOCK" }, { t: "SALON", accent: true }], petit: ["Gestion de stock", "Salons de coiffure"], credit: "App mobile", art: "stock" },

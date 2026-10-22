@@ -187,7 +187,7 @@ export function Messagerie() {
         </button>
       </p>
 
-      <div ref={zone} role="log" aria-live="polite" aria-label="Conversation avec Divine" className="flex max-h-[24rem] min-h-[15rem] flex-col gap-2 overflow-y-auto pr-1">
+      <div ref={zone} data-lenis-prevent role="log" aria-live="polite" aria-label="Conversation avec Divine" className="flex max-h-[24rem] min-h-[15rem] flex-col gap-2 overflow-y-auto pr-1">
         {msgs.map((m, i) => (
           <p
             key={i}

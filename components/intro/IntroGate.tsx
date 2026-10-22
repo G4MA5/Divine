@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { usePrefs } from "../PrefsProvider";
 import { avatars } from "@/content/avatars";
 import { identite } from "@/content/identite";
-import { Avatar, type AvatarId } from "../avatar/Avatar";
+import { ImagePerso } from "../avatar/ImagePerso";
+import type { IdPerso } from "../scene3d/Personnage";
 import { allerA } from "../SmoothScroll";
 import { play } from "@/lib/sound";
 import { Chargement } from "./Chargement";
@@ -161,7 +162,7 @@ export function IntroGate({ children }: { children: ReactNode }) {
                           className="carton-avatar group flex w-full flex-col items-center gap-2 border-2 border-ink px-2 pb-3 pt-3 transition-colors hover:bg-[#fbf3dc]"
                           
                         >
-                          <Avatar id={a.id as AvatarId} className="h-28 w-auto transition-transform group-hover:scale-105" />
+                          <ImagePerso id={a.id as IdPerso} className="h-36 w-auto transition-transform group-hover:scale-105" />
                           <span className="font-sans text-[0.72rem] font-extrabold uppercase leading-tight tracking-[0.12em]" >
                             {a.rubrique}
                           </span>

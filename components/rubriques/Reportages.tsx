@@ -78,7 +78,7 @@ function Dossier({ index, origine, onClose }: { index: number; origine: Origine;
   }, []);
 
   return createPortal(
-    <div ref={racine} role="dialog" aria-modal="true" aria-label={`Dossier ${p.titre}`} className="fixed inset-0 z-[90] overflow-y-auto bg-white" style={reducedMotion ? undefined : { clipPath: iris(0) }}>
+    <div ref={racine} data-lenis-prevent role="dialog" aria-modal="true" aria-label={`Dossier ${p.titre}`} className="fixed inset-0 z-[90] overflow-y-auto bg-white" style={reducedMotion ? undefined : { clipPath: iris(0) }}>
       <button ref={fermer} type="button" onClick={fin} aria-label="Refermer le dossier" className="btn fixed right-4 top-4 z-10 !px-4 !py-2">
         Refermer ×
       </button>
