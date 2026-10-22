@@ -43,7 +43,7 @@ export function Page({
           <span className="tabular-nums">p. {num}</span>
         </p>
         <TitreAnime as="h2" id={`${id}-titre`} texte={titre ?? r.titre} className="titre-xl mt-3 text-[clamp(3.4rem,15vw,8rem)]" />
-        {trait && <Gribouillis className="mt-1" />}
+        {trait && <Gribouillis className="mt-5" />}
         <hr className="filet mt-5" />
         {children}
         {!sansPied && <PiedDePage page={num} />}

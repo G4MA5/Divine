@@ -5,6 +5,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { CanvasTexture, type Group, type MeshBasicMaterial, type PerspectiveCamera } from "three";
 import gsap from "gsap";
 import { creerTextures, type JeuTextures, type Variante } from "./texturesLivre";
+import { Environnement } from "./Table3D";
 
 /**
  * Le magazine en vraie 3D (three.js, via React Three Fiber).
@@ -15,7 +16,7 @@ import { creerTextures, type JeuTextures, type Variante } from "./texturesLivre"
 const DEG = Math.PI / 180;
 const DISTANCE = 1600;
 
-type Sources = { pos: HTMLElement; cover: HTMLElement };
+type Sources = { pos: HTMLElement; cover: HTMLElement; table: HTMLElement | null };
 
 const lire = (el: HTMLElement, p: string, defaut: number) => {
   const v = Number(gsap.getProperty(el, p));
@@ -55,6 +56,7 @@ function Livre({ tex, src }: { tex: JeuTextures; src: Sources }) {
   const charniere = useRef<Group>(null);
   const ombreG = useRef<Group>(null);
   const matOmbre = useRef<MeshBasicMaterial>(null);
+  const voile = useRef<MeshBasicMaterial>(null);
   const W = Math.min(size.width, size.height * 0.75);
   const H = (W * 4) / 3;
   const T = W * 0.07; // épaisseur totale du bloc de pages
@@ -62,6 +64,22 @@ function Livre({ tex, src }: { tex: JeuTextures; src: Sources }) {
   const tL = T / 2;
   const c = W * 0.014; // épaisseur de la couverture
   const ombre = useMemo(creerOmbre, []);
+  const invalider = useThree((st) => st.invalidate);
+
+  // rendu à la demande : on ne redessine que si la scène GSAP a bougé (ou tant que la table est visible, pour la vapeur)
+  useEffect(() => {
+    let dernier = "";
+    const tick = () => {
+      const o = src.table ? lire(src.table, "opacity", 0) : 0;
+      const sig = [lire(src.pos, "x", 0), lire(src.pos, "y", 0), lire(src.pos, "scale", 1), lire(src.pos, "rotationX", 0), lire(src.cover, "rotationY", 0), o].map((v) => v.toFixed(2)).join("|");
+      if (sig !== dernier || o > 0.01) {
+        dernier = sig;
+        invalider();
+      }
+    };
+    gsap.ticker.add(tick);
+    return () => gsap.ticker.remove(tick);
+  }, [src, invalider]);
 
   useFrame(() => {
     const g = groupe.current;
@@ -78,28 +96,39 @@ function Livre({ tex, src }: { tex: JeuTextures; src: Sources }) {
     h.rotation.y = ouvert * DEG;
     if (ombreG.current) ombreG.current.scale.x = 1 + Math.min(1, Math.abs(ouvert) / 178);
     // l'ombre n'existe vraiment que lorsque le livre est posé sur la table (incliné)
+    // la table apparaît quand la caméra recule : son opacité est pilotée par la scène (data-s=table)
+    if (voile.current) {
+      const reduit = !!src.pos.closest("[data-reduced]");
+      const o = reduit || !src.table ? 0 : lire(src.table, "opacity", 0);
+      voile.current.opacity = 1 - Math.min(1, Math.max(0, o));
+    }
     if (matOmbre.current) matOmbre.current.opacity = 0.18 + 0.82 * Math.min(1, Math.max(0, rx) / 40);
   });
 
   return (
+    <>
     <group ref={groupe}>
-      {/* ombre posée sur la table, sous le livre */}
-      <group ref={ombreG} position={[0, 0, -2]}>
-        <mesh position={[-W * 0.0, -H * 0.04, 0]}>
-          <planeGeometry args={[W * 1.5, H * 1.18]} />
-          <meshBasicMaterial ref={matOmbre} map={ombre} transparent depthWrite={false} />
-        </mesh>
+      {/* la table et les objets posés dessus, puis l'ombre du livre */}
+      <group renderOrder={1}>
+        <Environnement W={W} />
+        <group ref={ombreG} position={[0, 0, 0.6]}>
+          <mesh position={[-W * 0.0, -H * 0.04, 0]}>
+            <planeGeometry args={[W * 1.5, H * 1.18]} />
+            <meshBasicMaterial ref={matOmbre} map={ombre} transparent depthWrite={false} />
+          </mesh>
+        </group>
       </group>
+      <group renderOrder={3}>
 
       {/* pile de pages de droite */}
       <mesh position={[0, 0, tR / 2]} castShadow>
         <boxGeometry args={[W, H, tR]} />
-        <meshLambertMaterial attach="material-0" map={tex.papierU} />
-        <meshLambertMaterial attach="material-1" color="#e9e5da" />
-        <meshLambertMaterial attach="material-2" map={tex.papierV} />
-        <meshLambertMaterial attach="material-3" map={tex.papierV} />
-        <meshLambertMaterial attach="material-4" map={tex.droite} />
-        <meshLambertMaterial attach="material-5" color="#ffffff" />
+        <meshLambertMaterial transparent attach="material-0" map={tex.papierU} />
+        <meshLambertMaterial transparent attach="material-1" color="#e9e5da" />
+        <meshLambertMaterial transparent attach="material-2" map={tex.papierV} />
+        <meshLambertMaterial transparent attach="material-3" map={tex.papierV} />
+        <meshLambertMaterial transparent attach="material-4" map={tex.droite} />
+        <meshLambertMaterial transparent attach="material-5" color="#ffffff" />
       </mesh>
 
       {/* charnière sur la reliure : la couverture et la pile de gauche pivotent ensemble */}
@@ -107,25 +136,32 @@ function Livre({ tex, src }: { tex: JeuTextures; src: Sources }) {
         {/* pile de gauche : sa face du dessous est la page de gauche */}
         <mesh position={[W / 2, 0, tL / 2]}>
           <boxGeometry args={[W, H, tL]} />
-          <meshLambertMaterial attach="material-0" map={tex.papierU} />
-          <meshLambertMaterial attach="material-1" color="#e9e5da" />
-          <meshLambertMaterial attach="material-2" map={tex.papierV} />
-          <meshLambertMaterial attach="material-3" map={tex.papierV} />
-          <meshLambertMaterial attach="material-4" color="#f4f2ec" />
-          <meshLambertMaterial attach="material-5" map={tex.gauche} />
+          <meshLambertMaterial transparent attach="material-0" map={tex.papierU} />
+          <meshLambertMaterial transparent attach="material-1" color="#e9e5da" />
+          <meshLambertMaterial transparent attach="material-2" map={tex.papierV} />
+          <meshLambertMaterial transparent attach="material-3" map={tex.papierV} />
+          <meshLambertMaterial transparent attach="material-4" color="#f4f2ec" />
+          <meshLambertMaterial transparent attach="material-5" map={tex.gauche} />
         </mesh>
         {/* la couverture : sa face extérieure est la une */}
         <mesh position={[W / 2, 0, tL + c / 2]}>
           <boxGeometry args={[W, H, c]} />
-          <meshLambertMaterial attach="material-0" color="#ffffff" />
-          <meshLambertMaterial attach="material-1" color="#ffffff" />
-          <meshLambertMaterial attach="material-2" color="#ffffff" />
-          <meshLambertMaterial attach="material-3" color="#ffffff" />
-          <meshLambertMaterial attach="material-4" map={tex.couverture} />
-          <meshLambertMaterial attach="material-5" color="#f4f2ec" />
+          <meshLambertMaterial transparent attach="material-0" color="#ffffff" />
+          <meshLambertMaterial transparent attach="material-1" color="#ffffff" />
+          <meshLambertMaterial transparent attach="material-2" color="#ffffff" />
+          <meshLambertMaterial transparent attach="material-3" color="#ffffff" />
+          <meshLambertMaterial transparent attach="material-4" map={tex.couverture} />
+          <meshLambertMaterial transparent attach="material-5" color="#f4f2ec" />
         </mesh>
       </group>
+      </group>
     </group>
+    {/* le voile blanc couvre la table tant que la caméra n'a pas reculé (il se dessine avant le livre, après la table) */}
+    <mesh position={[0, 0, 0]} renderOrder={2}>
+      <planeGeometry args={[size.width * 4, size.height * 4]} />
+      <meshBasicMaterial ref={voile} color="#ffffff" transparent depthTest={false} depthWrite={false} opacity={1} />
+    </mesh>
+    </>
   );
 }
 
@@ -181,7 +217,7 @@ export default function Livre3D({ variante, src, onPret, portrait, cvDispo }: { 
 
   return (
     <div ref={boite} aria-hidden="true" className="pointer-events-none absolute inset-0 z-[1]">
-      <Canvas flat dpr={[1, 1.75]} frameloop={visible ? "always" : "never"} gl={{ alpha: true, antialias: true }} camera={{ position: [0, 0, DISTANCE], fov: 30 }} style={{ background: "transparent" }}>
+      <Canvas flat dpr={[1, 1.5]} frameloop={visible ? "demand" : "never"} gl={{ alpha: true, antialias: true }} camera={{ position: [0, 0, DISTANCE], fov: 30 }} style={{ background: "transparent" }}>
         <Scene variante={variante} src={src} onPret={onPret} portrait={portrait} cvDispo={cvDispo} />
       </Canvas>
     </div>

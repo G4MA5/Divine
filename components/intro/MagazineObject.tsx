@@ -29,7 +29,7 @@ class Secours extends Component<{ children: ReactNode }, { erreur: boolean }> {
 export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" | "fin" }) {
   const fin = variant === "fin";
   const racine = useRef<HTMLDivElement>(null);
-  const [src, setSrc] = useState<{ pos: HTMLElement; cover: HTMLElement } | null>(null);
+  const [src, setSrc] = useState<{ pos: HTMLElement; cover: HTMLElement; table: HTMLElement | null } | null>(null);
   const [pret3d, setPret3d] = useState(false);
   const portraitOk = usePortraitDisponible();
   const cvDispo = useCvDisponible();
@@ -37,8 +37,18 @@ export function MagazineObject({ variant = "sommaire" }: { variant?: "sommaire" 
   useEffect(() => {
     const r = racine.current;
     if (!r) return;
-    setSrc({ pos: r.querySelector("[data-s=mag-pos]") as HTMLElement, cover: r.querySelector("[data-s=cover-flip]") as HTMLElement });
+    const scene = r.closest("section") ?? r.parentElement;
+    setSrc({
+      pos: r.querySelector("[data-s=mag-pos]") as HTMLElement,
+      cover: r.querySelector("[data-s=cover-flip]") as HTMLElement,
+      table: (scene?.querySelector("[data-s=table]") as HTMLElement | null) ?? null,
+    });
   }, []);
+
+  // la table dessinée en CSS laisse la place à celle de la 3D
+  useEffect(() => {
+    if (pret3d && src?.table) src.table.style.visibility = "hidden";
+  }, [pret3d, src]);
 
   return (
     <div ref={racine} className="absolute inset-0 flex items-center justify-center" style={{ perspective: "1600px" }}>

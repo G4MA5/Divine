@@ -6,7 +6,7 @@ import { forwardRef, type ReactNode } from "react";
  * legL, legR, armL, armR, head, body. Les pivots sont posés par la scène (svgOrigin).
  */
 
-export type AvatarId = "recruteur" | "curieuse" | "client" | "etudiante";
+export type AvatarId = "recruteur" | "curieuse" | "client" | "etudiante" | "divine";
 
 type Style = {
   skin: string;
@@ -22,6 +22,8 @@ export const STYLES: Record<AvatarId, Style> = {
   curieuse: { skin: "#c68b62", hair: "#1a110d", outfit: "#e9e6dd", outfit2: "#d99a00", trousers: "#e9e6dd", shoes: "#1b1b1b" },
   client: { skin: "#efc7a4", hair: "#5a3b2a", outfit: "#5b5b57", outfit2: "#ffffff", trousers: "#2b2b2b", shoes: "#ffffff" },
   etudiante: { skin: "#6b4330", hair: "#0f0a08", outfit: "#2b2b2b", outfit2: "#d99a00", trousers: "#111111", shoes: "#ffffff" },
+  // Divine : peau mate, longues tresses, blazer noir sur un haut noir, petit collier doré
+  divine: { skin: "#7a4a33", hair: "#1c100c", outfit: "#151515", outfit2: "#2a2a2a", trousers: "#151515", shoes: "#ffffff" },
 };
 
 /** Pivots (coordonnées du viewBox) : chaque partie mobile tourne autour de son point d'attache. */
@@ -64,6 +66,19 @@ function Hair({ id, c }: { id: AvatarId; c: string }) {
       );
     case "client":
       return <path d="M50 80c-4-26 10-42 30-42s34 16 30 42c-2-12-8-22-20-24-10 6-26 6-40 24Z" fill={c} />;
+    case "divine":
+      // une raie sur le côté, et de longues tresses qui retombent sur les épaules
+      return (
+        <g fill={c}>
+          <path d="M53 78c-2-26 11-40 27-40s30 14 27 40c-5-12-12-19-27-19s-22 7-27 19Z" />
+          {[48, 54, 60, 100, 106, 112].map((x, i) => (
+            <rect key={x} x={x - 3} y={58 + (i % 3) * 3} width="6.5" height={92 - (i % 3) * 10} rx="3.2" />
+          ))}
+          {[51, 57, 103, 109].map((x) => (
+            <circle key={x} cx={x} cy={146} r="2.4" fill="#d99a00" />
+          ))}
+        </g>
+      );
     case "etudiante":
       return (
         <g fill={c}>
@@ -98,6 +113,16 @@ function Outfit({ id, s }: { id: AvatarId; s: Style }) {
           <rect x="46" y="118" width="68" height="114" rx="22" fill={s.outfit} />
           <rect x="72" y="118" width="16" height="114" fill={s.outfit2} opacity="0.9" />
           <rect x="56" y="196" width="22" height="30" rx="4" fill="#2b3340" />
+        </g>
+      );
+    case "divine":
+      return (
+        <g data-part="body">
+          <rect x="46" y="118" width="68" height="116" rx="22" fill={s.outfit} />
+          <path d="M60 118l20 46 20-46-8 0-12 26-12-26Z" fill="#ffffff" opacity="0.14" />
+          <path d="M66 122c4 10 24 10 28 0" fill="none" stroke="#d99a00" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="80" cy="134" r="2.6" fill="#d99a00" />
+          <rect x="46" y="118" width="68" height="116" rx="22" fill="none" stroke="#2f2f2f" strokeWidth="1.5" />
         </g>
       );
     case "etudiante":
@@ -174,6 +199,7 @@ export const Avatar = forwardRef<SVGSVGElement, { id: AvatarId; className?: stri
         {id === "recruteur" && <path d="M55 70c3-14 13-20 25-20s22 6 25 20c-8-6-16-8-25-8s-17 2-25 8Z" fill={s.hair} />}
         {id === "client" && <path d="M55 72c0-16 10-26 25-26s25 10 25 26c-10-12-20-14-30-12-8 2-14 6-20 12Z" fill={s.hair} />}
         {id === "curieuse" && <path d="M56 68c2-14 12-22 24-22s22 8 24 22c-10-8-16-10-24-10s-14 2-24 10Z" fill={s.hair} />}
+        {id === "divine" && <path d="M54 74c2-18 12-28 26-28s24 10 26 28c-8-9-15-12-26-12s-18 3-26 12Z" fill={s.hair} />}
         {id === "etudiante" && <path d="M55 70c3-14 13-20 25-20s22 6 25 20c-8-6-16-8-25-8s-17 2-25 8Z" fill={s.hair} />}
         {/* visage */}
         <circle cx="70" cy="82" r="2.4" fill="#1a1410" />

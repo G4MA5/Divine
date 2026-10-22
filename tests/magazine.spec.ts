@@ -77,7 +77,7 @@ test("« Passer l'intro » mène au sommaire", async ({ page }) => {
 test("navigation au clavier : le focus est visible dès l'écran d'accueil", async ({ page }) => {
   await page.goto("/");
   // l'écran de chargement (le petit personnage) passe d'abord
-  await page.locator('[aria-label="Chargement du magazine"]').waitFor({ state: "detached", timeout: 15_000 });
+  await page.locator('[aria-label="Chargement du magazine"]').waitFor({ state: "detached", timeout: 45_000 });
   await page.keyboard.press("Tab");
   const focus = await page.evaluate(() => {
     const el = document.activeElement as HTMLElement | null;

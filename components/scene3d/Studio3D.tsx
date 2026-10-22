@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { CanvasTexture, SRGBColorSpace, type Group, type Mesh, type MeshBasicMaterial } from "three";
+import { CanvasTexture, DoubleSide, SRGBColorSpace, type Group, type Mesh, type MeshBasicMaterial } from "three";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Avatar, type AvatarId, VIEWBOX_H, VIEWBOX_W } from "../avatar/Avatar";
 
@@ -41,23 +41,6 @@ async function textureAvatar(id: AvatarId) {
   c.height = VIEWBOX_H * 6;
   if (img) c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
   return { tex: enTexture(c), ratio: VIEWBOX_W / VIEWBOX_H };
-}
-
-async function texturePortrait(src: string | null) {
-  const c = document.createElement("canvas");
-  c.width = 442;
-  c.height = 890;
-  const ctx = c.getContext("2d")!;
-  const img = src ? await charger(src) : null;
-  if (img) ctx.drawImage(img, 0, 0, c.width, c.height);
-  else {
-    ctx.fillStyle = "#121212";
-    ctx.fill(new Path2D("M0 890c10-190 100-258 220-288l80-24h40l80 24c120 30 212 98 222 288Z"));
-    ctx.beginPath();
-    ctx.ellipse(221, 300, 120, 150, 0, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  return { tex: enTexture(c), ratio: c.width / c.height };
 }
 
 /** Disque doux : sert d'ombre au sol et de tapis. */
@@ -151,7 +134,7 @@ function Salon({ t, parle }: { t: Textures; parle: number }) {
   });
 
   const hA = 3.3;
-  const hP = 3.7;
+  const hP = 3.3;
   return (
     <group ref={racine}>
       {/* le sol : un tapis clair et des ombres */}
@@ -200,23 +183,11 @@ function Salon({ t, parle }: { t: Textures; parle: number }) {
         </mesh>
       </group>
 
-      {/* le bureau de l'interview, devant Divine : il cache le bas de la découpe */}
-      <group position={[2.0, -1.43, 0.55]} rotation={[0, -0.34, 0]}>
-        <mesh>
-          <boxGeometry args={[2.5, 0.75, 0.5]} />
-          <meshLambertMaterial color="#f4f1ea" />
-        </mesh>
-        <mesh position={[0, 0.39, 0]}>
-          <boxGeometry args={[2.56, 0.05, 0.56]} />
-          <meshLambertMaterial color="#f2b400" />
-        </mesh>
-      </group>
-
       {/* Divine (à droite) */}
       <group ref={po} position={[2.0, -0.05, 0]} rotation={[0, -0.34, 0]}>
-        <mesh position={[0, hP / 2 - 1.68, 0]}>
+        <mesh position={[0, hP / 2 - 1.68, 0]} scale={[-1, 1, 1]}>
           <planeGeometry args={[hP * t.portrait.ratio, hP]} />
-          <meshBasicMaterial map={t.portrait.tex} transparent alphaTest={0.02} />
+          <meshBasicMaterial map={t.portrait.tex} transparent alphaTest={0.02} side={DoubleSide} />
         </mesh>
         <mesh ref={bRep} position={[-0.75, hP - 2.05, 0.1]}>
           <planeGeometry args={[0.85, 0.85]} />
@@ -227,19 +198,19 @@ function Salon({ t, parle }: { t: Textures; parle: number }) {
   );
 }
 
-function Contenu({ avatarId, portrait, parle, onPret }: { avatarId: AvatarId; portrait: string | null; parle: number; onPret: () => void }) {
+function Contenu({ avatarId, parle, onPret }: { avatarId: AvatarId; parle: number; onPret: () => void }) {
   const [t, setT] = useState<Textures | null>(null);
 
   useEffect(() => {
     let vivant = true;
-    Promise.all([textureAvatar(avatarId), texturePortrait(portrait)]).then(([avatar, por]) => {
+    Promise.all([textureAvatar(avatarId), textureAvatar("divine")]).then(([avatar, por]) => {
       if (!vivant) return;
       setT({ avatar, portrait: por, ombre: disque("40,34,20", 0.35, 0.16), tapis: disque("214,208,190", 0.55, 0.3), ask: bulle("?", "#f2b400"), rep: bulle("…", "#121212") });
     });
     return () => {
       vivant = false;
     };
-  }, [avatarId, portrait]);
+  }, [avatarId]);
 
   useEffect(() => {
     if (!t) return;
@@ -257,7 +228,7 @@ function Contenu({ avatarId, portrait, parle, onPret }: { avatarId: AvatarId; po
   );
 }
 
-export default function Studio3D({ avatarId, parle, portrait, onPret }: { avatarId: AvatarId; parle: number; portrait: string | null; onPret: () => void }) {
+export default function Studio3D({ avatarId, parle, onPret }: { avatarId: AvatarId; parle: number; onPret: () => void }) {
   const boite = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
 
@@ -271,9 +242,9 @@ export default function Studio3D({ avatarId, parle, portrait, onPret }: { avatar
 
   return (
     <div ref={boite} aria-hidden="true" className="absolute inset-0">
-      <Canvas flat dpr={[1, 1.75]} frameloop={visible ? "always" : "never"} camera={{ fov: 33, near: 0.1, far: 60 }} gl={{ alpha: true, antialias: true }} style={{ background: "transparent" }}>
+      <Canvas flat dpr={[1, 1.5]} frameloop={visible ? "always" : "never"} camera={{ fov: 33, near: 0.1, far: 60 }} gl={{ alpha: true, antialias: true }} style={{ background: "transparent" }}>
         <Suspense fallback={null}>
-          <Contenu avatarId={avatarId} portrait={portrait} parle={parle} onPret={onPret} />
+          <Contenu avatarId={avatarId} parle={parle} onPret={onPret} />
         </Suspense>
       </Canvas>
     </div>

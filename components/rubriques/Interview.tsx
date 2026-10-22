@@ -5,9 +5,6 @@ import dynamic from "next/dynamic";
 import { questions, type QuestionInterview } from "@/content/interview";
 import { Avatar, type AvatarId } from "../avatar/Avatar";
 import { usePrefs } from "../PrefsProvider";
-import { Portrait } from "../ui/Portrait";
-import { usePortraitDisponible } from "../PortraitContext";
-import { identite } from "@/content/identite";
 import { Citation } from "../ui/Citation";
 import { Page } from "./Page";
 import { gsap } from "@/lib/useScene";
@@ -52,7 +49,6 @@ function QR({ q, premier }: { q: QuestionInterview; premier: boolean }) {
 
 function Scene({ parle = 0 }: { parle?: number }) {
   const { avatar } = usePrefs();
-  const portraitOk = usePortraitDisponible();
   const id = (avatar ?? "curieuse") as AvatarId;
   const [pret3d, setPret3d] = useState(false);
   return (
@@ -61,10 +57,10 @@ function Scene({ parle = 0 }: { parle?: number }) {
       <div className="relative h-72 border-b border-ink sm:h-[24rem]" aria-hidden="true">
         <div className="absolute inset-0 grid grid-cols-[1fr_1fr] items-end gap-2 transition-opacity duration-500 sm:gap-8" style={{ opacity: pret3d ? 0 : 1 }}>
           <Avatar id={id} pose="assis" className="mx-auto h-44 w-auto sm:h-64" />
-          <Portrait className="mx-auto h-44 w-auto sm:h-64" />
+          <Avatar id="divine" pose="assis" className="mx-auto h-44 w-auto -scale-x-100 sm:h-64" />
         </div>
         <Secours>
-          <Studio3D avatarId={id} parle={parle} portrait={portraitOk ? identite.portrait : null} onPret={() => setPret3d(true)} />
+          <Studio3D avatarId={id} parle={parle} onPret={() => setPret3d(true)} />
         </Secours>
       </div>
       <p className="label mt-2 flex justify-between">
